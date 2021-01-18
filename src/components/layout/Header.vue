@@ -1,6 +1,6 @@
 <template lang="pug">
 header.Header.grid.v-center
-  i.fas.fa-bars
+  i.fas.fa-bars.pointer(@click="toggleSidebar")
   h1.title GO COURT
   
 </template>
@@ -17,12 +17,13 @@ export default {
   setup(props) {
     const store = useStore()
     const isSidebarOpen = computed(() => store.state.Layout.isSidebarOpen)
-    const toggleSidebar = () => store.commit('Layout/setSidebarOpen', !isSidebarOpen.value)
+    const toggleSidebar = () => {
+      store.commit('Layout/setSidebarOpen', !isSidebarOpen.value)
+    }
 
     return {
       isSidebarOpen,
       toggleSidebar
-
     }
   }
 }
