@@ -1,15 +1,16 @@
 <template lang="pug">
-
-div  
-  h2 123
+.home
+  SearchPanel
 
 </template>
+
 <script>
-// @ is an alias to /src
+import SearchPanel from '@/components/public/SearchPanel'
 
 export default {
   name: 'Home',
   components: {
+    SearchPanel
   }
 }
 </script>

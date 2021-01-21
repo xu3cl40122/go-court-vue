@@ -2,6 +2,7 @@
 .App 
   Header
   Sidebar
+  router-view
   
 </template>
 
