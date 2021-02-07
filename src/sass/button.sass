@@ -1,0 +1,52 @@
+.gc-btns
+  display: flex 
+  flex-direction: column
+  > * 
+    &:not(:last-child)
+      margin-bottom: .75rem
+.gc-btn 
+  border-radius: 4px 
+  padding: .75rem 1.5rem
+  font-size: .875rem
+  transition-property: background-color, color, border
+  transition-duration: .3s
+  transition-timing-function: ease-in-out
+  cursor: pointer
+  font-weight: 500
+
+  &.main 
+    background-color: $main_c
+    border: 1px solid $main_c
+    color: #fff
+    &:hover
+      border: 1px solid #0f1b46
+      background-color: #0f1b46
+  &.second 
+    background-color: $second_c
+    border: 1px solid $second_c
+    color: $main_c
+    &:hover
+      border: 1px solid #daa549
+      background-color: #daa549
+  &.danger 
+    background-color: $danger_c
+    border: 1px solid $danger_c
+    color: #fff
+    &:hover
+      border: 1px solid #a01c1c
+      background-color: #a01c1c
+  &.hollow-main 
+    border: 1px solid $main_c
+    color: $main_c
+    background-color: #fff
+    &:hover 
+      background-color: $main_c 
+      color: #fff
+  &:disabled
+    background-color: #e4dfd6
+    border: 1px solid #e4dfd6
+    color: #fff
+    pointer-events: none
+
+  &.full 
+    width: 100%

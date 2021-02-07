@@ -2,7 +2,8 @@
 const state = () => ({
   isSidebarOpen: false,
   sidebarMenu: {
-    login: { label: '登入', path: '/login' },
+    login: { label: '登入', path: '', event: 'login' },
+    register: { label: '註冊', path: '', event: 'register' },
     logout: { label: '登出', path: '/logout' },
     profile: { label: '個人檔案', path: '/profile' },
     myGame: { label: '我的比賽', path: '/myGame' },

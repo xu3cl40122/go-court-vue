@@ -1,29 +1,61 @@
 <template lang="pug">
 .Sidebar(:class="isSidebarOpen ? 'show' : ''")
   .menu.grid 
-    .col(v-for="(col, i) of menu", :key="i") {{ col.label }}
+    .col(v-for="(col, i) of menu", :key="i", @click="clickCol(col)") {{ col.label }}
 </template>
 
 <script>
 import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter, useRoute } from 'vue-router'
 
 export default {
   name: 'Sidebar',
   props: {
 
   },
-  setup(props) {
+  setup(props, context) {
     const store = useStore()
+    const router = useRouter()
     const isSidebarOpen = computed(() => store.state.Layout.isSidebarOpen)
+
     const menu = computed(() => {
-      let features = ['login', 'profile', 'myGame']
+      let features = ['login', 'register', 'profile', 'myGame']
       return store.getters['Layout/getMenu'](features)
     })
 
+
+    function clickCol(col) {
+      toggleSidebar()
+      col.path
+        ? router.push({ path: col.path })
+        : this[col.event]()
+    }
+
+    function toggleSidebar() {
+      store.commit('Layout/setSidebarOpen', !isSidebarOpen.value)
+    }
+
+    function login() {
+      store.commit('Dialog/openDialog', {
+        name: 'userDialog',
+        info: { type: 'login' }
+      })
+    }
+
+    function register() {
+      store.commit('Dialog/openDialog', {
+        name: 'userDialog',
+        info: { type: 'register' }
+      })
+    }
+
     return {
       isSidebarOpen,
-      menu
+      menu,
+      clickCol,
+      login,
+      register
     }
   }
 }
@@ -50,7 +82,7 @@ export default {
 
 .col
   padding: .5rem 0
-  color: main_c
+  color: #333
   font-size: 1.5rem
   text-align: center
   font-weight: 600
