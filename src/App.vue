@@ -21,8 +21,9 @@ export default {
     UserDialog,
     MessageDialog
   },
-  mounted() {
+  async mounted() {
     window.vm = this
+    await this.$store.dispatch('initApp')
   }
 }
 

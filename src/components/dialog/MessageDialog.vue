@@ -8,6 +8,7 @@ Dialog(
   :showHeader="false"
   position="top"
   @show="onOpen"
+  @hide="onClose"
 )
   .body
     i.icon(:class="[icon, dialogInfo.status]")
@@ -26,6 +27,7 @@ import Dialog from "primevue/dialog"
  * @title <string>
  * @subtitles string[]
  * @closeAfter number
+ * @closeCb function
  * 
  */
 export default {
@@ -51,12 +53,18 @@ export default {
       if (dialogInfo.value.closeAfter)
         setTimeout(() => isDialogOpen.value = false, dialogInfo.value.closeAfter)
     }
+    
+    function onClose() {
+      if (dialogInfo.value.closeCb)
+        dialogInfo.value.closeCb()
+    }
 
     return {
       isDialogOpen,
       dialogInfo,
       icon,
-      onOpen
+      onOpen,
+      onClose
     }
   }
 

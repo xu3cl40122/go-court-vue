@@ -3,8 +3,8 @@
   .description 
     span 已將驗證碼發送到您的 e-mail
     .email.info_c {{ userEmail }}
-    span(v-if="cdTime") 重新發送驗證碼({{ cdTime }}s)
-    .underline.main_c.pointer(v-else @click="initTimer") 重新發送驗證碼
+    span(v-if="cdTime") 重發驗證碼({{ cdTime }}s)
+    .underline.main_c.pointer(v-else @click="resend") 重發驗證碼
 
  
   .flex.h-center
@@ -12,7 +12,7 @@
       .codeCol.flex.h-center.v-center(v-for="(code, i) of codeArr", :key="i") 
         span {{ code }}
 
-  .errorMsg.danger_c(v-if="errorMsg") {{ errorMsg }}
+  .errorMsg.danger_c(v-if="errorMsg.text") {{ errorMsg.text }}
   
   //- hidden input 
   input.disapper(ref="RefInput", v-model="verification_code", @keyup="onChange")
@@ -31,7 +31,10 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    errorMsg: String,
+    errorMsg: {
+      type: Object,
+      default: () => ({}),
+    },
     codeLength: {
       type: Number,
       default: 6
@@ -41,7 +44,7 @@ export default {
       default: 5
     }
   },
-  setup(props) {
+  setup(props, { emit }) {
     let { info, codeLength, cdSecond } = props
     let RefInput = ref(null)
     let userEmail = computed(() => info.user?.email || '')
@@ -63,6 +66,11 @@ export default {
       verification_code.value = verification_code.value.slice(0, codeLength)
       codeArr.value = codeArr.value.map((code, i) => verification_code.value[i] || '')
     })
+
+    function resend() {
+      emit('resend', { email: userEmail.value, toVerify: false })
+      initTimer()
+    }
 
     function initTimer() {
       if (timer) return
@@ -91,7 +99,8 @@ export default {
       RefInput,
       focusInput,
       cdTime,
-      initTimer
+      initTimer,
+      resend
     }
   },
 };

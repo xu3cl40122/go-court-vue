@@ -1,7 +1,8 @@
 <template lang="pug">
 .Sidebar(:class="isSidebarOpen ? 'show' : ''")
   .menu.grid 
-    .col(v-for="(col, i) of menu", :key="i", @click="clickCol(col)") {{ col.label }}
+    .col(v-for="(col, i) of menu", :key="i") 
+      span.pointer(@click="clickCol(col)") {{ col.label }}
 </template>
 
 <script>
@@ -86,4 +87,6 @@ export default {
   font-size: 1.5rem
   text-align: center
   font-weight: 600
+  span 
+    padding: 0 2rem
 </style>

@@ -12,11 +12,11 @@ Dialog(
       h4.main_c {{ layout.title }}
       i.fas.fa-times.close.pointer(v-if="!layout.hideClose" @click="close")
   template(v-if="dialogInfo.type === 'login'")
-    Login
+    Login(ref="RefLogin" :errorMsg="errorMsg")
   template(v-else-if="dialogInfo.type === 'register'")
     Register(ref="RefRegister")
   template(v-else-if="dialogInfo.type === 'verification'")
-    Verification(ref="RefVerification" :info="dialogInfo" :errorMsg="errorMsg")
+    Verification(ref="RefVerification" :info="dialogInfo" :errorMsg="errorMsg" @resend="sendVerification")
 
   template(#footer)
     .gc-btns 
@@ -29,7 +29,7 @@ Dialog(
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import Dialog from "primevue/dialog"
 import Login from "@/components/dialog/userSystem/Login"
@@ -49,6 +49,7 @@ export default {
     // ref component
     const RefRegister = ref(null)
     const RefVerification = ref(null)
+    const RefLogin = ref(null)
 
     const store = useStore()
     const isDialogOpen = computed({
@@ -56,11 +57,15 @@ export default {
       set: () => store.commit("Dialog/closeDialog", "userDialog"),
     })
     const dialogInfo = computed(() => store.state.Dialog.userDialogInfo)
+    const loginParams = computed(() => store.state.User.loginParams)
     const layout = computed(() => {
       switch (dialogInfo.value.type) {
         case "login":
           return {
             title: "登入",
+            btns: [
+              { text: '登入', class: 'main', callback: login.bind(this) }
+            ]
           }
         case "register":
           return {
@@ -85,9 +90,27 @@ export default {
 
 
     const errorMsg = ref('')
+    watch(dialogInfo, () => errorMsg.value = { text: '' })
+
+    async function login() {
+      let params = RefLogin.value.emitData()
+      if (!params) return
+
+      let res = await store.dispatch('User/login', { params, option: {} })
+      switch (res.status) {
+        case 200:
+          return showMessageDialog('loginSuccess')
+        // initial account
+        case 406:
+          store.commit('User/setLoginParams', params)
+          return showMessageDialog('accountNotEnabled')
+        default:
+          errorMsg.value = { text: '帳號密碼錯誤' }
+          break;
+      }
+    }
 
     async function addUser() {
-      return enableUser()
       let params = RefRegister.value.emitData()
       if (!params) return
       console.log('result', params)
@@ -101,17 +124,85 @@ export default {
     }
 
     async function enableUser() {
-      // let verification_code = RefVerification.value.verification_code
-      // errorMsg.value = '驗證碼錯誤'
+      let verification_code = RefVerification.value.verification_code
+      let email = loginParams.value.email
+      let params = { email, verification_code }
+      let res = await store.dispatch('User/enableUser', { params, option: {} })
+      switch (res.status) {
+        case 400:
+          return errorMsg.value = { text: '驗證碼錯誤' }
+        case 406:
+          return errorMsg.value = { text: '驗證碼已過期，請點擊重新發送' }
+        default:
+          return onVerifySuccess()
+      }
+    }
+
+    async function onVerifySuccess() {
+      let params = loginParams.value
+      let res = await store.dispatch('User/login', { params, option: {} })
+      if (!res.success) return
+
+      showMessageDialog('registerSuccess')
       close()
+    }
+
+    async function sendVerification({ email, toVerify = true }) {
+      let params = { email }
+      let res = await store.dispatch('User/sendVerification', { params, option: {} })
+      if (res.status === 406)
+        errorMsg.value = { text: '請求驗證碼太過頻繁，請先至您的信箱查看驗證碼或稍後再試' }
+      if (toVerify)
+        toVerificationTab()
+
+    }
+
+    function toVerificationTab() {
+      store.commit('Dialog/setDialog', {
+        name: 'userDialog',
+        info: {
+          type: 'verification',
+          user: store.state.User.loginParams
+        }
+      })
+    }
+
+    function showMessageDialog(event) {
+      let info = {}
+      switch (event) {
+        case 'registerSuccess':
+          info = {
+            status: 'success',
+            title: '註冊完成',
+            subtitles: ['祝您天天定三米'],
+            closeAfter: 3000
+          }
+          break;
+        case 'loginSuccess':
+          info = {
+            status: 'success',
+            title: '登入成功',
+            subtitles: [],
+            closeAfter: 3000
+          }
+          break;
+        case 'accountNotEnabled':
+          info = {
+            status: 'warning',
+            title: '帳號 e-mail 未驗證',
+            subtitles: ['請先驗證您的 email'],
+            closeAfter: 3000,
+            closeCb: sendVerification.bind(this, { email: loginParams.value.email })
+          }
+          break;
+
+        default:
+          break;
+      }
+
       store.commit('Dialog/setDialog', {
         name: 'messageDialog',
-        info: {
-          status: 'success',
-          title: '註冊完成',
-          subtitles: ['祝您天天定三米'],
-          closeAfter: 3000
-        }
+        info
       })
     }
 
@@ -126,7 +217,9 @@ export default {
       close,
       RefRegister,
       RefVerification,
-      errorMsg
+      RefLogin,
+      errorMsg,
+      sendVerification,
     }
   },
 }
