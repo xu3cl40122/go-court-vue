@@ -37,14 +37,14 @@ export default {
     }
 
     function login() {
-      store.commit('Dialog/openDialog', {
+      store.commit('Dialog/setDialog', {
         name: 'userDialog',
         info: { type: 'login' }
       })
     }
 
     function register() {
-      store.commit('Dialog/openDialog', {
+      store.commit('Dialog/setDialog', {
         name: 'userDialog',
         info: { type: 'register' }
       })

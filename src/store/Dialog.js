@@ -1,7 +1,10 @@
 
 const state = () => ({
   userDialogOpen: false,
-  userDialogInfo: {}
+  userDialogInfo: {},
+
+  messageDialogOpen: false,
+  messageDialogInfo: {},
 
 })
 
@@ -10,8 +13,8 @@ const getters = {
 }
 
 const mutations = {
-  openDialog: (state, { name, info = {} }) => {
-    state[`${name}Open`] = true
+  setDialog: (state, { name, info = {}, open = true }) => {
+    state[`${name}Open`] = open
     state[`${name}Info`] = info
   },
   closeDialog: (state, name) => state[`${name}Open`] = false

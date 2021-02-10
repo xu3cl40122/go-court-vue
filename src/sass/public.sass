@@ -1,4 +1,3 @@
-
 body 
   font-family: 'Noto Sans TC', sans-serif
   color: #333
@@ -21,11 +20,19 @@ h5
   color: $main_c 
 .second_c 
   color: $second_c 
+.success_c 
+  color: $success_c 
 .danger_c 
   color: $danger_c 
+.info_c 
+  color: $info_c 
+.underline 
+  text-decoration: underline
 
 .flex 
-  display: flex 
+  display: flex
+  &.column 
+    flex-direction: column 
   &.v-center 
     align-items: center 
   &.h-center 
@@ -38,11 +45,16 @@ h5
   &.v-center 
     align-items: center
 
-.fw-500 
-  font-weight: 500
+.fw-600 
+  font-weight: 600
 
 .pointer 
   cursor: pointer 
 
 .event-none 
   pointer-events: none
+
+.gc-form 
+  display: grid 
+  grid-gap: 1rem
+    

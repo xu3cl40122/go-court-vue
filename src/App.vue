@@ -3,6 +3,7 @@
   Header
   Sidebar
   UserDialog
+  MessageDialog
   router-view
   
 </template>
@@ -11,12 +12,14 @@
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
 import UserDialog from '@/components/dialog/userSystem/'
+import MessageDialog from '@/components/dialog/MessageDialog'
 
 export default {
   components: {
     Header,
     Sidebar,
-    UserDialog
+    UserDialog,
+    MessageDialog
   },
   mounted() {
     window.vm = this
