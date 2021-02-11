@@ -15,7 +15,7 @@
   .errorMsg.danger_c(v-if="errorMsg.text") {{ errorMsg.text }}
   
   //- hidden input 
-  input.disapper(ref="RefInput", v-model="verification_code", @keyup="onChange")
+  input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput" @keyup="onChange" @keyup.enter="onEnter")
 
   
 
@@ -91,6 +91,10 @@ export default {
       RefInput.value.focus()
     }
 
+    function onEnter() {
+      emit('submit')
+    }
+
     return {
       userEmail,
       gridStyle,
@@ -100,7 +104,8 @@ export default {
       focusInput,
       cdTime,
       initTimer,
-      resend
+      resend,
+      onEnter,
     }
   },
 };

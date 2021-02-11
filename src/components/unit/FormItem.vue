@@ -7,9 +7,9 @@
         :value="option.value" v-model="model") 
       label(:for="option.label") {{ option.label }}
   template(v-else-if="iCol.type === 'password'")
-    Password(v-model="model" :placeholder="iCol.placeholder" :feedback="false" toggleMask)
+    Password(v-model="model" :placeholder="iCol.placeholder" :feedback="false" toggleMask @keyup.native.enter="onEnter")
   template(v-else)
-    InputText(:type="iCol.type" v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled")
+    InputText(:type="iCol.type" v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" @keyup.native.enter="onEnter")
   
   .errorMsg.danger_c {{ iCol.error }}
 
@@ -45,8 +45,13 @@ export default {
       },
     })
 
+    function onEnter() {
+      emit('onEnter', { col: props.iCol, key: props.iKey })
+    }
+
     return {
       model,
+      onEnter
     }
   },
 }

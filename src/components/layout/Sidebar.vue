@@ -19,9 +19,12 @@ export default {
     const store = useStore()
     const router = useRouter()
     const isSidebarOpen = computed(() => store.state.Layout.isSidebarOpen)
+    const isLogin = computed(() => store.state.User.isLogin)
 
     const menu = computed(() => {
-      let features = ['login', 'register', 'profile', 'myGame']
+      let features = isLogin.value
+        ? ['profile', 'myGame', 'logout']
+        : ['login', 'register', 'profile', 'myGame']
       return store.getters['Layout/getMenu'](features)
     })
 
@@ -51,12 +54,17 @@ export default {
       })
     }
 
+    function logout() {
+      store.dispatch('User/logout')
+    }
+
     return {
       isSidebarOpen,
       menu,
       clickCol,
       login,
-      register
+      register,
+      logout
     }
   }
 }

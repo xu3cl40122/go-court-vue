@@ -7,6 +7,7 @@
       :iCol="col",
       :iKey="key",
       @onChange="onChange"
+      @onEnter="onEnter"
     )
   
 </template>
@@ -31,7 +32,7 @@ export default {
       default: () => ({}),
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     let columns = reactive({
       email: {
         label: "電子郵件",
@@ -83,6 +84,11 @@ export default {
       checkValue({ col, key })
     }
 
+    function onEnter({ col, key }) {
+      if (key === 'password')
+        emit('submit')
+    }
+
     function checkValue({ col, key }) {
       let { model, required, label } = col
       if (key === "email" && !isEmail(model))
@@ -99,6 +105,7 @@ export default {
       columns,
       onChange,
       emitData,
+      onEnter
     }
   },
 };

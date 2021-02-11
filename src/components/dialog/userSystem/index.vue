@@ -12,11 +12,11 @@ Dialog(
       h4.main_c {{ layout.title }}
       i.fas.fa-times.close.pointer(v-if="!layout.hideClose" @click="close")
   template(v-if="dialogInfo.type === 'login'")
-    Login(ref="RefLogin" :errorMsg="errorMsg")
+    Login(ref="RefLogin" :errorMsg="errorMsg" @submit="login")
   template(v-else-if="dialogInfo.type === 'register'")
     Register(ref="RefRegister")
   template(v-else-if="dialogInfo.type === 'verification'")
-    Verification(ref="RefVerification" :info="dialogInfo" :errorMsg="errorMsg" @resend="sendVerification")
+    Verification(ref="RefVerification" :info="dialogInfo" :errorMsg="errorMsg" @resend="sendVerification" @submit="enableUser")
 
   template(#footer)
     .gc-btns 
@@ -89,7 +89,8 @@ export default {
     })
 
 
-    const errorMsg = ref('')
+    // 用 string update 一樣的值不會被 watch 到只好用 object 包起來
+    const errorMsg = ref({})
     watch(dialogInfo, () => errorMsg.value = { text: '' })
 
     async function login() {
@@ -113,14 +114,17 @@ export default {
     async function addUser() {
       let params = RefRegister.value.emitData()
       if (!params) return
-      console.log('result', params)
-      store.commit('Dialog/setDialog', {
-        name: 'userDialog',
-        info: {
-          type: 'verification',
-          user: params
-        }
-      })
+
+      let res = await store.dispatch('User/register', { params, option: {} })
+      switch (res.status) {
+        case 201:
+          store.commit('User/setLoginParams', params)
+          return sendVerification({ email: params.email })
+        case 400:
+          return errorMsg.value = { text: '該 e-mail 已被使用，請確認是否已有帳號' }
+        default:
+          return
+      }
     }
 
     async function enableUser() {
@@ -138,6 +142,7 @@ export default {
       }
     }
 
+    // 驗證完 email 自動幫登入
     async function onVerifySuccess() {
       let params = loginParams.value
       let res = await store.dispatch('User/login', { params, option: {} })
@@ -147,7 +152,9 @@ export default {
       close()
     }
 
+    // 發送驗證碼到 email
     async function sendVerification({ email, toVerify = true }) {
+      console.log('sendVerification', email)
       let params = { email }
       let res = await store.dispatch('User/sendVerification', { params, option: {} })
       if (res.status === 406)
@@ -220,6 +227,8 @@ export default {
       RefLogin,
       errorMsg,
       sendVerification,
+      login,
+      enableUser,
     }
   },
 }
