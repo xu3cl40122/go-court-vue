@@ -15,7 +15,7 @@
   .errorMsg.danger_c(v-if="errorMsg.text") {{ errorMsg.text }}
   
   //- hidden input 
-  input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput" @keyup="onChange" @keyup.enter="onEnter")
+  input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput35" @keyup="onChange" @keyup.enter="onEnter")
 
   
 
@@ -41,7 +41,7 @@ export default {
     },
     cdSecond: {
       type: Number,
-      default: 5
+      default: 300
     }
   },
   setup(props, { emit }) {
