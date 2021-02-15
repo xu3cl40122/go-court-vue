@@ -1,6 +1,6 @@
-import { Object } from "core-js"
+import _ from 'lodash';
 
-const cityMap = {
+export const cityMap = {
   "基隆市": {
     "label": "基隆市",
     "code": "10017",
@@ -2488,6 +2488,24 @@ export function getDistCategory() {
 
 export function getCityMap() {
   return JSON.parse(JSON.stringify(cityMap))
+}
+
+export function getCityOptions() {
+  return Object.values(cityMap).map(city => {
+    city.value = city.code
+    return city
+  })
+}
+
+export function getDistOptions(city_code) {
+  let city = Object.values(cityMap).find(city => city.code === city_code)
+  if (!city) throw 'city not found'
+  let cityName = city.label
+  let dists = distMap[cityName]
+  return Object.values(dists).map(city => {
+    city.value = city.code
+    return city
+  })
 }
 
 export function getDistMap(addCheckAllChild = true) {

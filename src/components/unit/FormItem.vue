@@ -2,14 +2,22 @@
 .FormItem
   .label {{ iCol.label }}
   template(v-if="iCol.type === 'radio'")
-    .radioWrapper(v-for="(option, i) of iCol.selectItems" :key="i")
+    .radioWrapper(v-for="(option, i) of iCol.options" :key="i")
       RadioButton( :name="option.label" 
         :value="option.value" v-model="model") 
       label(:for="option.label") {{ option.label }}
+
   template(v-else-if="iCol.type === 'password'")
-    Password(v-model="model" :placeholder="iCol.placeholder" :feedback="false" toggleMask @keyup.native.enter="onEnter")
+    Password(v-model="model" :placeholder="iCol.placeholder" :feedback="false" toggleMask 
+      @keyup.native.enter="onEnter")
+
+  template(v-else-if="iCol.type === 'select'")
+    Dropdown(:modelValue="iCol.model" :options="iCol.options" optionLabel="label" optionValue="value" 
+      :placeholder="iCol.placeholder" :disabled="iCol.disabled" @change="onSelect")
+
   template(v-else)
-    InputText(:type="iCol.type" v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" @keyup.native.enter="onEnter")
+    InputText(:type="iCol.type" v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" 
+      @keyup.native.enter="onEnter")
   
   .errorMsg.danger_c {{ iCol.error }}
 
@@ -20,12 +28,14 @@
 import { ref, computed } from "vue"
 import RadioButton from 'primevue/radiobutton';
 import Password from 'primevue/password';
+import Dropdown from 'primevue/dropdown';
 
 export default {
   name: "FormItem",
   components: {
     RadioButton,
-    Password
+    Password,
+    Dropdown
   },
   props: {
     iCol: {
@@ -34,31 +44,45 @@ export default {
     },
     iKey: String,
   },
-  setup(props, { emit }) {
+  setup(props, { emit, }) {
     let model = computed({
       get() {
         return props.iCol.model
       },
       set(val) {
         props.iCol.model = val
-        emit("onChange", { col: props.iCol, key: props.iKey })
+        onChange()
       },
     })
+
+    let updateIndex = ref(0)
 
     function onEnter() {
       emit('onEnter', { col: props.iCol, key: props.iKey })
     }
 
+    function onChange(val) {
+      emit("onChange", { col: props.iCol, key: props.iKey })
+    }
+
     return {
       model,
-      onEnter
+      onEnter,
+      onChange,
     }
   },
+  methods: {
+    // 這樣才能調用 this
+    async onSelect({ orginalEvent, value }) {
+      this.model = value
+      this.$forceUpdate()
+    }
+  }
 }
 </script>
 
 <style lang="sass" scoped>
-:deep .p-inputtext, .p-password
+:deep .p-inputtext, .p-password, .p-dropdown
   width: 100%
 
 .label

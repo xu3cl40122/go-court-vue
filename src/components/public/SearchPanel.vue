@@ -1,36 +1,76 @@
 <template lang="pug">
 .SearchPanel
-  .col
+  .gc-form(:key="updateIndex")
+    FormItem(
+      v-for="(col, key) in columns",
+      :key="key",
+      :iCol="col",
+      :iKey="key",
+      @onChange="onChange"
+    )
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import FormItem from "@/components/unit/FormItem.vue"
+import _ from 'lodash';
+import { getCityOptions, getDistOptions } from '@/methods/district'
 
 export default {
   name: 'SearchPanel',
+  components: {
+    FormItem
+  },
   props: {},
-  setup(props) {
+  setup(props, context) {
+    let updateIndex = ref(0)
     const columns = {
       city: {
-        label: '縣市',
-        model: '',
-        type: 'select',
+        label: "縣市",
+        type: "select",
+        model: "",
+        placeholder: "",
+        options: getCityOptions(),
         required: true,
-        error: '',
-        options: []
+        error: "",
       },
       dist: {
         label: '鄉鎮市區',
         model: '',
         type: 'select',
-        required: true,
+        required: false,
         error: '',
         options: []
       },
-      
+
     }
+
+    onMounted(() => {
+      let citys = getCityOptions()
+      columns.city.options = citys
+    })
+
+    function onChange({ col, key }) {
+      switch (key) {
+        case 'city':
+          columns.dist.options = getDistOptions(col.model)
+          columns.dist.model = col.model
+          updateIndex.value++
+          break;
+
+        default:
+          break;
+      }
+    }
+
     return {
+      columns,
+      onChange,
+      updateIndex
     }
+  },
+  methods: {
+  
   }
 }
 </script>

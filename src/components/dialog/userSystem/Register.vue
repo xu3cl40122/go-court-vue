@@ -51,7 +51,7 @@ export default {
         label: "生理性別",
         type: "radio",
         model: "",
-        selectItems: [
+        options: [
           { label: '男', value: 'MALE' },
           { label: '女', value: 'FEMALE' },
         ],

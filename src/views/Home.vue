@@ -1,5 +1,5 @@
 <template lang="pug">
-.home
+.Home
   TabBlocks(v-model:tabIndex="tabIndex" :tabs="tabs")
   SearchPanel
 </template>
@@ -29,3 +29,8 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+.Home
+  padding: 1rem
+</style>

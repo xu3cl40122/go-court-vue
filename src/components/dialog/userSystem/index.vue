@@ -206,7 +206,7 @@ export default {
         default:
           break;
       }
-
+      close()
       store.commit('Dialog/setDialog', {
         name: 'messageDialog',
         info
