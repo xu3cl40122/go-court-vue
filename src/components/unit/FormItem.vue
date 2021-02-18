@@ -15,6 +15,14 @@
     Dropdown(:modelValue="iCol.model" :options="iCol.options" optionLabel="label" optionValue="value" 
       :placeholder="iCol.placeholder" :disabled="iCol.disabled" @change="onSelect")
 
+  template(v-else-if="iCol.type === 'multiSelect'")
+    MultiSelect(:modelValue="iCol.model" :options="iCol.options" optionLabel="label" optionValue="value" 
+      :placeholder="iCol.placeholder" :disabled="iCol.disabled" @change="onSelect")
+
+  template(v-else-if="iCol.type === 'dateRange'")
+    Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled"
+    selectionMode="range" :manualInput="false" @date-select="onSelectDate" dateFormat="yy-mm-dd")
+
   template(v-else)
     InputText(:type="iCol.type" v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" 
       @keyup.native.enter="onEnter")
@@ -29,13 +37,17 @@ import { ref, computed } from "vue"
 import RadioButton from 'primevue/radiobutton';
 import Password from 'primevue/password';
 import Dropdown from 'primevue/dropdown';
+import Calendar from 'primevue/calendar';
+import MultiSelect from 'primevue/multiselect';
 
 export default {
   name: "FormItem",
   components: {
     RadioButton,
     Password,
-    Dropdown
+    Dropdown,
+    Calendar,
+    MultiSelect
   },
   props: {
     iCol: {
@@ -76,13 +88,26 @@ export default {
     async onSelect({ orginalEvent, value }) {
       this.model = value
       this.$forceUpdate()
+    },
+
+    async onSelectDate(value) {
+      let [start, end] = this.iCol.model
+      if (start && end)
+        this.iCol.model = [value, null]
+      else {
+        new Date(value).getTime() > new Date(start).getTime()
+          ? this.iCol.model = [start, value]
+          : this.iCol.model = [value, start]
+      }
+      this.$forceUpdate()
+      this.onChange()
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-:deep .p-inputtext, .p-password, .p-dropdown
+:deep .p-inputtext, .p-password, .p-dropdown, .p-calendar, .p-multiselect
   width: 100%
 
 .label

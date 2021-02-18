@@ -1,6 +1,6 @@
 <template lang="pug">
 .Home
-  TabBlocks(v-model:tabIndex="tabIndex" :tabs="tabs")
+  //- TabBlocks(v-model:tabIndex="tabIndex" :tabs="tabs")
   SearchPanel
 </template>
 

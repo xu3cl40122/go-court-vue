@@ -4,7 +4,8 @@
   Sidebar
   UserDialog
   MessageDialog
-  router-view
+  .main(v-if="redyRender")
+    router-view
   
 </template>
 
@@ -21,9 +22,15 @@ export default {
     UserDialog,
     MessageDialog
   },
+  data() {
+    return {
+      redyRender: false
+    }
+  },
   async mounted() {
     window.vm = this
     await this.$store.dispatch('initApp')
+    this.redyRender = true
   }
 }
 

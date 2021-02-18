@@ -3,7 +3,7 @@ import Layout from './Layout'
 import Dialog from './Dialog'
 import Setting from './Setting'
 import User from './User'
-import q from '@/api/request'
+import Game from './Game'
 
 export default createStore({
   state: {
@@ -21,6 +21,7 @@ export default createStore({
     Layout,
     Dialog,
     Setting,
-    User
+    User,
+    Game
   }
 })

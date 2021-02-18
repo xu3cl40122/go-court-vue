@@ -1,20 +1,26 @@
 <template lang="pug">
 .SearchPanel
-  .gc-form(:key="updateIndex")
-    FormItem(
-      v-for="(col, key) in columns",
-      :key="key",
-      :iCol="col",
-      :iKey="key",
-      @onChange="onChange"
-    )
+  .gc-form.col-2(:key="updateIndex")
+    .col(v-for="(col, key) in columns" :key="key" :class="col.class")
+      FormItem(
+        :iCol="col",
+        :iKey="key",
+        @onChange="onChange"
+      )
+  
+  .gc-btns 
+    button.gc-btn.main(@click="submit") 找球賽
+
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 import FormItem from "@/components/unit/FormItem.vue"
 import _ from 'lodash';
 import { getCityOptions, getDistOptions } from '@/methods/district'
+import { isNull, delay } from "@/methods/"
+import dayjs from 'dayjs'
 
 export default {
   name: 'SearchPanel',
@@ -24,10 +30,12 @@ export default {
   props: {},
   setup(props, context) {
     let updateIndex = ref(0)
+    const store = useStore()
     const columns = {
-      city: {
+      city_code: {
         label: "縣市",
         type: "select",
+        class: '',
         model: "",
         placeholder: "",
         options: getCityOptions(),
@@ -38,27 +46,133 @@ export default {
         label: '鄉鎮市區',
         model: '',
         type: 'select',
+        class: '',
         required: false,
         error: '',
         options: []
       },
+      date_range: {
+        label: '日期',
+        model: '',
+        type: 'dateRange',
+        class: 'span2',
+        required: true,
+        error: '',
+        options: []
+      },
+      game_type: {
+        label: '球賽類型',
+        model: [],
+        type: 'multiSelect',
+        class: 'span2',
+        required: false,
+        error: '',
+        options: store.getters['Game/getGameTypeOptions']
+      },
+      court_type: {
+        label: '球場',
+        model: [],
+        type: 'multiSelect',
+        class: 'span2',
+        required: false,
+        error: '',
+        options: store.getters['Game/getCourtTypeOptions']
+      }
 
     }
 
-    onMounted(() => {
-      let citys = getCityOptions()
-      columns.city.options = citys
+    onMounted(async () => {
+      await delay(300)
+      getParamsFromLocal()
+
     })
+
+    function getParamsFromLocal() {
+      let params = localStorage.getItem('GC_SEARCH_GAME_PARAMS')
+      if (!params) return
+      params = JSON.parse(params)
+      Object.keys(columns).forEach(key => {
+        let col = columns[key]
+        switch (key) {
+          case 'date_range':
+            if (params[key]) {
+              let [start, end] = params[key]
+              col.model = [new Date(start), new Date(end)]
+            }
+            break;
+          default:
+            if (params[key])
+              col.model = params[key]
+            break;
+        }
+
+      })
+      updateIndex.value++
+    }
+
+    async function submit() {
+      let params = emitData()
+      if (!params) return
+      await queryGames(params)
+      saveParamsToLocal()
+    }
+
+    async function queryGames(params) {
+      let res = await store.dispatch('Game/queryGames', { params, option: {} })
+    }
+
+    function saveParamsToLocal() {
+      let params = {}
+      Object.keys(columns).forEach(key => params[key] = columns[key].model)
+      localStorage.setItem('GC_SEARCH_GAME_PARAMS', JSON.stringify(params))
+    }
+
+    function emitData() {
+      let outputData = {}
+      let isValid = true
+      Object.keys(columns).forEach(key => {
+        let col = columns[key]
+        checkValue({ col, key })
+        if (col.error) return isValid = false
+
+        switch (key) {
+          case 'game_type':
+          case 'court_type':
+            outputData[key] = col.model.join(',')
+            break;
+          case 'date_range':
+            let [start, end] = col.model
+            outputData.start = new Date(start).toISOString()
+            outputData.end = new Date(dayjs(end).add(24, 'hour')).toISOString()
+            break;
+          default:
+            outputData[key] = col.model
+            break;
+        }
+      })
+      updateIndex.value++
+      return isValid ? outputData : false
+    }
+
+    function checkValue({ col, key }) {
+      let { model, required, label } = col
+      if (required && isNull(model))
+        return col.error = `請輸入"${label}"`
+
+      return col.error = ''
+    }
 
     function onChange({ col, key }) {
       switch (key) {
-        case 'city':
+        case 'city_code':
           columns.dist.options = getDistOptions(col.model)
           columns.dist.model = col.model
           updateIndex.value++
+          checkValue({ col, key })
           break;
 
         default:
+          checkValue({ col, key })
           break;
       }
     }
@@ -66,11 +180,10 @@ export default {
     return {
       columns,
       onChange,
-      updateIndex
+      updateIndex,
+      submit,
+      emitData,
     }
-  },
-  methods: {
-  
   }
 }
 </script>
@@ -81,4 +194,9 @@ export default {
   border-radius: 8px
   background-color: #fff
   box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 1px
+.col 
+  &.span2 
+    grid-column: span 2
+.gc-btns 
+  margin-top: 1rem
 </style>

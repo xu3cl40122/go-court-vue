@@ -22,3 +22,14 @@ export function isNull(val) {
 
   return false
 }
+
+export function addQueryToUrl(url, query = {}) {
+  Object.keys(query).forEach((key, i) => {
+    let value = query[key]
+    i === 0
+      ? url += `?${key}=${value}`
+      : url += `&${key}=${value}`
+  })
+
+  return url
+}
