@@ -23,7 +23,10 @@
     .description {{ game.description }}
   
   .fixedBtns 
-    button.gc-btn.main.full 參加球賽
+    button.gc-btn.main.full(@click="openPanel(true)") 參加球賽
+  
+  SidePanel(v-model:isOpen="isPanelOpen" title="選擇種類及數量")
+    GameStockSelector(:game="game")
 
 </template>
 
@@ -31,17 +34,23 @@
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import defaultImg from '@/assets/image/default.jpg'
-import { getDistrictCodeMap } from '@/methods/district'
 import { toTimeRangeString } from '@/methods/time'
+import SidePanel from '@/components/layout/SidePanel'
+import GameStockSelector from '@/components/game/GameStockSelector'
 
 export default {
   name: 'GameDetailPage',
+  components: {
+    SidePanel,
+    GameStockSelector
+  },
   props: {
     game_id: String
   },
   setup(props) {
     const store = useStore()
     let game = ref({})
+    let isPanelOpen = ref(false)
     onMounted(() => {
       store.commit('Layout/setHeaders', [
         {
@@ -93,6 +102,11 @@ export default {
       let { success, data } = await store.dispatch('Game/getGameById', { game_id, option: {} })
       if (!success) return
       game.value = data
+      console.log(888888, game.value)
+    }
+
+    function openPanel(open) {
+      isPanelOpen.value = open
     }
 
     return {
@@ -100,7 +114,9 @@ export default {
       logo,
       time,
       tags,
-      price
+      price,
+      isPanelOpen,
+      openPanel
     }
   }
 }
