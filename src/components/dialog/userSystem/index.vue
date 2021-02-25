@@ -154,7 +154,6 @@ export default {
 
     // 發送驗證碼到 email
     async function sendVerification({ email, toVerify = true }) {
-      console.log('sendVerification', email)
       let params = { email }
       let res = await store.dispatch('User/sendVerification', { params, option: {} })
       if (res.status === 406)

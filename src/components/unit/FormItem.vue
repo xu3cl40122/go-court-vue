@@ -13,7 +13,7 @@
 
   template(v-else-if="iCol.type === 'select'")
     Dropdown(:modelValue="iCol.model" :options="iCol.options" optionLabel="label" optionValue="value" 
-      :placeholder="iCol.placeholder" :disabled="iCol.disabled" @change="onSelect")
+      :placeholder="iCol.placeholder" :disabled="iCol.disabled" :showClear="iCol.showClear" @change="onSelect")
 
   template(v-else-if="iCol.type === 'multiSelect'")
     MultiSelect(:modelValue="iCol.model" :options="iCol.options" optionLabel="label" optionValue="value" 

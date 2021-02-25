@@ -64,3 +64,23 @@
 
   &.full 
     width: 100%
+  
+
+.gc-tag
+  display: inline-block
+  padding: 4px 8px 
+  border-radius: 20px
+  color: #333
+  border: 1px solid #333
+  &:not(:last-child)
+    margin-right: .25rem
+    margin-bottom: .25rem
+  &.main 
+    color: $main_c 
+    border: 1px solid $main_c 
+  &.success 
+    color: $success_c 
+    border: 1px solid $success_c 
+  &.info 
+    color: $info_c 
+    border: 1px solid $info_c 

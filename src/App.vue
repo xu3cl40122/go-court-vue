@@ -1,17 +1,22 @@
 <template lang="pug">
-.App 
-  Header
-  Sidebar
-  UserDialog
-  MessageDialog
-  .main(v-if="redyRender")
-    router-view
+.App
+  template(v-if="redyRender")
+    Header
+    Sidebar
+    UserDialog
+    MessageDialog
+    .main
+      router-view(v-slot="{ Component }")
+        keep-alive(include="GamesPage")
+          component(:is="Component")
+    Navbar(v-if="showNavbar")
   
 </template>
 
 <script>
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
+import Navbar from '@/components/layout/Navbar'
 import UserDialog from '@/components/dialog/userSystem/'
 import MessageDialog from '@/components/dialog/MessageDialog'
 
@@ -20,11 +25,17 @@ export default {
     Header,
     Sidebar,
     UserDialog,
-    MessageDialog
+    MessageDialog,
+    Navbar
   },
   data() {
     return {
       redyRender: false
+    }
+  },
+  computed:{
+    showNavbar() {
+      return this.$store.state.Layout.showNavbar
     }
   },
   async mounted() {

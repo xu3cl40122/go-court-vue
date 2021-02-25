@@ -4,37 +4,49 @@ import { Game } from '@/api/'
 
 const state = () => ({
   gameTypeMap: {
-    MALE_NET: '男網',
-    FEMALE_NET_MIX: '女網混排',
-    FEMAL_NET_PURE: '女網',
-    BEACH: '沙排',
+    MALE_NET: { label: '男網', value: 'MALE_NET', class: '' },
+    FEMALE_NET_MIX: { label: '女網混排', value: 'FEMALE_NET_MIX', class: '' },
+    FEMAL_NET_PURE: { label: '女網', value: 'FEMAL_NET_PURE', class: '' },
+    BEACH: { label: '沙排', value: 'BEACH', class: '' },
   },
 
   courtTypeMap: {
-    INDOOR: '室內',
-    COVERED: '風雨球場',
-    OUTDOOR: '室外',
+    INDOOR: { label: '室內', value: 'INDOOR', class: 'success' },
+    COVERED: { label: '風雨球場', value: 'COVERED', class: 'info' },
+    OUTDOOR: { label: '室外', value: 'OUTDOOR', class: 'main' },
   },
+
+  games: []
 
 })
 
 const getters = {
-  getGameTypeOptions: (state) => Object.keys(state.gameTypeMap).map(key => {
-    return { label: state.gameTypeMap[key], value: key }
-  }),
-  getCourtTypeOptions: (state) => Object.keys(state.courtTypeMap).map(key => {
-    return { label: state.courtTypeMap[key], value: key }
-  })
+  getGameTypeOptions: (state) => Object.values(state.gameTypeMap).map(d => d),
+  getCourtTypeOptions: (state) => Object.values(state.courtTypeMap).map(d => d),
+
 }
 
 const mutations = {
   setLoginParams: (state, data) => state.loginParams = data,
+  setGames: (state, data) => state.games = data,
 
 }
 
 const actions = {
   async queryGames(context, { params, option }) {
     let res = await Game.queryGames({ params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        context.commit('setGames', data.content)
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async getGameById(context, { game_id, option }) {
+    let res = await Game.getGameById({ game_id, option })
     let { status, data } = res
     switch (status) {
       case 200:

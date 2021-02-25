@@ -27,8 +27,10 @@ export default {
   components: {
     FormItem
   },
-  props: {},
-  setup(props, context) {
+  props: {
+    className: String
+  },
+  setup(props, { emit }) {
     let updateIndex = ref(0)
     const store = useStore()
     const columns = {
@@ -42,12 +44,13 @@ export default {
         required: true,
         error: "",
       },
-      dist: {
+      dist_code: {
         label: '鄉鎮市區',
         model: '',
         type: 'select',
         class: '',
         required: false,
+        showClear: true,
         error: '',
         options: []
       },
@@ -100,6 +103,10 @@ export default {
               col.model = [new Date(start), new Date(end)]
             }
             break;
+          case 'city_code':
+            col.model = params[key]
+            onChange({ col, key })
+            break
           default:
             if (params[key])
               col.model = params[key]
@@ -113,12 +120,8 @@ export default {
     async function submit() {
       let params = emitData()
       if (!params) return
-      await queryGames(params)
       saveParamsToLocal()
-    }
-
-    async function queryGames(params) {
-      let res = await store.dispatch('Game/queryGames', { params, option: {} })
+      emit('queryGames', params)
     }
 
     function saveParamsToLocal() {
@@ -165,8 +168,8 @@ export default {
     function onChange({ col, key }) {
       switch (key) {
         case 'city_code':
-          columns.dist.options = getDistOptions(col.model)
-          columns.dist.model = col.model
+          columns.dist_code.options = getDistOptions(col.model)
+          columns.dist_code.model = null
           updateIndex.value++
           checkValue({ col, key })
           break;
@@ -191,9 +194,10 @@ export default {
 <style lang="sass" scoped>
 .SearchPanel
   padding: 1rem 1rem
-  border-radius: 8px
-  background-color: #fff
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 1px
+  &.card
+    border-radius: 8px
+    background-color: #fff
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 1px
 .col 
   &.span2 
     grid-column: span 2

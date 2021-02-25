@@ -16,6 +16,10 @@ h4
 h5 
   font-size: 1.125rem
 
+a 
+  text-decoration: none 
+  color: inherit
+
 .main_c 
   color: $main_c 
 .second_c 
@@ -39,11 +43,16 @@ h5
     justify-content: center 
   &.h-end 
     justify-content: flex-end
+  &.between 
+    justify-content: space-between
   
 .grid 
   display: grid
   &.v-center 
     align-items: center
+  &.h-center 
+    justify-items: center
+ 
 
 .fw-600 
   font-weight: 600
@@ -59,4 +68,6 @@ h5
   grid-gap: 1rem
   &.col-2 
     grid-template-columns: 1fr 1fr
+
+
     

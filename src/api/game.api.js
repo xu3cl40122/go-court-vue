@@ -6,7 +6,7 @@ export function queryGames({ params, option }) {
   return q.get(url, { ...option, params })
 }
 
-export function login({ params, option }) {
-  let url = `${apiPath}/auth/login`
-  return q.post(url, params, option)
+export function getGameById({ game_id, option }) {
+  let url = `${apiPath}/games/${game_id}`
+  return q.get(url, { ...option })
 }

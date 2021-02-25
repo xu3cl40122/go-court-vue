@@ -66,7 +66,6 @@ const actions = {
   },
 
   async logout(context) {
-    console.log('logout')
     localStorage.removeItem(process.env.VUE_APP_TOKEN_NAME)
     window.location.href = window.location.origin
   },

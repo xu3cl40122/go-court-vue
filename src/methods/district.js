@@ -2502,10 +2502,12 @@ export function getDistOptions(city_code) {
   if (!city) throw 'city not found'
   let cityName = city.label
   let dists = distMap[cityName]
-  return Object.values(dists).map(city => {
-    city.value = city.code
-    return city
-  })
+  return Object.values(dists)
+    .map(city => {
+      city.value = city.code
+      return city
+    })
+    .filter(d => d.label !== '全部地區')
 }
 
 export function getDistMap(addCheckAllChild = true) {
