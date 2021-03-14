@@ -56,6 +56,49 @@ const actions = {
     }
   },
 
+  async postGame(context, { body, option }) {
+    let res = await Game.postGame({ body, option })
+    let { status, data } = res
+    switch (status) {
+      case 201:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async putGame(context, { game_id, body, option }) {
+    let res = await Game.putGame({ game_id, body, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async putGameStock(context, { game_id, body, option }) {
+    let res = await Game.putGameStock({ game_id, body, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async getMyHostGames(context, { params, option }) {
+    let res = await Game.getMyHostGames({ params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
 
 
 }

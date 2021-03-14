@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/home.vue'
 import Games from '@/views/games/games.vue'
 import GameDetail from '@/views/games/game-detail.vue'
+import HostGameDetail from '@/views/games/host-game-detail.vue'
+import Tickets from '@/views/tickets/'
+import MyGames from '@/views/myGames/myGames'
 import store from '@/store/'
 
 const routes = [
@@ -21,6 +24,22 @@ const routes = [
     component: GameDetail,
     props: true
   },
+  {
+    path: '/games/host/:game_id',
+    name: 'HostGameDetail',
+    component: HostGameDetail,
+    props: true
+  },
+  {
+    path: '/tickets',
+    name: 'Tickets',
+    component: Tickets,
+  },
+  {
+    path: '/myGames',
+    name: 'MyGames',
+    component: MyGames,
+  },
 ]
 
 const router = createRouter({
@@ -32,6 +51,7 @@ router.beforeEach((to, from, next) => {
   let { name } = to
   switch (name) {
     case 'GameDetail':
+    case 'HostGameDetail':
       store.commit('Layout/setHeaders', [
         {
           type: 'icons',

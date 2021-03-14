@@ -1,7 +1,7 @@
 <template lang="pug">
 .App
   template(v-if="redyRender")
-    Header
+    Header.header
     Sidebar
     UserDialog
     MessageDialog
@@ -46,4 +46,15 @@ export default {
 }
 
 </script>
+
+<style lang="sass" scoped>
+.header 
+  position: fixed 
+  top: 0 
+  left: 0
+  width: 100% 
+.main 
+  margin-top: $headerH
+  padding-bottom: $navbarH
+</style>
 

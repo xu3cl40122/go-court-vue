@@ -23,6 +23,20 @@
     Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled"
     selectionMode="range" :manualInput="false" @date-select="onSelectDate" dateFormat="yy-mm-dd")
 
+  template(v-else-if="iCol.type === 'datetime'")
+    Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" :showTime="true" 
+      @date-select="onChange" dateFormat="yy-mm-dd")
+
+  //- template(v-else-if="iCol.type === 'autoComplete'")
+  //-   InputComplete(:modelValue="iCol.model" :target="iCol.target" :emitAttr="iCol.emitAttr" @onSelect="onChange"
+  //-     :placeholder="iCol.placeholder" :disabled="iCol.disabled")
+  template(v-else-if="iCol.type === 'courtSelector'")
+    CourtSelector(:courtId="iCol.model" @onSelect="onChange")
+
+  template(v-else-if="iCol.type === 'textarea'")
+    Textarea(v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" 
+      @keyup.native.enter="onEnter" :rows="5")
+
   template(v-else)
     InputText(:type="iCol.type" v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" 
       @keyup.native.enter="onEnter")
@@ -39,6 +53,9 @@ import Password from 'primevue/password';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import MultiSelect from 'primevue/multiselect';
+import Textarea from 'primevue/textarea';
+import InputComplete from '@/components/unit/InputComplete';
+import CourtSelector from '@/components/court/CourtSelector';
 
 export default {
   name: "FormItem",
@@ -47,7 +64,10 @@ export default {
     Password,
     Dropdown,
     Calendar,
-    MultiSelect
+    MultiSelect,
+    Textarea,
+    InputComplete,
+    CourtSelector
   },
   props: {
     iCol: {
@@ -63,29 +83,37 @@ export default {
       },
       set(val) {
         props.iCol.model = val
-        onChange()
+        // emit('update:iCol', { ...props.iCol, model: value })
+        emitChange()
       },
     })
 
-    let updateIndex = ref(0)
+    let suggestions = ref([])
+
 
     function onEnter() {
       emit('onEnter', { col: props.iCol, key: props.iKey })
     }
 
-    function onChange(val) {
+    function emitChange(val) {
       emit("onChange", { col: props.iCol, key: props.iKey })
     }
 
     return {
       model,
       onEnter,
-      onChange,
+      emitChange,
+      suggestions,
     }
   },
   methods: {
     // 這樣才能調用 this
     async onSelect({ orginalEvent, value }) {
+      this.model = value
+      this.$forceUpdate()
+    },
+
+    onChange(value) {
       this.model = value
       this.$forceUpdate()
     },
@@ -100,7 +128,7 @@ export default {
           : this.iCol.model = [value, start]
       }
       this.$forceUpdate()
-      this.onChange()
+      this.emitChange()
     }
   }
 }

@@ -4,6 +4,8 @@ import Dialog from './Dialog'
 import Setting from './Setting'
 import User from './User'
 import Game from './Game'
+import Ticket from './Ticket'
+import Court from './Court'
 
 export default createStore({
   state: {
@@ -22,6 +24,8 @@ export default createStore({
     Dialog,
     Setting,
     User,
-    Game
+    Game,
+    Ticket,
+    Court
   }
 })

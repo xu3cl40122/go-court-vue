@@ -26,12 +26,11 @@
     h5.blockTitle 賽事說明
     .description {{ game.description }}
   
-  
   .gc-fixed-wrapper  
-    button.gc-btn.main.full(@click="openPanel(true)") 參加球賽
+    button.gc-btn.main.full(@click="openPanel(true)") 編輯球賽
   
-  SidePanel(v-model:isOpen="isPanelOpen" title="選擇種類及數量")
-    GameStockSelector(:game="game")
+  SidePanel(v-model:isOpen="isPanelOpen" title="編輯球賽")
+    GameCreator(:game="game" @onGameChange="onGameChange" type="edit" )
 
 </template>
 
@@ -41,13 +40,13 @@ import { useStore } from 'vuex'
 import defaultImg from '@/assets/image/default.jpg'
 import { toTimeRangeString } from '@/methods/time'
 import SidePanel from '@/components/layout/SidePanel'
-import GameStockSelector from '@/components/game/GameStockSelector'
+import GameCreator from '@/components/game/GameCreator'
 
 export default {
   name: 'GameDetailPage',
   components: {
     SidePanel,
-    GameStockSelector
+    GameCreator
   },
   props: {
     game_id: String
@@ -109,7 +108,13 @@ export default {
       game.value = data
     }
 
+    function onGameChange() {
+      getGameById()
+      openPanel(false)
+    }
+
     function openPanel(open) {
+      console.log(7777777, open)
       isPanelOpen.value = open
     }
 
@@ -120,7 +125,8 @@ export default {
       tags,
       price,
       isPanelOpen,
-      openPanel
+      openPanel,
+      onGameChange
     }
   }
 }

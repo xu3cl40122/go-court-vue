@@ -6,11 +6,16 @@
       span.main_c {{ stock.price }} 
       span.unit NTD
 
-  .counter.flex.v-center.h-end 
-    span.label 數量
-    i.fas.fa-minus-circle(@click="setCount(-1)")
-    input.countInput(v-model="count")
-    i.fas.fa-plus-circle(@click="setCount(1)")
+  .flex.between
+    .rest.flex 
+      span 尚缺
+      span {{ stock.stock_amount }}
+
+    .counter.flex.v-center.h-end 
+      span.label 數量
+      i.fas.fa-minus-circle(@click="setCount(-1)" :class="[count === 0 && 'disabled']")
+      input.countInput(v-model="count" type="number")
+      i.fas.fa-plus-circle(@click="setCount(1)" :class="[count >= stock.stock_amount && 'disabled']")
     
 </template>
 
@@ -28,11 +33,26 @@ export default {
       default: () => ({})
     }
   },
-  setup(props) {
+  setup(props, { emit }) {
     let count = ref(0)
 
+    watch(count, newVal => {
+      newVal = Number(newVal)
+      if (newVal < 0)
+        count.value = 0
+      else if (newVal > props.stock.stock_amount)
+        count.value = props.stock.stock_amount
+      else
+        count.value = newVal
+
+      emit('change', {
+        game_stock_id: props.stock.game_stock_id,
+        count: count.value
+      })
+    })
+
     function setCount(val) {
-      count.value += val
+      count.value = Number(count.value) + val
     }
 
     return {
@@ -53,6 +73,12 @@ export default {
     margin-left: .25rem
     color: #333
   
+  .rest 
+    align-items: flex-end
+    span 
+      margin-right: .25rem
+      color: #666
+      font-size: .875rem
   .counter
     margin-top: 1rem
     .label 
@@ -60,6 +86,9 @@ export default {
     i 
       color: $main_c
       font-size: 1.5rem
+      &.disabled 
+        color: #ccc
+        pointer-events: none
     .countInput 
       width: 3rem
       text-align: center

@@ -55,7 +55,7 @@ export default {
         options: []
       },
       date_range: {
-        label: '日期',
+        label: '日期區間',
         model: '',
         type: 'dateRange',
         class: 'span2',
@@ -85,7 +85,6 @@ export default {
     }
 
     onMounted(async () => {
-      await delay(300)
       getParamsFromLocal()
 
     })
@@ -158,9 +157,12 @@ export default {
     }
 
     function checkValue({ col, key }) {
+      console.log(333, col, key)
       let { model, required, label } = col
       if (required && isNull(model))
         return col.error = `請輸入"${label}"`
+      if (key === 'date_range' && col.model.some(d => !d))
+        return col.error = `請選擇開始及結束時間`
 
       return col.error = ''
     }

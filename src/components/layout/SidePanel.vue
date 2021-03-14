@@ -3,7 +3,8 @@
   .header.flex.v-center.h-center
     i.fas.fa-chevron-left.backIcon.pointer(@click="toggleOpen")
     h5 {{ title }}
-  slot
+  .body
+    slot
   
 </template>
 
@@ -54,5 +55,9 @@ export default {
       position: absolute 
       left: 1rem
       font-size: 1.25rem
+  .body 
+    height: calc(100% - #{$headerH})
+    z-index: 1000
+    overflow: auto
 
 </style>

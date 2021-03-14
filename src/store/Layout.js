@@ -16,7 +16,7 @@ const state = () => ({
     home: { label: '主頁', icon: 'fas fa-home', class: '', path: '/' },
     games: { label: '找球賽', icon: 'fas fa-search', class: '', path: '/games' },
     myGames: { label: '球賽管理', icon: 'fas fa-trophy', class: '', path: '/myGames' },
-    myTickets: { label: '我的票夾', icon: 'fas fa-ticket-alt', class: '', path: '/myTickets' },
+    myTickets: { label: '我的票夾', icon: 'fas fa-ticket-alt', class: '', path: '/tickets' },
     profile: { label: '個人檔案', icon: 'fas fa-user', class: '', path: '/profile' },
   },
 

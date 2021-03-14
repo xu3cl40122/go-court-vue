@@ -54,6 +54,7 @@ export default {
   box-shadow: 0 -2px 8px 0 rgba(0, 0, 0, 0.1)
   border-radius: 8px 8px 0 0
   overflow: hidden
+  background-color: #fff
   .col
     @include setTextStyle(.75rem, normal, #333)
     &.active 

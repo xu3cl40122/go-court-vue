@@ -1,16 +1,19 @@
 <template lang="pug">
 .GamesPage
   .searchInput(@click="() => isPanelOpen = true")
-    .query 
-      span {{ gameQuery.city_code }}
-      template(v-if="gameQuery.dist_code")
-        span /
-        span {{ gameQuery.dist_code }}
-    .time {{ gameQuery.time_range }}
+    template(v-if="Object.keys(gameQuery).length === 0")
+      .searchPlaceholder 請選擇搜尋條件
+    template(v-else)
+      .query 
+        span {{ gameQuery.city_code }}
+        template(v-if="gameQuery.dist_code")
+          span /
+          span {{ gameQuery.dist_code }}
+      .time {{ gameQuery.time_range }}
     i.fas.fa-search
 
   .games.grid
-    router-link(v-for="(game, i) of games" :key="i" :to="`/games/${game.game_id}`")
+    router-link(v-for="(game, i) of games" :key="game.game_id" :to="`/games/${game.game_id}`")
       GameCard(:info="game")
 
   SidePanel(v-model:isOpen="isPanelOpen" title="搜尋球賽")
@@ -57,8 +60,8 @@ export default {
     function setDisplayQuery(params) {
       let { city_code, dist_code, start, end } = params
       gameQuery.value = {
-        city_code: codeMap.value[params.city_code],
-        dist_code: codeMap.value[params.dist_code],
+        city_code: codeMap.value[city_code],
+        dist_code: codeMap.value[dist_code],
         time_range: toTimeRangeString(start, end)
       }
     }
@@ -90,6 +93,8 @@ export default {
       transform: translateY(-50%)
     .query
       margin-bottom: .25rem 
+    .searchPlaceholder
+      color: #666
     .time 
       font-size: .75rem
   .games

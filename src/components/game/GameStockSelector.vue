@@ -15,7 +15,10 @@
       //-   i.fas.fa-user 
       //-   span {{ game.host_user_detail.profile_name }} 
     .specContainer.grid 
-      GameStockCard(v-for="(stock, i) of gameStock" :key="i" :stock="stock" :game="game")
+      GameStockCard(v-for="(stock, i) of gameStock" :key="i" :stock="stock" :game="game" @change="cardChange")
+
+    .gc-fixed-wrapper  
+      button.gc-btn.main.full(@click="checkout") 送出
 
 </template>
 
@@ -65,10 +68,29 @@ export default {
       immediate: true
     })
 
+    function cardChange({ game_stock_id, count }) {
+      let index = gameStock.value.findIndex(d => d.game_stock_id === game_stock_id)
+      gameStock.value[index] = { ...gameStock.value[index], count }
+    }
+
+    async function checkout() {
+      let body = gameStock.value
+        .filter(d => d.count > 0)
+        .map(d => {
+          let { game_stock_id, count } = d
+          return { game_stock_id, stock_amount: count }
+        })
+      let option = {}
+      await store.dispatch('Ticket/checkout', { body, option })
+
+    }
+
     return {
       time,
       tags,
-      gameStock
+      gameStock,
+      cardChange,
+      checkout,
     }
   }
 }

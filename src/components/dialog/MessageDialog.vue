@@ -45,7 +45,7 @@ export default {
     const iconMap = {
       success: 'fas fa-check-circle',
       warning: 'fas fa-exclamation-circle',
-      danger: 'far fa-times-circle',
+      danger: 'fas fa-times-circle',
     }
     const icon = computed(() => iconMap[dialogInfo.value.status])
 
