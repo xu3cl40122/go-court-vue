@@ -56,6 +56,7 @@ export default {
   padding: 0 1rem
   background-color: $main_c
   color: #fff
+  z-index: $headerZ
   .title
     font-size: 1.25rem
     text-align: center

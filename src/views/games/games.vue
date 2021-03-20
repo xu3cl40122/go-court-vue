@@ -1,23 +1,26 @@
 <template lang="pug">
 .GamesPage
   .searchInput(@click="() => isPanelOpen = true")
-    template(v-if="Object.keys(gameQuery).length === 0")
+    template(v-if="Object.keys(displayQuery).length === 0")
       .searchPlaceholder 請選擇搜尋條件
     template(v-else)
-      .query 
-        span {{ gameQuery.city_code }}
-        template(v-if="gameQuery.dist_code")
+      .location 
+        span {{ displayQuery.city_code }}
+        template(v-if="displayQuery.dist_code")
           span /
-          span {{ gameQuery.dist_code }}
-      .time {{ gameQuery.time_range }}
+          span {{ displayQuery.dist_code }}
+      .time {{ displayQuery.time_range }}
+      .searchOption {{ displayQuery.game_type }}
+      .searchOption {{ displayQuery.court_type }}
     i.fas.fa-search
 
   .games.grid
     router-link(v-for="(game, i) of games" :key="game.game_id" :to="`/games/${game.game_id}`")
       GameCard(:info="game")
+    h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
 
   SidePanel(v-model:isOpen="isPanelOpen" title="搜尋球賽")
-    SearchPanel(@queryGames="queryGames")
+    SearchPanel(@queryGames="setQuery")
 
 </template>
 
@@ -42,36 +45,79 @@ export default {
     let isPanelOpen = ref(false)
     let games = ref([])
     let gameQuery = ref({})
+    let displayQuery = computed(() => {
+      let { city_code, dist_code, start, end, court_type, game_type } = gameQuery.value
+      return {
+        city_code: codeMap.value[city_code],
+        dist_code: codeMap.value[dist_code],
+        time_range: toTimeRangeString(start, end),
+        court_type: court_type?.split(',').map(key => store.state.Game.courtTypeMap[key].label).join(', '),
+        game_type: game_type?.split(',').map(key => store.state.Game.gameTypeMap[key].label).join(', '),
+      }
+    })
+    
+    let pageSetting = ref({
+      page: 0,
+      size: 1,
+      totalPage: 10
+    })
+    let loadingEl = ref(false)
+    let toEnd = ref(false)
+
     const codeMap = computed(() => getDistrictCodeMap())
     const storeGames = computed(() => store.state.Game.games)
+
 
     onMounted(() => {
       let hasGame = storeGames.value?.length
       isPanelOpen.value = !storeGames.value?.length
+     
     })
 
-    async function queryGames(params) {
-      let { data } = await store.dispatch('Game/queryGames', { params, option: {} })
-      games.value = data.content
+    function onInterset(entryArr) {
+      entryArr.forEach(entry => {
+        if (entry.isIntersecting && !toEnd.value) {
+          queryGames({})
+        }
+      })
+    }
+
+    async function setQuery(params) {
+      console.log(params)
+      gameQuery.value = params
       isPanelOpen.value = false
-      setDisplayQuery(params)
+      await queryGames({ init: true })
+      let observer = new IntersectionObserver(onInterset, {})
+      observer.observe(loadingEl.value)
     }
 
-    function setDisplayQuery(params) {
-      let { city_code, dist_code, start, end } = params
-      gameQuery.value = {
-        city_code: codeMap.value[city_code],
-        dist_code: codeMap.value[dist_code],
-        time_range: toTimeRangeString(start, end)
+    async function queryGames({ init }) {
+      init
+        ? pageSetting.value.page = 0
+        : pageSetting.value.page++
+
+      let params = {
+        ...gameQuery.value,
+        ...pageSetting.value
       }
-    }
+      let { data } = await store.dispatch('Game/queryGames', { params, option: {} })
+      games.value = games.value.concat(data.content)
 
+      isPanelOpen.value = false
+      if (data.totalPage -1 === data.page)
+        toEnd.value = true
+    }
 
     return {
       isPanelOpen,
       queryGames,
       games,
-      gameQuery
+      gameQuery,
+      loadingEl,
+      pageSetting,
+      setQuery,
+      displayQuery,
+      toEnd
     }
   }
 }
@@ -91,13 +137,17 @@ export default {
       right: 1rem
       top: 50% 
       transform: translateY(-50%)
-    .query
+    .location
       margin-bottom: .25rem 
     .searchPlaceholder
       color: #666
     .time 
       font-size: .75rem
+    .searchOption
+      margin: .25rem 0
   .games
     grid-row-gap: 1rem 
-
+  .loading 
+    text-align: center 
+    color: #666
 </style>

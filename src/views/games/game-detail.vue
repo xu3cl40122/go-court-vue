@@ -1,31 +1,6 @@
 <template lang="pug">
 .GameDetailPage
-  img.img(:src="logo")
-  .content(v-if="game.game_id")
-    .tags 
-      .gc-tag(v-for="(tag, i) of tags" :key="i" :class="tag.class") {{ tag.label }}
-
-    h3.title {{ game.game_name }}
-    .time {{ time }}
-
-    .detail
-      .detailCol 
-        i.fas.fa-map-marker-alt
-        span {{ game.court_detail.name }}
-      .detailCol 
-        i.fas.fa-user 
-        span {{ game.host_user_detail.profile_name }}
-    
-    h5.blockTitle 收費方式 
-    .specCols.grid 
-      .spec(v-for="(spec, i) of game.game_stock" :key="i")
-        span {{ spec.spec_name }}
-        span {{ spec.price }}
-        span NTD
-    
-    h5.blockTitle 賽事說明
-    .description {{ game.description }}
-  
+  GameBasicInfo(:game="game")
   
   .gc-fixed-wrapper  
     button.gc-btn.main.full(@click="openPanel(true)") 參加球賽
@@ -38,16 +13,16 @@
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import defaultImg from '@/assets/image/default.jpg'
-import { toTimeRangeString } from '@/methods/time'
 import SidePanel from '@/components/layout/SidePanel'
 import GameStockSelector from '@/components/game/GameStockSelector'
+import GameBasicInfo from '@/components/game/GameBasicInfo'
 
 export default {
   name: 'GameDetailPage',
   components: {
     SidePanel,
-    GameStockSelector
+    GameStockSelector,
+    GameBasicInfo
   },
   props: {
     game_id: String
@@ -57,49 +32,7 @@ export default {
     let game = ref({})
     let isPanelOpen = ref(false)
     onMounted(() => {
-      store.commit('Layout/setHeaders', [
-        {
-          type: 'icons',
-          icons: [{ icon: 'fas fa-chevron-left', class: '', event: 'back' }]
-        },
-        {
-          type: 'title',
-          title: 'GO COURT'
-        },
-        {
-          type: 'icons',
-          icons: [{ icon: 'fas fa-bars', class: '', event: 'toggleSidebar' }]
-        },
-      ])
       getGameById()
-    })
-
-    let logo = computed(() => game.value.logo_url || defaultImg)
-    let time = computed(() => {
-      let { game_start_at, game_end_at } = game.value
-      return game_start_at ? toTimeRangeString(game_start_at, game_end_at) : ''
-    })
-    let tags = computed(() => {
-      let { game_type, court_type } = game.value
-      if (!game.value.game_id) return []
-      let matchCourt = store.state.Game.courtTypeMap[court_type]
-      let matchGame = store.state.Game.gameTypeMap[game_type]
-      return [
-        { label: matchCourt.label, class: matchCourt.class },
-        { label: matchGame.label, class: matchGame.class },
-      ]
-    })
-
-    let price = computed(() => {
-      let game_stock = game.value.game_stock
-      if (!game_stock?.length) return '免費'
-      let priceArr = game_stock.map(d => d.price).sort((a, b) => a - b)
-      let min = priceArr[0]
-      let max = priceArr[priceArr.length - 1]
-      if (priceArr.length === 1 || min === max)
-        return min
-      return `${min} - ${max}`
-
     })
 
     async function getGameById() {
@@ -115,10 +48,6 @@ export default {
 
     return {
       game,
-      logo,
-      time,
-      tags,
-      price,
       isPanelOpen,
       openPanel
     }

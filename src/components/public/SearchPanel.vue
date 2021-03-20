@@ -157,7 +157,6 @@ export default {
     }
 
     function checkValue({ col, key }) {
-      console.log(333, col, key)
       let { model, required, label } = col
       if (required && isNull(model))
         return col.error = `請輸入"${label}"`

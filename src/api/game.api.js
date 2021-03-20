@@ -30,3 +30,9 @@ export function putGameStock({ game_id, body, option }) {
   let url = `${apiPath}/games/${game_id}/stock`
   return q.put(url, body, option)
 }
+
+export function getGameTickets({ game_id, params, option }) {
+  let url = `${apiPath}/games/${game_id}/tickets`
+  return q.get(url, { ...option, params })
+}
+

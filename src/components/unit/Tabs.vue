@@ -29,6 +29,7 @@ export default {
 
     function changeTab(key) {
       emit('changeTab', key)
+      emit('update:active', key)
     }
 
     return {
