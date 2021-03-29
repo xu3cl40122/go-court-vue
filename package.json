@@ -6,7 +6,8 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "dev": "vue-cli-service serve"
+    "dev": "vue-cli-service serve",
+    "dev:https": "vue-cli-service serve --https"
   },
   "dependencies": {
     "@types/lodash": "^4.14.168",
@@ -15,6 +16,7 @@
     "dayjs": "^1.10.4",
     "eslint": "^7.17.0",
     "eslint-plugin-vue": "^7.4.1",
+    "instascan": "^1.0.0",
     "lodash": "^4.17.20",
     "primeicons": "^4.1.0",
     "primevue": "^3.2.2",

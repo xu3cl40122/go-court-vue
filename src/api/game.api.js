@@ -36,3 +36,13 @@ export function getGameTickets({ game_id, params, option }) {
   return q.get(url, { ...option, params })
 }
 
+export function getGameUsers({ game_id, params, option }) {
+  let url = `${apiPath}/games/${game_id}/game_users`
+  return q.get(url, { ...option, params })
+}
+
+export function initGame({ game_id, body, option }) {
+  let url = `${apiPath}/games/${game_id}/init`
+  return q.put(url, body, option)
+}
+

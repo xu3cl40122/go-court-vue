@@ -1,5 +1,5 @@
 <template lang="pug">
-.TicketCard.grid.v-center
+.TicketCard.grid.v-center(@click="onCardClick")
   .flex.between.v-center
     h5.name {{ info.game_detail.game_name }}
     .tags 
@@ -8,6 +8,7 @@
   .spec {{ info.game_stock_detail.spec_name }}
   .location {{ info.game_detail.court_detail.name }}
   .time {{ time }}
+  .qrcode(v-if="showQrCode" ref="qrcodeRef")
   
 </template>
 
@@ -23,13 +24,12 @@ export default {
     info: {
       type: Object,
       default() {
-        return {
-
-        }
+        return {}
       }
-    }
+    },
+    showQrCode: Boolean
   },
-  setup(props) {
+  setup(props, { emit }) {
     const store = useStore()
     let { game_start_at, game_end_at, game_stock, game_type, court_type } = props.info.game_detail
     let time = computed(() => toTimeRangeString(game_start_at, game_end_at))
@@ -53,13 +53,34 @@ export default {
 
     })
 
+    let qrcodeRef = ref(null)
+    function generateQrcode() {
+      // new QRCode(qrcodeRef.value, props.info.game_ticket_id)
+      let qrcode = new QRCode(qrcodeRef.value, {
+        text: props.info.game_ticket_id,
+        width: 128,
+        height: 128,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
     onMounted(() => {
+      if (props.showQrCode)
+        generateQrcode()
     })
+
+    function onCardClick() {
+      emit('onCardClick')
+    }
 
     return {
       time,
       price,
       tags,
+      onCardClick,
+      qrcodeRef,
     }
   }
 }
@@ -81,4 +102,6 @@ export default {
     margin-bottom: .25rem
   .time
     font-size: 1.125rem
+  .qrcode 
+    margin: 1rem auto
 </style>

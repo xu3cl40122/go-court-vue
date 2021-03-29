@@ -16,6 +16,12 @@ const state = () => ({
     OUTDOOR: { label: '室外', value: 'OUTDOOR', class: 'main' },
   },
 
+  gameStatusMap: {
+    PENDING: { label: '未開始', value: 'PENDING', class: 'info' },
+    PLAYING: { label: '進行中', value: 'PLAYING', class: 'main' },
+    FINISHED: { label: '已結束', value: 'FINISHED', class: 'success' },
+  },
+
   games: []
 
 })
@@ -102,6 +108,28 @@ const actions = {
 
   async getGameTickets(context, { game_id, params, option }) {
     let res = await Game.getGameTickets({ game_id, params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async getGameUsers(context, { game_id, params, option }) {
+    let res = await Game.getGameUsers({ game_id, params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async initGame(context, { game_id, body, option }) {
+    let res = await Game.initGame({ game_id, body, option })
     let { status, data } = res
     switch (status) {
       case 200:

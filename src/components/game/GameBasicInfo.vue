@@ -2,8 +2,11 @@
 .GameBasicInfo
   img.img(:src="logo")
   .content(v-if="game.game_id")
-    .tags 
-      .gc-tag(v-for="(tag, i) of tags" :key="i" :class="tag.class") {{ tag.label }}
+    .flex.between.v-center
+      .tags 
+        .gc-tag(v-for="(tag, i) of tags" :key="i" :class="tag.class") {{ tag.label }}
+      .gameStatus 
+        span {{ gameStatusTag.label }}
 
     h3.title {{ game.game_name }}
     .time {{ time }}
@@ -63,6 +66,12 @@ export default {
       ]
     })
 
+    let gameStatusTag = computed(() => {
+      let { game_status } = props.game
+      let match = store.state.Game.gameStatusMap[game_status]
+      return match || {}
+    })
+
     let price = computed(() => {
       let game_stock = props.game.game_stock
       if (!game_stock?.length) return '免費'
@@ -80,6 +89,7 @@ export default {
       time,
       tags,
       price,
+      gameStatusTag,
     }
   }
 }
@@ -113,5 +123,7 @@ export default {
     margin: 1rem 0 .5rem
   .description 
     color: #666
+  .gameStatus 
+    font-weight: 500
 
 </style>
