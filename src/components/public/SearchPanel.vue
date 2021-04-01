@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import FormItem from "@/components/unit/FormItem.vue"
 import _ from 'lodash';
@@ -28,7 +28,11 @@ export default {
     FormItem
   },
   props: {
-    className: String
+    className: String,
+    queryParams: {
+      type: Object,
+      default: () => ({})
+    }
   },
   setup(props, { emit }) {
     let updateIndex = ref(0)
@@ -84,28 +88,27 @@ export default {
 
     }
 
-    onMounted(async () => {
-      getParamsFromLocal()
+    watch(props, (val) => {
+      if (Object.keys(props.queryParams).length)
+        setParams(props.queryParams)
+    }, { immediate: true })
 
-    })
-
-    function getParamsFromLocal() {
-      let params = localStorage.getItem('GC_SEARCH_GAME_PARAMS')
-      if (!params) return
-      params = JSON.parse(params)
+    function setParams(params) {
       Object.keys(columns).forEach(key => {
         let col = columns[key]
         switch (key) {
           case 'date_range':
-            if (params[key]) {
-              let [start, end] = params[key]
-              col.model = [new Date(start), new Date(end)]
-            }
+            let { start, end } = params
+            col.model = [new Date(start), new Date(end)]
             break;
           case 'city_code':
             col.model = params[key]
             onChange({ col, key })
             break
+          case 'game_type':
+          case 'court_type':
+            col.model = params[key].split(',')
+            break;
           default:
             if (params[key])
               col.model = params[key]
@@ -119,8 +122,8 @@ export default {
     async function submit() {
       let params = emitData()
       if (!params) return
-      saveParamsToLocal()
-      emit('queryGames', params)
+      // saveParamsToLocal()
+      emit('update:queryParams', params)
     }
 
     function saveParamsToLocal() {
@@ -145,7 +148,7 @@ export default {
           case 'date_range':
             let [start, end] = col.model
             outputData.start = new Date(start).toISOString()
-            outputData.end = new Date(dayjs(end).add(24, 'hour')).toISOString()
+            outputData.end = new Date(dayjs(end).add(24, 'hour').subtract(1, 'second')).toISOString()
             break;
           default:
             outputData[key] = col.model

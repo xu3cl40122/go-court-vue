@@ -20,7 +20,7 @@
     h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
 
   SidePanel(v-model:isOpen="isPanelOpen" title="搜尋球賽")
-    SearchPanel(@queryGames="setQuery")
+    SearchPanel(v-model:queryParams="queryParams")
 
 </template>
 
@@ -28,10 +28,11 @@
 import SearchPanel from '@/components/public/SearchPanel'
 import SidePanel from '@/components/layout/SidePanel'
 import GameCard from '@/components/game/GameCard'
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { getDistrictCodeMap } from '@/methods/district'
 import { toTimeRangeString } from '@/methods/time'
+import dayjs from 'dayjs'
 
 export default {
   name: 'GamesPage',
@@ -44,21 +45,21 @@ export default {
     const store = useStore()
     let isPanelOpen = ref(false)
     let games = ref([])
-    let gameQuery = ref({})
+    let queryParams = ref({})
     let displayQuery = computed(() => {
-      let { city_code, dist_code, start, end, court_type, game_type } = gameQuery.value
+      let { city_code, dist_code, start, end, court_type, game_type } = queryParams.value
       return {
         city_code: codeMap.value[city_code],
         dist_code: codeMap.value[dist_code],
-        time_range: toTimeRangeString(start, end),
+        time_range: toTimeRangeString(start, end, true),
         court_type: court_type?.split(',').map(key => store.state.Game.courtTypeMap[key].label).join(', '),
         game_type: game_type?.split(',').map(key => store.state.Game.gameTypeMap[key].label).join(', '),
       }
     })
-    
+
     let pageSetting = ref({
       page: 0,
-      size: 1,
+      size: 10,
       totalPage: 10
     })
     let loadingEl = ref(false)
@@ -67,12 +68,30 @@ export default {
     const codeMap = computed(() => getDistrictCodeMap())
     const storeGames = computed(() => store.state.Game.games)
 
-
-    onMounted(() => {
+    /**
+     * todo 
+     * clear observer ?
+     */
+    onMounted(async () => {
       let hasGame = storeGames.value?.length
       isPanelOpen.value = !storeGames.value?.length
-     
+      getParamsFromLocal()
+      let observer = new IntersectionObserver(onInterset, {})
+      loadingEl.value && observer.observe(loadingEl.value)
     })
+
+    watch(queryParams, (val) => {
+      isPanelOpen.value = false
+      localStorage.setItem('GC_SEARCH_GAME_PARAMS', JSON.stringify(val))
+      queryGames({ init: true })
+    })
+
+    function getParamsFromLocal() {
+      let localData = localStorage.getItem('GC_SEARCH_GAME_PARAMS')
+      if (!localData) return
+      queryParams.value = JSON.parse(localData)
+    }
+
 
     function onInterset(entryArr) {
       entryArr.forEach(entry => {
@@ -82,29 +101,25 @@ export default {
       })
     }
 
-    async function setQuery(params) {
-      console.log(params)
-      gameQuery.value = params
-      isPanelOpen.value = false
-      await queryGames({ init: true })
-      let observer = new IntersectionObserver(onInterset, {})
-      observer.observe(loadingEl.value)
-    }
-
     async function queryGames({ init }) {
-      init
-        ? pageSetting.value.page = 0
-        : pageSetting.value.page++
+      if (init) {
+        pageSetting.value.page = 0
+        toEnd.value = false
+        games.value = []
+      }
+      else {
+        pageSetting.value.page++
+      }
 
       let params = {
-        ...gameQuery.value,
+        ...queryParams.value,
         ...pageSetting.value
       }
       let { data } = await store.dispatch('Game/queryGames', { params, option: {} })
       games.value = games.value.concat(data.content)
 
       isPanelOpen.value = false
-      if (data.totalPage -1 === data.page)
+      if (data.totalPage - 1 === data.page)
         toEnd.value = true
     }
 
@@ -112,10 +127,9 @@ export default {
       isPanelOpen,
       queryGames,
       games,
-      gameQuery,
+      queryParams,
       loadingEl,
       pageSetting,
-      setQuery,
       displayQuery,
       toEnd
     }
