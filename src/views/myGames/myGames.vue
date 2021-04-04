@@ -30,11 +30,15 @@ export default {
     let games = ref([])
 
     onMounted(async () => {
+      getHostGames()
+    })
+
+    async function getHostGames() {
       let params = {}
       let option = {}
       let { data } = await store.dispatch('Game/getMyHostGames', { params, option })
       games.value = data.content
-    })
+    }
 
     function showPanel(open = true) {
       isPanelOpen.value = open
@@ -61,6 +65,6 @@ export default {
   padding: 1rem
 .games
   grid-row-gap: 1rem
-.titleRow 
+.titleRow
   margin-bottom: 1rem
 </style>

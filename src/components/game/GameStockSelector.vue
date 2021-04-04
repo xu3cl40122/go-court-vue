@@ -25,6 +25,7 @@
 <script>
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { toTimeRangeString } from '@/methods/time'
 import GameStockCard from '@/components/game/GameStockCard'
 
@@ -41,6 +42,8 @@ export default {
   },
   setup(props) {
     const store = useStore()
+    const router = useRouter()
+
     let gameStock = ref([])
     let time = computed(() => {
       let { game_start_at, game_end_at } = props.game
@@ -81,9 +84,45 @@ export default {
           return { game_stock_id, stock_amount: count }
         })
       let option = {}
-      await store.dispatch('Ticket/checkout', { body, option })
-
+      let { success } = await store.dispatch('Ticket/checkout', { body, option })
+      success
+        ? showMessageDialog('success')
+        : showMessageDialog('failed')
     }
+
+    function showMessageDialog(status) {
+      let info = {}
+      switch (status) {
+        case 'success':
+          info = {
+            status: 'success',
+            title: `購票成功`,
+            subtitles: ['可在票券管理查看'],
+            closeAfter: 3000,
+            closeCb: toTicketsPage.bind(this)
+          }
+          break;
+        case 'failed':
+          info = {
+            status: 'danger',
+            title: `購票失敗`,
+            subtitles: ['請稍後再試', '或聯絡系統管理員'],
+          }
+          break;
+
+        default:
+          break;
+      }
+      store.commit('Dialog/setDialog', {
+        name: 'messageDialog',
+        info
+      })
+    }
+
+    function toTicketsPage() {
+      router.push({ name: 'Tickets' })
+    }
+
 
     return {
       time,
@@ -97,22 +136,21 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.GameStockSelector 
+.GameStockSelector
   padding: 1rem
-  .title, .time 
+  .title, .time
     margin-bottom: .5rem
-  .detail 
+  .detail
     color: #666
     .detailCol
       margin-bottom: .5rem
-      i 
+      i
         display: inline-block
-        width: 1rem 
+        width: 1rem
         text-align: center
         margin-right: .25rem
-        
+
   .specContainer
     margin-top: 1.5rem
     grid-row-gap: .5rem
-   
 </style>

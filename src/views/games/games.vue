@@ -52,8 +52,8 @@ export default {
         city_code: codeMap.value[city_code],
         dist_code: codeMap.value[dist_code],
         time_range: toTimeRangeString(start, end, true),
-        court_type: court_type?.split(',').map(key => store.state.Game.courtTypeMap[key].label).join(', '),
-        game_type: game_type?.split(',').map(key => store.state.Game.gameTypeMap[key].label).join(', '),
+        court_type: court_type?.split(',').map(key => store.state.Game.courtTypeMap[key]?.label).join(', '),
+        game_type: game_type?.split(',').map(key => store.state.Game.gameTypeMap[key]?.label).join(', '),
       }
     })
 
