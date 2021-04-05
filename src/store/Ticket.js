@@ -1,7 +1,11 @@
 import { Ticket } from '@/api/'
 
 const state = () => ({
-
+  ticketStatusMap: {
+    PENDING: { label: '未開始', value: 'PENDING', class: 'main' },
+    PLAYING: { label: '進行中', value: 'PLAYING', class: 'second' },
+    VERIFIED: { label: '已驗證', value: 'VERIFIED', class: 'success' },
+  },
 })
 
 const getters = {

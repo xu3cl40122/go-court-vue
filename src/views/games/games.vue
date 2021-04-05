@@ -119,7 +119,7 @@ export default {
       games.value = games.value.concat(data.content)
 
       isPanelOpen.value = false
-      if (data.totalPage - 1 === data.page)
+      if (data.totalPage - 1 <= data.page)
         toEnd.value = true
     }
 

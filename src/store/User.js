@@ -22,7 +22,7 @@ const mutations = {
 
 const actions = {
   async setErrorHandle(context) {
-    let pass401Paths = ['auth/login']
+    let pass401Paths = ['/auth/login']
     let unauthorizedCb = () => context.dispatch('logout')
     q.setErrorHandle({ pass401Paths, unauthorizedCb })
   },

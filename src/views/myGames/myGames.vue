@@ -6,6 +6,8 @@
   .games.grid
     router-link(v-for="(game, i) of games" :key="game.game_id" :to="`/games/host/${game.game_id}`")
       GameCard(:info="game")
+    h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
+
   SidePanel(v-model:isOpen="isPanelOpen" title="建立球賽")
     GameCreator(@onGameChange="onGameChange")
 </template>
@@ -29,15 +31,47 @@ export default {
     let isPanelOpen = ref(false)
     let games = ref([])
 
+    let pageSetting = ref({
+      page: 0,
+      size: 10,
+      totalPage: 10
+    })
+    let loadingEl = ref(false)
+    let toEnd = ref(false)
+
     onMounted(async () => {
-      getHostGames()
+      queryGames({ init: true })
+      let observer = new IntersectionObserver(onInterset, {})
+      loadingEl.value && observer.observe(loadingEl.value)
     })
 
-    async function getHostGames() {
-      let params = {}
-      let option = {}
-      let { data } = await store.dispatch('Game/getMyHostGames', { params, option })
-      games.value = data.content
+    function onInterset(entryArr) {
+      entryArr.forEach(entry => {
+        if (entry.isIntersecting && !toEnd.value) {
+          queryGames({})
+        }
+      })
+    }
+
+    async function queryGames({ init }) {
+      if (init) {
+        pageSetting.value.page = 0
+        toEnd.value = false
+        games.value = []
+      }
+      else {
+        pageSetting.value.page++
+      }
+
+      let params = {
+        ...pageSetting.value
+      }
+      let { data } = await store.dispatch('Game/getMyHostGames', { params, option: {} })
+      games.value = games.value.concat(data.content)
+
+      isPanelOpen.value = false
+      if (data.totalPage - 1 <= data.page)
+        toEnd.value = true
     }
 
     function showPanel(open = true) {
@@ -46,13 +80,18 @@ export default {
 
     function onGameChange() {
       showPanel(false)
+      getHostGames()
     }
 
     return {
       isPanelOpen,
       showPanel,
       onGameChange,
-      games
+      games,
+      pageSetting,
+      loadingEl,
+      toEnd,
+      queryGames,
     }
   }
 

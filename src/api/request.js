@@ -24,10 +24,11 @@ function onRes(res) {
 
 function onError(error) {
   let { response } = error
+  let path = response.data.path
   switch (response.status) {
     // token 過期或錯誤
     case 401:
-      if (reqInstance.unauthorizedCb)
+      if (!reqInstance.pass401Paths.includes(path) && reqInstance.unauthorizedCb)
         return reqInstance.unauthorizedCb()
     case 403:
       if (reqInstance.forbiddenCb)
