@@ -71,7 +71,7 @@ export default {
       if (props.game) {
         setGameInfo(props.game)
         setSpecList(props.game)
-        
+
       }
     })
 
@@ -181,6 +181,15 @@ export default {
     })
 
     const timeLocationColumns = reactive({
+      court_id: {
+        label: '地點',
+        model: '',
+        placeholder: '輸入並搜尋球場名稱',
+        type: 'courtSelector',
+        class: '',
+        required: true,
+        error: '',
+      },
       game_start_at: {
         label: '開始時間',
         model: null,
@@ -206,15 +215,7 @@ export default {
         required: true,
         error: '',
       },
-      court_id: {
-        label: '地點',
-        model: '',
-        placeholder: '輸入並搜尋球場名稱',
-        type: 'courtSelector',
-        class: '',
-        required: true,
-        error: '',
-      },
+
     })
 
     const ticketColumns = reactive({
@@ -337,7 +338,10 @@ export default {
 
     function onChange({ col, key }) {
       switch (key) {
-
+        case 'game_start_at':
+          if (!timeLocationColumns.game_end_at.model)
+            timeLocationColumns.game_end_at.model = col.model
+          break;
         default:
           checkValue({ col, key })
           break;

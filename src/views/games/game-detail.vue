@@ -2,8 +2,8 @@
 .GameDetailPage
   GameBasicInfo(:game="game")
   
-  .gc-fixed-wrapper  
-    button.gc-btn.main.full(@click="openPanel(true)") 參加球賽
+  .gc-fixed-wrapper(v-if="btns.length")
+    button.gc-btn.main.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
   
   SidePanel(v-model:isOpen="isPanelOpen" title="選擇種類及數量")
     GameStockSelector(:game="game")
@@ -35,6 +35,16 @@ export default {
       getGameById()
     })
 
+    let btns = computed(() => {
+      switch (game.value.game_status) {
+        case 'PENDING':
+          return [{ text: '參加球賽', class: '', callback: openPanel.bind(this, true) }]
+
+        default:
+          return []
+      }
+    })
+
     async function getGameById() {
       let game_id = props.game_id
       let { success, data } = await store.dispatch('Game/getGameById', { game_id, option: {} })
@@ -49,7 +59,8 @@ export default {
     return {
       game,
       isPanelOpen,
-      openPanel
+      openPanel,
+      btns
     }
   }
 }

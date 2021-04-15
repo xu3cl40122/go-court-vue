@@ -3,6 +3,7 @@
   h2.title 我的票夾
   .cards.grid 
     TicketCard(v-for="(ticket, i) of tickets" :info="ticket" :key="i" @onCardClick="showTicketDetail(ticket)")
+    h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
   
   OperatorDialog(v-model:show="isOpDialogOpen")
     TicketCard(:info="selectedTicketInfo" :showQrCode="true")
@@ -26,18 +27,44 @@ export default {
     let tickets = ref([])
     let pageSetting = ref({
       page: 0,
-      size: 10
+      size: 10,
+      totalPage: 10
     })
+    let loadingEl = ref(false)
+    let toEnd = ref(false)
 
     onMounted(() => {
-      getMyTickets()
+      queryTickets({ init: true })
+      let observer = new IntersectionObserver(onInterset, {})
+      loadingEl.value && observer.observe(loadingEl.value)
     })
 
-    async function getMyTickets() {
-      let params = pageSetting.value
-      let option = {}
-      let { success, data } = await store.dispatch('Ticket/getMyTickets', { params, option })
-      tickets.value = data.content
+    function onInterset(entryArr) {
+      entryArr.forEach(entry => {
+        if (entry.isIntersecting && !toEnd.value) {
+          queryTickets({})
+        }
+      })
+    }
+
+    async function queryTickets({ init }) {
+      if (init) {
+        pageSetting.value.page = 0
+        toEnd.value = false
+        tickets.value = []
+      }
+      else {
+        pageSetting.value.page++
+      }
+
+      let params = {
+        ...pageSetting.value
+      }
+      let { data } = await store.dispatch('Ticket/getMyTickets', { params, option: { skipLoading: true } })
+      tickets.value = tickets.value.concat(data.content)
+
+      if (data.totalPage - 1 <= data.page)
+        toEnd.value = true
     }
 
     let isOpDialogOpen = ref(false)
@@ -55,12 +82,14 @@ export default {
     return {
       tickets,
       pageSetting,
-      getMyTickets,
       isOpDialogOpen,
       openOpDialog,
       opDialogInfo,
       showTicketDetail,
-      selectedTicketInfo
+      selectedTicketInfo,
+      loadingEl,
+      toEnd,
+      queryTickets,
     }
   }
 }

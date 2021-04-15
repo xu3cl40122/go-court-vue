@@ -7,10 +7,10 @@
         InputText(v-model="spec.spec_name" placeholder="ex:男生、女生")
       .col.flex.v-center.stock_amount
         .label 數量
-        InputText(v-model="spec.stock_amount")
+        InputText(v-model="spec.stock_amount" type="number")
       .col.flex.v-center.price
         .label 價格
-        InputText(v-model="spec.price" placeholder="NTD")
+        InputText(v-model="spec.price" placeholder="NTD" type="number")
       .errorMsg(v-if="spec.error") {{ spec.error }}
       i.fas.fa-times.close.pointer(v-if="listModel.length > 1" @click="deleteCol(i)")
 
@@ -22,9 +22,13 @@
 
 <script>
 import { ref, computed, watch, reactive } from 'vue'
+import InputNumber from 'primevue/inputnumber';
 
 export default {
   name: 'SpecCreator',
+  components:{
+    InputNumber
+  },
   props: {
     specList: {
       type: Array,

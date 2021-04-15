@@ -137,6 +137,7 @@ export default {
 <style lang="sass" scoped>
 :deep .p-inputtext, .p-password, .p-dropdown, .p-calendar, .p-multiselect
   width: 100%
+  line-height: 1.4
 
 .label
   @include setTextStyle(1rem, 600, #333)

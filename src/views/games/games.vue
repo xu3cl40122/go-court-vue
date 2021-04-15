@@ -1,7 +1,7 @@
 <template lang="pug">
 .GamesPage
   .searchInput(@click="() => isPanelOpen = true")
-    template(v-if="Object.keys(displayQuery).length === 0")
+    template(v-if="Object.values(displayQuery).every(d => !d)")
       .searchPlaceholder 請選擇搜尋條件
     template(v-else)
       .location 
@@ -74,7 +74,6 @@ export default {
      */
     onMounted(async () => {
       let hasGame = storeGames.value?.length
-      isPanelOpen.value = !storeGames.value?.length
       getParamsFromLocal()
       let observer = new IntersectionObserver(onInterset, {})
       loadingEl.value && observer.observe(loadingEl.value)
@@ -111,11 +110,13 @@ export default {
         pageSetting.value.page++
       }
 
+      if (toEnd.value) return
+
       let params = {
         ...queryParams.value,
         ...pageSetting.value
       }
-      let { data } = await store.dispatch('Game/queryGames', { params, option: {} })
+      let { data } = await store.dispatch('Game/queryGames', { params, option: { skipLoading: true } })
       games.value = games.value.concat(data.content)
 
       isPanelOpen.value = false

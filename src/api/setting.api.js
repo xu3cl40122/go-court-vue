@@ -2,12 +2,12 @@ import q from '@/api/request'
 
 let apiPath = ''
 
-export function getSetting() {
+export function getSetting(option) {
   const pathMap = {
     development: '/setting.json'
   }
   let url = pathMap[process.env.NODE_ENV]
-  return q.get(url)
+  return q.get(url, option)
 }
 
 export function setApiPaths(setting) {

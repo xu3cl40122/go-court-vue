@@ -9,7 +9,7 @@
     h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
 
   SidePanel(v-model:isOpen="isPanelOpen" title="建立球賽")
-    GameCreator(@onGameChange="onGameChange")
+    GameCreator(v-if="isPanelOpen" @onGameChange="onGameChange")
 </template>
 
 <script>
@@ -66,7 +66,7 @@ export default {
       let params = {
         ...pageSetting.value
       }
-      let { data } = await store.dispatch('Game/getMyHostGames', { params, option: {} })
+      let { data } = await store.dispatch('Game/getMyHostGames', { params, option: { skipLoading: true } })
       games.value = games.value.concat(data.content)
 
       isPanelOpen.value = false
@@ -80,7 +80,7 @@ export default {
 
     function onGameChange() {
       showPanel(false)
-      getHostGames()
+      queryGames({ init: true })
     }
 
     return {

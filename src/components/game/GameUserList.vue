@@ -11,7 +11,8 @@
         span {{ gameUser.game_stock_detail.price }} NTD
   
   SidePanel(v-model:isOpen="isPanelOpen" title="驗證票券")
-    QrScanner
+    template(v-if="isPanelOpen")
+      QrScanner
   
   OperatorDialog(v-model:show="isOpDialogOpen" :info="opDialogInfo")
     .gameUser

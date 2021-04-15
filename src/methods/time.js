@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 
 export function toTimeRangeString(start, end, onlyDate) {
+  if (!start || !end) return ''
   let startDate = dayjs(start).format('YYYY/MM/DD')
   let startTime = dayjs(start).format('HH:mm')
   let startWeekDay = getWeekDay(start)
@@ -12,7 +13,7 @@ export function toTimeRangeString(start, end, onlyDate) {
     return startDate === endDate
       ? `${startDate}(${startWeekDay})`
       : `${startDate}(${startWeekDay}) - ${endDate}(${endWeekDay})`
-      
+
   return startDate === endDate
     ? `${startDate}(${startWeekDay}) ${startTime} - ${endTime}`
     : `${startDate}(${startWeekDay}) ${startTime} - ${endDate}(${endWeekDay}) ${endTime}`
