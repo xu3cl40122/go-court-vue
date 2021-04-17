@@ -14,7 +14,6 @@ export default createStore({
   },
   actions: {
     async initApp(context) {
-      await context.dispatch('Setting/getSetting')
       await context.dispatch('User/setErrorHandle')
       await context.dispatch('User/autoLogin')
     }

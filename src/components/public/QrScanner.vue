@@ -3,6 +3,11 @@
   .operatorBar.flex.between.v-center
     .cameraName camera {{ activeIndex +1 }}
     button.cameraBtn(@click="changeCamera") 切換相機
+  .tips.flex.h-center 
+    .tip 
+      span 請參賽者打開 "我的票夾" 點擊票券
+      br
+      span 並掃描該票券 QR code
   video#preview
 </template>
 
@@ -11,7 +16,7 @@ import Instascan from 'instascan'
 import { onMounted, ref, onUnmounted } from 'vue'
 export default {
   name: 'QrScanner',
-  setup(props) {
+  setup(props, { emit }) {
     onMounted(() => {
       openCamera()
       getUsedCamera()
@@ -42,10 +47,8 @@ export default {
     }
 
     function onScan(str) {
-      console.log(77777777777, str);
       localStorage.setItem('GC_SCAN_CAMERA_INDEX', activeIndex.value)
-
-
+      emit('onScan', str)
     }
 
     function changeCamera() {
@@ -81,6 +84,18 @@ export default {
     .cameraBtn
       padding: .5rem
       border-radius: 8px
+  .tips 
+    position: absolute 
+    top: 1rem 
+    left: 0
+    width: 100%
+    .tip
+      text-align: center
+      background-color: $second_c 
+      color: #333
+      padding: .25rem 
+      border-radius: 4px
+      font-size: 1.125rem
 #preview
   display: block
   width: 100%

@@ -33,8 +33,8 @@ export default {
     let loadingEl = ref(false)
     let toEnd = ref(false)
 
-    onMounted(() => {
-      queryTickets({ init: true })
+    onMounted(async () => {
+      await queryTickets({ init: true })
       let observer = new IntersectionObserver(onInterset, {})
       loadingEl.value && observer.observe(loadingEl.value)
     })

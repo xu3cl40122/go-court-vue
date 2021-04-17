@@ -13,12 +13,18 @@
       .gc-btns
         button.gc-btn(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
     
-    SidePanel(v-model:isOpen="isPanelOpen" title="編輯球賽")
-      GameCreator(:game="game" @onGameChange="onGameChange" type="edit" )
+    SidePanel(v-model:isOpen="isPanelOpen" :title="panelTitle")
+      template(v-if="game.game_status === 'PENDING'")     
+        GameCreator(:game="game" @onGameChange="onGameChange" type="edit" )
+      template(v-else-if="game.game_status === 'PLAYING'")  
+        QrScanner(@onScan="onScan")
     
     OperatorDialog(v-model:show="isOpDialogOpen" :info="opDialogInfo")
-      .confirmWrapper
-        h5 確定要開始球賽?
+      template(v-if="game.game_status === 'PENDING'")   
+        .confirmWrapper
+          h5 確定要開始球賽?
+      template(v-else-if="game.game_status === 'PLAYING'")
+        h2 777
 
 </template>
 
@@ -32,6 +38,7 @@ import BuyerList from '@/components/game/BuyerList'
 import GameUserList from '@/components/game/GameUserList'
 import Tabs from '@/components/unit/Tabs'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
+import QrScanner from '@/components/public/QrScanner'
 
 export default {
   name: 'HostGameDetail',
@@ -42,7 +49,8 @@ export default {
     Tabs,
     BuyerList,
     GameUserList,
-    OperatorDialog
+    OperatorDialog,
+    QrScanner
   },
   props: {
     game_id: String
@@ -69,10 +77,21 @@ export default {
       }
     })
 
+    let panelTitle = computed(() => {
+      switch (game.value.game_status) {
+        case 'PLAYING':
+          return `驗證票券`
+        default:
+          return '編輯球賽'
+      }
+    })
+
     let btns = computed(() => {
       switch (game.value.game_status) {
         case 'PLAYING':
-          return []
+          return [
+            { text: '驗票', class: 'main', callback: openPanel.bind(this, true) },
+          ]
 
         default:
           return [
@@ -84,6 +103,8 @@ export default {
 
     onMounted(() => {
       getGameById()
+      let game_ticket_id = 'f92b82c9-ea14-4661-8399-2057a38d7159'
+      store.dispatch('Ticket/getTicketById', { game_ticket_id })
     })
 
     async function getGameById() {
@@ -99,8 +120,20 @@ export default {
       let { success, data } = await store.dispatch('Game/initGame', { game_id, params })
       if (!success) return
       getGameById()
+
     }
 
+    async function onScan(str) {
+      let matchRes = str.match(/^gc\-(.*)/)
+
+      if (!matchRes) return window.alert('無法辨識的 QR code')
+      let game_ticket_id = matchRes[1]
+      let { success, data } = await store.dispatch('Ticket/getTicketById', { game_ticket_id })
+      if (!success) return window.alert('找不到票券')
+      if (data.game_id !== game.value.game_id) return window.alert('請確認是否為本場賽事的票券')
+      openOpDialog(true)
+
+    }
 
     function onGameChange() {
       getGameById()
@@ -136,7 +169,9 @@ export default {
       openOpDialog,
       opDialogInfo,
       initGame,
-      btns
+      btns,
+      onScan,
+      panelTitle
     }
   }
 }

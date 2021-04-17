@@ -11,6 +11,7 @@ import 'primeicons/primeicons.css'
 import PrimeVue from 'primevue/config';
 import InputText from 'primevue/inputtext';
 
+
 // global sass 
 import '@/sass/init.sass'
 import '@/sass/public.sass'
@@ -24,7 +25,7 @@ const app = createApp(App)
   // PrimeVue
   .use(PrimeVue)
   .component('InputText', InputText)
-  
+
   .mount('#app')
 
 

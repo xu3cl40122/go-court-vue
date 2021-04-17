@@ -1,6 +1,4 @@
 
-import { Setting } from '@/api/'
-
 const state = () => ({
   setting: {}
 
@@ -15,17 +13,7 @@ const mutations = {
 }
 
 const actions = {
-  async getSetting(context) {
-    let res = await Setting.getSetting()
-    switch (res.status) {
-      case 200:
-        context.commit('setSetting', res.data)
-        Setting.setApiPaths(res.data)
-        break;
-      default:
-        break;
-    }
-  }
+ 
 }
 
 export default {

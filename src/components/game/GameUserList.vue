@@ -10,10 +10,6 @@
         span {{ gameUser.game_stock_detail.spec_name }}
         span {{ gameUser.game_stock_detail.price }} NTD
   
-  SidePanel(v-model:isOpen="isPanelOpen" title="驗證票券")
-    template(v-if="isPanelOpen")
-      QrScanner
-  
   OperatorDialog(v-model:show="isOpDialogOpen" :info="opDialogInfo")
     .gameUser
       h5.buyer {{ opDialogInfo.gameUser.game_user_detail.profile_name }}
@@ -67,7 +63,7 @@ export default {
         gameUser,
         btns: [
           // { text: '取消', class: 'hollow-gray', callback: null },
-          { text: '驗票', class: 'main', callback: showScanner.bind(this) },
+          // { text: '驗票', class: 'main', callback: showScanner.bind(this) },
         ]
       }
       openOpDialog(true)

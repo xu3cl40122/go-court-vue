@@ -40,6 +40,17 @@ const actions = {
     }
   },
 
+  async getTicketById(context, { game_ticket_id, option }) {
+    let res = await Ticket.getTicketById({ game_ticket_id, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
 }
 
 export default {

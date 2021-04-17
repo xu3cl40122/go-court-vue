@@ -1,4 +1,4 @@
-import { apiPath } from './setting.api'
+const apiPath = process.env.VUE_APP_API_PATH
 import q from './request'
 
 export function queryGames({ params, option }) {
