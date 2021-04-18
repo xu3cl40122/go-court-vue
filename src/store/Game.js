@@ -18,7 +18,7 @@ const state = () => ({
 
   gameStatusMap: {
     PENDING: { label: '未開始', value: 'PENDING', class: 'info' },
-    PLAYING: { label: '進行中', value: 'PLAYING', class: 'main' },
+    PLAYING: { label: '進行中', value: 'PLAYING', class: 'second' },
     FINISHED: { label: '已結束', value: 'FINISHED', class: 'success' },
   },
 

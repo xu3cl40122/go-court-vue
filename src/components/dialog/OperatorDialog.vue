@@ -2,7 +2,7 @@
 Dialog(
   v-model:visible="show",
   :closeOnEscape="true",
-  :dismissableMask="true",
+  :dismissableMask="dismissableMask",
   :modal="true",
   :closable="true",
   :showHeader="false"
@@ -29,6 +29,10 @@ export default {
   },
   props: {
     show: Boolean,
+    dismissableMask: {
+      type: Boolean,
+      default: true
+    },
     info: {
       type: Object,
       default: () => ({})

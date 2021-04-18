@@ -6,9 +6,14 @@
         h5.buyer {{ gameUser.game_user_detail.profile_name }}
         .time {{ gameUser.createdTimeStr }}
 
-      .specWrapper.flex
-        span {{ gameUser.game_stock_detail.spec_name }}
-        span {{ gameUser.game_stock_detail.price }} NTD
+      .flex.between
+        .specWrapper.flex
+          span {{ gameUser.game_stock_detail.spec_name }}
+          span {{ gameUser.game_stock_detail.price }} NTD
+        
+        .verify(v-if="gameUser.game_ticket_detail.game_ticket_status === 'VERIFIED'")
+          i.fas.fa-check-circle
+          span 已驗票
   
   OperatorDialog(v-model:show="isOpDialogOpen" :info="opDialogInfo")
     .gameUser
@@ -59,12 +64,10 @@ export default {
     let opDialogInfo = ref({})
 
     function setOpDialog(gameUser) {
+      return false
       opDialogInfo.value = {
         gameUser,
-        btns: [
-          // { text: '取消', class: 'hollow-gray', callback: null },
-          // { text: '驗票', class: 'main', callback: showScanner.bind(this) },
-        ]
+        btns: []
       }
       openOpDialog(true)
     }
@@ -104,6 +107,11 @@ export default {
     border-radius: 4px
     padding: .5rem 1rem
     background-color: rgba($main_c, .1)
+    .verify 
+      i
+        color: $success_c
+        margin-right: .25rem  
+
 .buyer
   color: $main_c 
   margin-bottom: .25rem 

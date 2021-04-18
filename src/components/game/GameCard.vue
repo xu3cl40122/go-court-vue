@@ -17,6 +17,9 @@
       //- .detailCol 
       //-   i.fas.fa-user 
       //-   span {{ info.host_user_detail.profile_name }}
+  
+  .statusTag(:class="gameStatusTag.class") {{ gameStatusTag.label }}
+
 </template>
 
 <script>
@@ -52,6 +55,12 @@ export default {
       ]
     })
 
+    let gameStatusTag = computed(() => {
+      let { game_status } = props.info
+      let match = store.state.Game.gameStatusMap[game_status]
+      return match || {}
+    })
+
     let price = computed(() => {
       if (!game_stock?.length) return '免費'
       let priceArr = game_stock.map(d => d.price).sort((a, b) => a - b)
@@ -71,6 +80,7 @@ export default {
       time,
       price,
       tags,
+      gameStatusTag,
     }
   }
 }
@@ -78,6 +88,7 @@ export default {
 
 <style lang="sass" scoped>
 .GameCard
+  position: relative
   grid-template-columns: auto 1fr
   box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16)
   border-radius: 4px
@@ -105,4 +116,17 @@ export default {
           width: 1rem 
           text-align: center
           margin-right: .25rem
+  .statusTag 
+    position: absolute 
+    top: .25rem 
+    right: .25rem 
+    padding: .25rem .5rem
+    color: #fff 
+    border-radius: 4px
+    &.success
+      background-color: $success_c
+    &.second
+      background-color: $second_c
+    &.info
+      visibility: hidden
 </style>

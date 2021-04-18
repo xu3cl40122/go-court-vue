@@ -14,17 +14,27 @@
         button.gc-btn(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
     
     SidePanel(v-model:isOpen="isPanelOpen" :title="panelTitle")
-      template(v-if="game.game_status === 'PENDING'")     
-        GameCreator(:game="game" @onGameChange="onGameChange" type="edit" )
-      template(v-else-if="game.game_status === 'PLAYING'")  
-        QrScanner(@onScan="onScan")
-    
+      template(v-if="isPanelOpen")
+        template(v-if="game.game_status === 'PENDING'")     
+          GameCreator(:game="game" @onGameChange="onGameChange" type="edit" )
+        template(v-else-if="game.game_status === 'PLAYING'")  
+          QrScanner(@onScan="onScan")
+      
+  template(v-if="game.game_status === 'PENDING'")   
     OperatorDialog(v-model:show="isOpDialogOpen" :info="opDialogInfo")
-      template(v-if="game.game_status === 'PENDING'")   
-        .confirmWrapper
-          h5 確定要開始球賽?
-      template(v-else-if="game.game_status === 'PLAYING'")
-        h2 777
+      .confirmWrapper
+        h5 確定要開始球賽?
+
+  template(v-else-if="game.game_status === 'PLAYING'")
+    OperatorDialog(v-model:show="isValidDialogOpen" :info="validDialogInfo" :dismissableMask="false")
+      .ticketInfo
+        i.fas.fa-check-circle
+        h5 {{ game.game_name }}
+        .owner {{ ticket.owner_user_detail.profile_name }}
+        h4 
+          span.specName {{ ticket.game_stock_detail.spec_name }}
+          span {{ ticket.game_stock_detail.price }} NTD
+
 
 </template>
 
@@ -58,7 +68,6 @@ export default {
   setup(props) {
     const store = useStore()
     let game = ref({})
-
     let active = ref('basicInfo')
 
     let tabs = computed(() => {
@@ -123,21 +132,46 @@ export default {
 
     }
 
+    let ticket = ref({})
     async function onScan(str) {
       let matchRes = str.match(/^gc\-(.*)/)
-
       if (!matchRes) return window.alert('無法辨識的 QR code')
+
       let game_ticket_id = matchRes[1]
       let { success, data } = await store.dispatch('Ticket/getTicketById', { game_ticket_id })
       if (!success) return window.alert('找不到票券')
       if (data.game_id !== game.value.game_id) return window.alert('請確認是否為本場賽事的票券')
-      openOpDialog(true)
+      if (data.game_ticket_status === 'VERIFIED') return window.alert('該票券已使用過')
 
+      let verifyRes = await store.dispatch('Ticket/verifyTicket', { game_id: game.value.game_id, game_ticket_id })
+      if (!verifyRes.success) return showMessageDialog('verifyFailed')
+      ticket.value = data
+      openValidDialog(true)
     }
 
     function onGameChange() {
       getGameById()
       openPanel(false)
+    }
+
+    function showMessageDialog(status) {
+      let info = {}
+      switch (status) {
+        case 'verifyFailed':
+          info = {
+            status: 'danger',
+            title: `驗證票券失敗失敗`,
+            subtitles: ['請稍後再試', '或聯絡系統管理員'],
+          }
+          break;
+
+        default:
+          break;
+      }
+      store.commit('Dialog/setDialog', {
+        name: 'messageDialog',
+        info
+      })
     }
 
     let isPanelOpen = ref(false)
@@ -158,6 +192,18 @@ export default {
       isOpDialogOpen.value = open
     }
 
+    let isValidDialogOpen = ref(false)
+    let validDialogInfo = reactive({
+      btns: [
+        // { text: '取消', class: 'hollow-gray', callback: null },
+        { text: '確認', class: 'main', callback: null },
+      ]
+    })
+
+    function openValidDialog(open) {
+      isValidDialogOpen.value = open
+    }
+
     return {
       game,
       isPanelOpen,
@@ -168,10 +214,15 @@ export default {
       isOpDialogOpen,
       openOpDialog,
       opDialogInfo,
+      isValidDialogOpen,
+      validDialogInfo,
+      openValidDialog,
       initGame,
       btns,
       onScan,
-      panelTitle
+      panelTitle,
+      ticket,
+
     }
   }
 }
@@ -184,4 +235,14 @@ export default {
 .confirmWrapper
   text-align: center
 
+.ticketInfo
+  text-align: center
+  i 
+    font-size: 64px
+    color: $success_c
+    margin-bottom: 1rem
+  h5, .owner 
+    margin-bottom: .5rem 
+  .specName
+      margin-right: .5rem
 </style>

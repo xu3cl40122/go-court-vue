@@ -34,7 +34,7 @@
     CourtSelector(:courtId="iCol.model" @onSelect="onChange")
 
   template(v-else-if="iCol.type === 'textarea'")
-    Textarea(v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" 
+    Textarea(v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" :autoResize="true" 
       @keyup.native.enter="onEnter" :rows="5")
 
   template(v-else)

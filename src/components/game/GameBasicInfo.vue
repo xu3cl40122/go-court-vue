@@ -5,7 +5,7 @@
     .flex.between.v-center
       .tags 
         .gc-tag(v-for="(tag, i) of tags" :key="i" :class="tag.class") {{ tag.label }}
-      .gameStatus 
+      .statusTag() 
         span {{ gameStatusTag.label }}
 
     h3.title {{ game.game_name }}
@@ -123,7 +123,10 @@ export default {
     margin: 1rem 0 .5rem
   .description 
     color: #666
-  .gameStatus 
-    font-weight: 500
+  .statusTag 
+    padding: .25rem .5rem
+    background-color: $second_c
+    color: #fff 
+    border-radius: 4px
 
 </style>
