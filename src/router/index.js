@@ -5,6 +5,7 @@ import GameDetail from '@/views/games/game-detail.vue'
 import HostGameDetail from '@/views/games/host-game-detail.vue'
 import Tickets from '@/views/tickets/'
 import MyGames from '@/views/myGames/myGames'
+import Profile from '@/views/profile/profile'
 import store from '@/store/'
 
 const routes = [
@@ -34,6 +35,11 @@ const routes = [
     path: '/tickets',
     name: 'Tickets',
     component: Tickets,
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
   },
   {
     path: '/myGames',

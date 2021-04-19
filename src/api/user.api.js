@@ -25,3 +25,8 @@ export function getProfile({ option }) {
   let url = `${apiPath}/profile`
   return q.get(url, option)
 }
+
+export function putProfile({ body, option }) {
+  let url = `${apiPath}/profile`
+  return q.put(url, body, option)
+}

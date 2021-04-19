@@ -61,8 +61,8 @@ const actions = {
   async onLoginSuccess(context, { jwtToken }) {
     q.defaults.headers.common['Authorization'] = jwtToken
     localStorage.setItem(process.env.VUE_APP_TOKEN_NAME, jwtToken)
-    context.dispatch('getProfile', { option: {} })
-
+    await context.dispatch('getProfile', { option: {} })
+    context.commit('setIsLogin', true)
   },
 
   async logout(context) {
@@ -76,7 +76,18 @@ const actions = {
     switch (status) {
       case 200:
         context.commit('setUser', data)
-        context.commit('setIsLogin', true)
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async putProfile(context, { body, option }) {
+    let res = await User.putProfile({ body, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        context.commit('setUser', data)
         return { success: true, status, data }
       default:
         return { success: false, status, message: data?.message }
