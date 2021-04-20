@@ -76,6 +76,7 @@ const actions = {
     switch (status) {
       case 200:
         context.commit('setUser', data)
+        console.log(99999999, context.state.user)
         return { success: true, status, data }
       default:
         return { success: false, status, message: data?.message }

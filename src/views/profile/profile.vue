@@ -4,13 +4,20 @@
     Avatar(:src="user.avatar_url" :editable="true" @fileChange="avatarChange" )
     h3 {{ user.profile_name }}
     h5 {{ user.email }}
-  .gc-fixed-wrapper(v-if="btns.length")
-    button.gc-btn.main.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
+  //- .gc-fixed-wrapper(v-if="btns.length")
+  //-   button.gc-btn.main.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
   
-  .infoWrapper 
-    ListItem(v-for="(col, key) of infoColumns" :key="key" :info="col") 
+  .infoWrapper
+    .operator.pointer(@click="openPanel(true)")
+      i.fas.fa-edit 
+      span 編輯
+    ListItem(v-for="(col, key) of infoColumns" :key="key" :info="col")
+    .flex.h-center
+      .gc-btns
+        button.gc-btn.main(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
 
-  SidePanel(v-model:isOpen="isPanelOpen" title="選擇種類及數量")
+  SidePanel(v-model:isOpen="isPanelOpen" title="編輯個人資訊")
+    ProfileEditor(@updateProfile="updateProfile")
 
 </template>
 
@@ -20,26 +27,25 @@ import { useStore } from 'vuex'
 import SidePanel from '@/components/layout/SidePanel'
 import Avatar from '@/components/unit/Avatar'
 import ListItem from '@/components/unit/ListItem'
+import ProfileEditor from '@/components/public/ProfileEditor'
+
 
 export default {
   name: 'ProfilePage',
   components: {
     SidePanel,
     Avatar,
-    ListItem
+    ListItem,
+    ProfileEditor
   },
   setup(props) {
     const store = useStore()
     let isPanelOpen = ref(false)
     let user = computed(() => store.state.User.user)
     let btns = computed(() => {
-      switch ('') {
-        case 'PENDING':
-          return [{ text: '參加球賽', class: '', callback: '' }]
-
-        default:
-          return []
-      }
+      return [
+        { text: '變更密碼', class: '', callback: '' }
+        ]
     })
 
     onMounted(() => {
@@ -96,6 +102,11 @@ export default {
       let userRes = await store.dispatch('User/putProfile', { body: profile, option: {} })
     }
 
+    function updateProfile(){
+      setInfoColumns()
+      openPanel(false)
+    }
+
     function openPanel(open) {
       isPanelOpen.value = open
     }
@@ -106,19 +117,30 @@ export default {
       openPanel,
       btns,
       avatarChange,
-      infoColumns
+      infoColumns,
+      updateProfile
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
+.ProfilePage 
+  padding-bottom: $navbarH
 .banner
   min-height: 200px
   background-color: $second_c
   h3  
     margin: .5rem 0 .25rem
-.infoWrapper 
-  margin-top: 1.5rem
-  
+.infoWrapper
+  position: relative
+  padding-top: 1.5rem
+  .operator 
+    position: absolute 
+    top: .5rem
+    right: .5rem
+    color: $main_c
+    i 
+      margin-right: .25rem
+
 </style>

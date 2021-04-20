@@ -9,7 +9,7 @@
       )
   
   .gc-btns 
-    button.gc-btn.main(@click="submit") 找球賽
+    button.gc-btn.main.full(@click="submit") 找球賽
 
 </template>
 
