@@ -2,7 +2,10 @@
 .GameCreator
   Tabs(:tabs="tabs" :active="active" @changeTab="changeTab")
   .body
-    template(v-if="active === 'basicInfo'") 
+    template(v-if="active === 'basicInfo'")
+      label.imgWrapper
+        img.img(:src="logoSrc || defaultImg")
+        input.hidden(v-show="false" type="file" accept="image/jpeg, image/png" @change="addFile")
       .gc-form(:key="updateIndex")
         .col(v-for="(col, key) in basicColumns" :key="key" :class="col.class")
           FormItem(
@@ -31,7 +34,7 @@
 
   .gc-fixed-wrapper 
     .gc-btns 
-      button.gc-btn(v-for="(btn, i) of btns" :key="active + i" :class="btn.class" @click="btn.callback") {{ btn.text }}
+      button.gc-btn.full(v-for="(btn, i) of btns" :key="active + i" :class="btn.class" @click="btn.callback") {{ btn.text }}
 
 </template>
 
@@ -42,6 +45,7 @@ import { useStore } from 'vuex'
 import FormItem from "@/components/unit/FormItem.vue"
 import SpecCreator from "@/components/game/SpecCreator.vue"
 import { isNull } from "@/methods/"
+import defaultImg from '@/assets/image/default.jpg'
 
 export default {
   name: 'GameCreator',
@@ -51,7 +55,10 @@ export default {
     SpecCreator,
   },
   props: {
-    game: Object,
+    game: {
+      type: Object,
+      default: () => ({})
+    },
     // create, edit
     type: {
       type: String,
@@ -65,15 +72,21 @@ export default {
     let specList = ref([])
 
     onMounted(async () => {
-    })
-
-    watch(props, val => {
-      if (props.game) {
+       if (props.game) {
         setGameInfo(props.game)
         setSpecList(props.game)
 
       }
     })
+
+    // watch(props, val => {
+    //   console.log(77777777)
+    //   if (props.game) {
+    //     setGameInfo(props.game)
+    //     setSpecList(props.game)
+
+    //   }
+    // })
 
     function setGameInfo(game) {
       Object.keys(allColumns.value).forEach(key => {
@@ -130,6 +143,7 @@ export default {
           break;
       }
     })
+
 
     const basicColumns = reactive({
       game_name: {
@@ -256,33 +270,36 @@ export default {
     })
 
     async function submit() {
+      let body = emitData(allColumns.value, true)
+      if (!body) return
+      let isSpecValid = validSpecList()
+      if (!isSpecValid) return
+
+
       props.type === 'create'
-        ? addGame()
-        : editGame()
+        ? addGame({ body })
+        : editGame({ body, game_id: props.game.game_id })
     }
 
-    async function addGame() {
-      let body = emitData(allColumns.value, true)
-      // if (!body) return
-      let isSpecValid = validSpecList()
-      if (!isSpecValid) return
-
-      let option = {}
-      let gameRes = await store.dispatch('Game/postGame', { body, option })
-      let game_id = gameRes.data.game_id
-      let stockRes = await store.dispatch('Game/putGameStock', { game_id, body: specList.value, option })
-      stockRes.success
-        ? showMessageDialog('success')
-        : showMessageDialog('failed')
+    async function addGame({ body }) {
+      let { success, data } = await store.dispatch('Game/postGame', { body, option: { keepLoading: true } })
+      if (!success) return showMessageDialog('failed')
+      return editGame({ body: data, game_id: data.game_id })
     }
 
-    async function editGame() {
-      let body = emitData(allColumns.value, true)
-      let isSpecValid = validSpecList()
-      if (!isSpecValid) return
+    async function editGame({ game_id, body }) {
+      let { meta = {} } = body
 
-      let { game_id } = props.game
+      let { file_id, file_url } = await updateLogo({ game_id, file_id: meta?.logo_file_id })
+      console.log(777777777, file_id, file_url)
+      body.meta = {
+        ...meta,
+        logo_file_id: file_id,
+        logo_file_url: file_url
+      }
+
       let option = {}
+      console.log('meta', meta)
       let apis = [
         store.dispatch('Game/putGame', { game_id, body, option }),
         store.dispatch('Game/putGameStock', { game_id, body: specList.value, option })
@@ -294,6 +311,7 @@ export default {
         ? showMessageDialog('success')
         : showMessageDialog('failed')
     }
+
 
     /**
      * @columns 要處理的欄位
@@ -328,6 +346,39 @@ export default {
       return isValid ? outputData : false
     }
 
+
+    let logoFile = ref({})
+    let tempLogoUrl = ref('')
+    let logoSrc = computed(() => tempLogoUrl.value || props.game?.meta?.logo_url)
+
+    function addFile(e) {
+      logoFile.value = e.target.files[0]
+      let url = URL.createObjectURL(logoFile.value)
+      tempLogoUrl.value = url
+    }
+
+    async function updateLogo({ game_id, file_id }) {
+      let file = logoFile.value
+      if (!file) return {}
+      // create file entity
+      if (!file_id) {
+        let body = {
+          reference_id: game_id,
+          file_name: file.name,
+          description: '',
+          tag: 'GAME_LOGO'
+        }
+        let { success, data } = await store.dispatch('File/postFile', { body, option: { keepLoading: true } })
+        if (!success) return showMessageDialog('failed')
+        file_id = data.file_id
+      }
+      // put file content
+      let contentRes = await store.dispatch('File/putFileContent', { file_id, file, option: { keepLoading: true } })
+      if (!contentRes.success) return showMessageDialog('failed')
+
+      return { file_id, file_url: contentRes.data.file_url }
+    }
+
     function checkValue({ col, key }) {
       let { model, required, label } = col
       if (required && isNull(model))
@@ -360,6 +411,8 @@ export default {
       })
       return isPass
     }
+
+
 
     function showMessageDialog(status) {
       let info = {}
@@ -415,6 +468,11 @@ export default {
       specList,
       SpecCreatorRef,
       allColumns,
+      defaultImg,
+      logoSrc,
+      addFile,
+      logoFile,
+      tempLogoUrl
     }
   }
 }
@@ -423,6 +481,16 @@ export default {
 <style lang="sass" scoped>
 .body 
   padding: 1rem 1rem 4rem
+
+.imgWrapper
+  position: relative
+  width: 100%
+.img
+  display: block
+  width: 100%
+  height: auto
+  margin-bottom: 1rem
+  border-radius: 4px
 .specWrapper 
   margin-top: 1.5rem
 </style>

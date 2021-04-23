@@ -10,6 +10,7 @@ import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
 import PrimeVue from 'primevue/config';
 import InputText from 'primevue/inputtext';
+import ToastService from 'primevue/toastservice';
 
 
 // global sass 
@@ -24,6 +25,7 @@ const app = createApp(App)
 
   // PrimeVue
   .use(PrimeVue)
+  .use(ToastService)
   .component('InputText', InputText)
 
   .mount('#app')

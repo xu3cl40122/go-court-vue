@@ -39,8 +39,10 @@ function onRes(res) {
     res.config.keepLoading && console.log('keepLoading')
     console.log('status:', res.status, 'data:', res.data)
   }
-  if (isLoading && !res.config.keepLoading)
+  if (isLoading && !res.config.keepLoading) {
+    isLoading = false
     loader.hide()
+  }
   return res
 }
 

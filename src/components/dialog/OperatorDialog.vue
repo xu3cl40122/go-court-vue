@@ -13,7 +13,7 @@ Dialog(
   .body
     slot
     .gc-btns
-      button.gc-btn(v-for="(btn, i) of info.btns" :key="i" :class="btn.class" @click="onBtnClick(btn)") {{ btn.text }}
+      button.gc-btn.full(v-for="(btn, i) of info.btns" :key="i" :class="btn.class" @click="onBtnClick(btn)") {{ btn.text }}
 
 </template>
 

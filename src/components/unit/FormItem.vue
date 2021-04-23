@@ -32,7 +32,7 @@
   //-     :placeholder="iCol.placeholder" :disabled="iCol.disabled")
   template(v-else-if="iCol.type === 'courtSelector'")
     CourtSelector(:courtId="iCol.model" @onSelect="onChange")
-
+  
   template(v-else-if="iCol.type === 'textarea'")
     Textarea(v-model="model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" :autoResize="true" 
       @keyup.native.enter="onEnter" :rows="5")

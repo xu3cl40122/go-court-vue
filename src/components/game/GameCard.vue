@@ -2,6 +2,7 @@
 .GameCard.grid.v-center
   .imgPart.flex.v-center
     .img(:style="{'background-image': `url(${logo})`}")
+      .defaultImg(:style="{'background-image': `url(${defaultImg})`}")
   .infoPart
     .tags 
       .gc-tag(v-for="(tag, i) of tags" :key="i" :class="tag.class") {{ tag.label }}
@@ -43,7 +44,7 @@ export default {
   },
   setup(props) {
     const store = useStore()
-    let logo = computed(() => props.info.logo_url || defaultImg)
+    let logo = computed(() => props.info?.meta.logo_file_url)
     let { game_start_at, game_end_at, game_stock, game_type, court_type } = props.info
     let time = computed(() => toTimeRangeString(game_start_at, game_end_at))
     let tags = computed(() => {
@@ -81,6 +82,7 @@ export default {
       price,
       tags,
       gameStatusTag,
+      defaultImg
     }
   }
 }
@@ -97,10 +99,21 @@ export default {
   .imgPart
     padding-left: 1rem
     .img
+      position: relative
       width: 80px
       height: 80px
       border-radius: 4px
+      overflow: hidden
       @include bgImgSetting()
+      .defaultImg
+        position: absolute 
+        top: 0 
+        left: 0
+        width: 100% 
+        height: 100%
+        z-index: -1
+        @include bgImgSetting()
+
   .infoPart 
     background-color: #fff
     padding: .5rem 1rem

@@ -42,6 +42,7 @@ export default {
     window.vm = this
     await this.$store.dispatch('initApp')
     this.redyRender = true
+    this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000});
   }
 }
 

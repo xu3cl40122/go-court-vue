@@ -3,15 +3,16 @@
   Tabs(:tabs="tabs" v-model:active="active")
   .wrapper
     template(v-if="active === 'basicInfo'")
-      GameBasicInfo(:game="game")
+      GameBasicInfo(:game="game" :editable="true" @editGame="openPanel(true)")
     template(v-else-if="active === 'tickets'")
       BuyerList(:game_id="game_id")    
     template(v-else-if="active === 'gameUsers'")
       GameUserList(:game_id="game_id")
       
     .gc-fixed-wrapper(v-if="btns.length")
+      //- IconBtns(:buttons="btns")
       .gc-btns
-        button.gc-btn(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
+        button.gc-btn.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
     
     SidePanel(v-model:isOpen="isPanelOpen" :title="panelTitle")
       template(v-if="isPanelOpen")
@@ -49,6 +50,7 @@ import GameUserList from '@/components/game/GameUserList'
 import Tabs from '@/components/unit/Tabs'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
 import QrScanner from '@/components/public/QrScanner'
+import IconBtns from '@/components/unit/IconBtns'
 
 export default {
   name: 'HostGameDetail',
@@ -60,7 +62,8 @@ export default {
     BuyerList,
     GameUserList,
     OperatorDialog,
-    QrScanner
+    QrScanner,
+    IconBtns,
   },
   props: {
     game_id: String
@@ -72,17 +75,23 @@ export default {
 
     let tabs = computed(() => {
       switch (game.value.game_status) {
+        case 'PENDING':
+          return {
+            basicInfo: { label: '基本資訊' },
+            gameUsers: { label: '購票者' },
+          }
         case 'PLAYING':
           return {
             basicInfo: { label: '基本資訊' },
             gameUsers: { label: '參賽者' },
           }
-
-        default:
+        case 'FINISHED':
           return {
             basicInfo: { label: '基本資訊' },
-            tickets: { label: '購票者' },
+            gameUsers: { label: '參賽者' },
           }
+        default:
+          return {}
       }
     })
 
@@ -99,21 +108,23 @@ export default {
       switch (game.value.game_status) {
         case 'PLAYING':
           return [
-            { text: '驗票', class: 'main', callback: openPanel.bind(this, true) },
+            { icon:'fas fa-qrcode', text: '驗票', class: 'main', callback: openPanel.bind(this, true) },
+          ]
+        case 'PENDING':
+          return [
+            // { text: '編輯球賽', class: 'main', callback: openPanel.bind(this, true) },
+            { text: '開始球賽', class: 'second', callback: openOpDialog.bind(this, true) },
           ]
 
         default:
           return [
-            { text: '編輯球賽', class: 'main', callback: openPanel.bind(this, true) },
-            { text: '開始球賽', class: 'second', callback: openOpDialog.bind(this, true) },
+
           ]
       }
     })
 
     onMounted(() => {
       getGameById()
-      let game_ticket_id = 'f92b82c9-ea14-4661-8399-2057a38d7159'
-      store.dispatch('Ticket/getTicketById', { game_ticket_id })
     })
 
     async function getGameById() {

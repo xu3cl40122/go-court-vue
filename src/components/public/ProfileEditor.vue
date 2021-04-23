@@ -113,9 +113,11 @@ export default {
       let body = emitData()
       if (!body) return
       let { success, data } = await store.dispatch('User/putProfile', { body, option: {} })
-      if (!success) return
-      emit('updateProfile')
+      if (!success) return emit('updateProfileFaild')
+      emit('updateProfileSuccess')
     }
+
+    
 
     function onChange({ col, key }) {
       checkValue({ col, key })

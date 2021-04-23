@@ -1,11 +1,9 @@
 <template lang="pug">
 .ProfilePage
   .banner.flex.h-center.v-center.column
-    Avatar(:src="user.avatar_url" :editable="true" @fileChange="avatarChange" )
+    Avatar(:src="user.meta.avatar_url" :key="updateIndex" :editable="true" @fileChange="avatarChange")
     h3 {{ user.profile_name }}
     h5 {{ user.email }}
-  //- .gc-fixed-wrapper(v-if="btns.length")
-  //-   button.gc-btn.main.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
   
   .infoWrapper
     .operator.pointer(@click="openPanel(true)")
@@ -17,12 +15,12 @@
         button.gc-btn.main(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
 
   SidePanel(v-model:isOpen="isPanelOpen" title="編輯個人資訊")
-    ProfileEditor(@updateProfile="updateProfile")
+    ProfileEditor(@updateProfileSuccess="updateProfileSuccess" @updateProfileFaild="showMessageDialog('updateProfileFailed')")
 
 </template>
 
 <script>
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import SidePanel from '@/components/layout/SidePanel'
 import Avatar from '@/components/unit/Avatar'
@@ -40,12 +38,17 @@ export default {
   },
   setup(props) {
     const store = useStore()
+    let updateIndex = ref(0)
     let isPanelOpen = ref(false)
     let user = computed(() => store.state.User.user)
     let btns = computed(() => {
       return [
         { text: '變更密碼', class: '', callback: '' }
-        ]
+      ]
+    })
+
+    watch(user, (val) => {
+      setInfoColumns()
     })
 
     onMounted(() => {
@@ -86,24 +89,66 @@ export default {
     }
 
     async function avatarChange(file) {
-      let body = {
-        reference_id: user.value.user_id,
-        file_name: file.name,
-        description: '',
-        tag: 'AVATAR'
+
+      let file_id = user.value.meta.avatar_file_id
+      // create file entity
+      if (!file_id) {
+        let body = {
+          reference_id: user.value.user_id,
+          file_name: file.name,
+          description: '',
+          tag: 'AVATAR'
+        }
+        let { success, data } = await store.dispatch('File/postFile', { body, option: { keepLoading: true } })
+        if (!success) return showMessageDialog('updateProfileFailed')
+        file_id = data.file_id
       }
-      let { success, data } = await store.dispatch('File/postFile', { body, option: {} })
-      if (!success) return
-      let { file_id } = data
-      let contentRes = await store.dispatch('File/putFileContent', { file_id, file, option: {} })
-      if (!contentRes.success) return
+      // upload file content
+      let contentRes = await store.dispatch('File/putFileContent', { file_id, file, option: { keepLoading: true } })
+      if (!contentRes.success) return showMessageDialog('updateProfileFailed')
       let profile = { ...user.value }
-      profile.avatar_url = contentRes.data.file_url
+      // save file info to user profile
+      profile.meta = { ...profile.meta, avatar_file_id: file_id, avatar_url: contentRes.data.file_url }
       let userRes = await store.dispatch('User/putProfile', { body: profile, option: {} })
+      if (!userRes.success) return showMessageDialog('updateProfileFailed')
+      
+      showMessageDialog('success')
+      updateIndex.value++
+
     }
 
-    function updateProfile(){
-      setInfoColumns()
+    function showMessageDialog(event) {
+      let info = {}
+      switch (event) {
+        case 'success':
+          info = {
+            status: 'success',
+            title: '編輯個人資訊成功',
+            subtitles: [],
+            closeAfter: 3000
+          }
+          break;
+        case 'updateProfileFailed':
+          info = {
+            status: 'danger',
+            title: '編輯個人資訊失敗',
+            subtitles: ['請稍後再試', '或回報系統管理員'],
+            closeAfter: 3000,
+          }
+          break;
+
+        default:
+          break;
+      }
+      close()
+      store.commit('Dialog/setDialog', {
+        name: 'messageDialog',
+        info
+      })
+    }
+
+    function updateProfileSuccess() {
+      showMessageDialog('success')
       openPanel(false)
     }
 
@@ -118,7 +163,9 @@ export default {
       btns,
       avatarChange,
       infoColumns,
-      updateProfile
+      showMessageDialog,
+      updateProfileSuccess,
+      updateIndex,
     }
   }
 }

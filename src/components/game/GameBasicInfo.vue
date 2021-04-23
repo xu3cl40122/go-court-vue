@@ -5,8 +5,12 @@
     .flex.between.v-center
       .tags 
         .gc-tag(v-for="(tag, i) of tags" :key="i" :class="tag.class") {{ tag.label }}
-      .statusTag() 
-        span {{ gameStatusTag.label }}
+      .flex
+        .operator.pointer(v-if="editable && game.game_status === 'PENDING'" @click="editGame")
+          i.fas.fa-edit 
+          span 編輯
+        .statusTag(v-else :class="gameStatusTag.class") 
+          span {{ gameStatusTag.label }}
 
     h3.title {{ game.game_name }}
     .time {{ time }}
@@ -29,8 +33,6 @@
     h5.blockTitle 賽事說明
     .description {{ game.description }}
   
-  
-
 </template>
 
 <script>
@@ -42,15 +44,16 @@ import { toTimeRangeString } from '@/methods/time'
 export default {
   name: 'GameBasicInfo',
   props: {
+    editable: Boolean,
     game: {
       type: Object,
       default: () => ({})
     }
   },
-  setup(props) {
+  setup(props, {emit}) {
     const store = useStore()
 
-    let logo = computed(() => props.game.logo_url || defaultImg)
+    let logo = computed(() => props.game?.meta?.logo_file_url || defaultImg)
     let time = computed(() => {
       let { game_start_at, game_end_at } = props.game
       return game_start_at ? toTimeRangeString(game_start_at, game_end_at) : ''
@@ -84,11 +87,16 @@ export default {
 
     })
 
+    function editGame() {
+      emit('editGame')
+    }
+
     return {
       logo,
       time,
       tags,
       price,
+      editGame,
       gameStatusTag,
     }
   }
@@ -105,6 +113,10 @@ export default {
     margin-bottom: 1rem
   .title, .time 
     margin-bottom: .5rem
+  .operator 
+    color: $main_c
+    i 
+      margin-right: .25rem
   .detail 
     color: #666
     .detailCol
@@ -128,5 +140,11 @@ export default {
     background-color: $second_c
     color: #fff 
     border-radius: 4px
+    &.success
+      background-color: $success_c
+    &.second
+      background-color: $second_c
+    &.info
+      background-color: #ccc
 
 </style>

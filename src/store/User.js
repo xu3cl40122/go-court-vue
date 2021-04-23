@@ -56,6 +56,7 @@ const actions = {
     if (!jwtToken) return
     q.defaults.headers.common['Authorization'] = jwtToken
     await context.dispatch('getProfile', { option: {} })
+    context.commit('setIsLogin', true)
   },
 
   async onLoginSuccess(context, { jwtToken }) {
@@ -76,7 +77,6 @@ const actions = {
     switch (status) {
       case 200:
         context.commit('setUser', data)
-        console.log(99999999, context.state.user)
         return { success: true, status, data }
       default:
         return { success: false, status, message: data?.message }

@@ -47,13 +47,13 @@ export default {
 
     async function searchCourts(e) {
       let params = { name: e.query }
-      let option = {}
+      let option = { skipLoading: true }
       let { data } = await store.dispatch('Court/searchCourts', { params, option })
       suggestions.value = data
     }
 
     async function getCourtById(court_id) {
-      let option = {}
+      let option = { skipLoading: true }
       let { data, success } = await store.dispatch('Court/getCourtById', { court_id, option })
       if (!success) return
       courtInfo.value = data
