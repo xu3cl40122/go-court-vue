@@ -2,12 +2,14 @@
 .HostGameDetail
   Tabs(:tabs="tabs" v-model:active="active")
   .wrapper
-    template(v-if="active === 'basicInfo'")
+    div(v-show="active === 'basicInfo'")
       GameBasicInfo(:game="game" :editable="true" @editGame="openPanel(true)")
-    template(v-else-if="active === 'tickets'")
+    div(v-show="active === 'tickets'")
       BuyerList(:game_id="game_id")    
-    template(v-else-if="active === 'gameUsers'")
+    div(v-show="active === 'gameUsers'")
       GameUserList(:game_id="game_id")
+    div(v-show="active === 'otherInfo'")
+      GameRecord(:game="game")
       
     .gc-fixed-wrapper(v-if="btns.length")
       //- IconBtns(:buttons="btns")
@@ -47,6 +49,7 @@ import GameCreator from '@/components/game/GameCreator'
 import GameBasicInfo from '@/components/game/GameBasicInfo'
 import BuyerList from '@/components/game/BuyerList'
 import GameUserList from '@/components/game/GameUserList'
+import GameRecord from '@/components/game/GameRecord'
 import Tabs from '@/components/unit/Tabs'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
 import QrScanner from '@/components/public/QrScanner'
@@ -64,6 +67,7 @@ export default {
     OperatorDialog,
     QrScanner,
     IconBtns,
+    GameRecord,
   },
   props: {
     game_id: String
@@ -84,6 +88,7 @@ export default {
           return {
             basicInfo: { label: '基本資訊' },
             gameUsers: { label: '參賽者' },
+            otherInfo: { label: '其他資訊' },
           }
         case 'FINISHED':
           return {

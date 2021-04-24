@@ -47,6 +47,7 @@ function onRes(res) {
 }
 
 function onError(error) {
+  loader.hide()
   let { response } = error
   let path = response.data?.path
   switch (response.status) {

@@ -46,3 +46,8 @@ export function initGame({ game_id, body, option }) {
   return q.put(url, body, option)
 }
 
+export function closeGame({ game_id, body, option }) {
+  let url = `${apiPath}/games/${game_id}/close`
+  return q.put(url, body, option)
+}
+

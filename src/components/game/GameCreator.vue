@@ -79,15 +79,6 @@ export default {
       }
     })
 
-    // watch(props, val => {
-    //   console.log(77777777)
-    //   if (props.game) {
-    //     setGameInfo(props.game)
-    //     setSpecList(props.game)
-
-    //   }
-    // })
-
     function setGameInfo(game) {
       Object.keys(allColumns.value).forEach(key => {
         let col = allColumns.value[key]
@@ -291,7 +282,6 @@ export default {
       let { meta = {} } = body
 
       let { file_id, file_url } = await updateLogo({ game_id, file_id: meta?.logo_file_id })
-      console.log(777777777, file_id, file_url)
       body.meta = {
         ...meta,
         logo_file_id: file_id,
@@ -299,7 +289,6 @@ export default {
       }
 
       let option = {}
-      console.log('meta', meta)
       let apis = [
         store.dispatch('Game/putGame', { game_id, body, option }),
         store.dispatch('Game/putGameStock', { game_id, body: specList.value, option })
