@@ -20,7 +20,10 @@ export default {
     const route = useRoute()
     const router = useRouter()
     const path = computed(() => route.path)
-    const features = computed(() => ['home', 'games', 'myGames', 'myTickets', 'profile'])
+    const features = computed(() => store.state.User.isLogin
+      ? ['home', 'games', 'myGames', 'myTickets', 'profile']
+      : ['home', 'games']
+    )
     const menu = computed(() => store.getters['Layout/getNavbarMenu'](features.value))
     const gridStyle = computed(() => {
       return {

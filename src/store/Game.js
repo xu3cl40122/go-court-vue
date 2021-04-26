@@ -139,6 +139,17 @@ const actions = {
     }
   },
   
+  async initGameUsers(context, { game_id, body, option }) {
+    let res = await Game.initGameUsers({ game_id, body, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+  
   async closeGame(context, { game_id, body, option }) {
     let res = await Game.closeGame({ game_id, body, option })
     let { status, data } = res

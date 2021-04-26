@@ -1,5 +1,5 @@
 <template lang="pug">
-.HostGameDetail
+.HostGameDetail(:key="updateIndex")
   Tabs(:tabs="tabs" v-model:active="active")
   .wrapper
     div(v-show="active === 'basicInfo'")
@@ -27,6 +27,9 @@
     OperatorDialog(v-model:show="isOpDialogOpen" :info="opDialogInfo")
       .confirmWrapper
         h5 確定要開始球賽?
+        .initGameUser.flex.v-center
+          Checkbox(v-model="needInitUser" :binary="true")
+          .label 自動把購票者加入參賽者清單
 
   template(v-else-if="game.game_status === 'PLAYING'")
     OperatorDialog(v-model:show="isValidDialogOpen" :info="validDialogInfo" :dismissableMask="false")
@@ -44,6 +47,7 @@
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import SidePanel from '@/components/layout/SidePanel'
 import GameCreator from '@/components/game/GameCreator'
 import GameBasicInfo from '@/components/game/GameBasicInfo'
@@ -54,6 +58,7 @@ import Tabs from '@/components/unit/Tabs'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
 import QrScanner from '@/components/public/QrScanner'
 import IconBtns from '@/components/unit/IconBtns'
+import Checkbox from 'primevue/checkbox';
 
 export default {
   name: 'HostGameDetail',
@@ -68,14 +73,18 @@ export default {
     QrScanner,
     IconBtns,
     GameRecord,
+    Checkbox
   },
   props: {
     game_id: String
   },
   setup(props) {
     const store = useStore()
+    const router = useRouter()
+    let updateIndex = ref(0)
     let game = ref({})
     let active = ref('basicInfo')
+    let needInitUser = ref(false)
 
     let tabs = computed(() => {
       switch (game.value.game_status) {
@@ -113,7 +122,7 @@ export default {
       switch (game.value.game_status) {
         case 'PLAYING':
           return [
-            { icon:'fas fa-qrcode', text: '驗票', class: 'main', callback: openPanel.bind(this, true) },
+            { icon: 'fas fa-qrcode', text: '驗票', class: 'main', callback: openPanel.bind(this, true) },
           ]
         case 'PENDING':
           return [
@@ -142,8 +151,18 @@ export default {
     async function initGame() {
       let game_id = props.game_id
       let params = {}
-      let { success, data } = await store.dispatch('Game/initGame', { game_id, params })
-      if (!success) return
+      // let { success, data } = await store.dispatch('Game/initGame', { game_id, params })
+      // if (!success) return
+      let apis = [
+        store.dispatch('Game/initGame', { game_id }),
+        store.dispatch('Game/initGameUsers', { game_id }),
+      ]
+      if (!needInitUser.value) apis.pop()
+
+      let resArr = await Promise.all(apis)
+      if (!resArr.every(d => d.success))
+        return showMessageDialog('initFailed')
+      showMessageDialog('initSuccess')
       getGameById()
 
     }
@@ -166,6 +185,7 @@ export default {
     }
 
     function onGameChange() {
+      updateIndex.value++
       getGameById()
       openPanel(false)
     }
@@ -176,7 +196,21 @@ export default {
         case 'verifyFailed':
           info = {
             status: 'danger',
-            title: `驗證票券失敗失敗`,
+            title: `驗證票券失敗`,
+            subtitles: ['請稍後再試', '或聯絡系統管理員'],
+          }
+          break;
+        case 'initSuccess':
+          info = {
+            status: 'success',
+            title: `開始球賽`,
+            subtitles: [''],
+          }
+          break;
+        case 'initFailed':
+          info = {
+            status: 'danger',
+            title: `開始球賽失敗`,
             subtitles: ['請稍後再試', '或聯絡系統管理員'],
           }
           break;
@@ -238,6 +272,8 @@ export default {
       onScan,
       panelTitle,
       ticket,
+      needInitUser,
+      updateIndex
 
     }
   }
@@ -250,7 +286,10 @@ export default {
 
 .confirmWrapper
   text-align: center
-
+  .initGameUser
+    margin-top: 1rem
+    .label 
+      margin-left: .5rem
 .ticketInfo
   text-align: center
   i 

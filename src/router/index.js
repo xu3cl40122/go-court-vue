@@ -6,6 +6,7 @@ import HostGameDetail from '@/views/games/host-game-detail.vue'
 import Tickets from '@/views/tickets/'
 import MyGames from '@/views/myGames/myGames'
 import Profile from '@/views/profile/profile'
+import Refresh from '@/views/refresh'
 import store from '@/store/'
 
 const routes = [
@@ -46,6 +47,12 @@ const routes = [
     name: 'MyGames',
     component: MyGames,
   },
+  {
+    path: '/refresh',
+    name: 'Refresh',
+    component: Refresh,
+  },
+  { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
 const router = createRouter({

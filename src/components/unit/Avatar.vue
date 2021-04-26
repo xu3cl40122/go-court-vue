@@ -1,7 +1,7 @@
 <template lang="pug">
 label.Avatar
-  .img(:style="{'background-image': `url(${src})`}")
-    .defaultImg(:style="{'background-image': `url(${defaultImg})`}")
+  .img(:style="{'background-image': `url(${src ||　defaultImg})`}")
+    //- .defaultImg(:style="{'background-image': `url(${defaultImg})`}")
   input.hidden(v-if="editable" type="file" accept="image/jpeg, image/png" @change="addFile")
     
 </template>

@@ -42,6 +42,7 @@
 import Tabs from '@/components/unit/Tabs'
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import FormItem from "@/components/unit/FormItem.vue"
 import SpecCreator from "@/components/game/SpecCreator.vue"
 import { isNull } from "@/methods/"
@@ -67,12 +68,13 @@ export default {
   },
   setup(props, { emit, slots }) {
     const store = useStore()
+    const router = useRouter()
     let updateIndex = ref(0)
     let SpecCreatorRef = ref(null)
     let specList = ref([])
 
     onMounted(async () => {
-       if (props.game) {
+      if (props.game) {
         setGameInfo(props.game)
         setSpecList(props.game)
 
@@ -90,8 +92,7 @@ export default {
               col.model = new Date(game[key])
             break;
           default:
-            if (game[key])
-              col.model = game[key]
+            col.model = game[key]
             break;
         }
 
@@ -270,6 +271,7 @@ export default {
       props.type === 'create'
         ? addGame({ body })
         : editGame({ body, game_id: props.game.game_id })
+
     }
 
     async function addGame({ body }) {
@@ -279,13 +281,11 @@ export default {
     }
 
     async function editGame({ game_id, body }) {
-      let { meta = {} } = body
-
+      let { meta } = body
       let { file_id, file_url } = await updateLogo({ game_id, file_id: meta?.logo_file_id })
-      body.meta = {
-        ...meta,
-        logo_file_id: file_id,
-        logo_file_url: file_url
+      if (file_id && file_url) {
+        body.meta.logo_file_id = file_id
+        body.meta.logo_file_url = file_url
       }
 
       let option = {}
@@ -296,9 +296,8 @@ export default {
 
       let resArr = await Promise.all(apis).catch(err => false)
 
-      resArr.every(res => res.success)
-        ? showMessageDialog('success')
-        : showMessageDialog('failed')
+      if (!resArr.every(res => res.success)) return showMessageDialog('failed')
+      showMessageDialog('success')
     }
 
 
@@ -329,6 +328,7 @@ export default {
       if (isAll) {
         outputData.sell_end_at = outputData.game_start_at
         outputData.deleted = false
+        outputData.meta = props.game.meta
       }
       updateIndex.value++
 
@@ -336,9 +336,9 @@ export default {
     }
 
 
-    let logoFile = ref({})
+    let logoFile = ref(null)
     let tempLogoUrl = ref('')
-    let logoSrc = computed(() => tempLogoUrl.value || props.game?.meta?.logo_url)
+    let logoSrc = computed(() => tempLogoUrl.value || props.game?.meta?.logo_file_url)
 
     function addFile(e) {
       logoFile.value = e.target.files[0]
