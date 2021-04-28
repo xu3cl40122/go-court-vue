@@ -28,8 +28,8 @@
       .confirmWrapper
         h5 確定要開始球賽?
         .initGameUser.flex.v-center
-          Checkbox(v-model="needInitUser" :binary="true")
-          .label 自動把購票者加入參賽者清單
+          //- Checkbox(v-model="needInitUser" :binary="true")
+          //- .label 自動把購票者加入參賽者清單
 
   template(v-else-if="game.game_status === 'PLAYING'")
     OperatorDialog(v-model:show="isValidDialogOpen" :info="validDialogInfo" :dismissableMask="false")
@@ -91,18 +91,20 @@ export default {
         case 'PENDING':
           return {
             basicInfo: { label: '基本資訊' },
-            gameUsers: { label: '購票者' },
+            tickets: { label: '購票者' },
           }
         case 'PLAYING':
           return {
             basicInfo: { label: '基本資訊' },
-            gameUsers: { label: '參賽者' },
+            tickets: { label: '購票者' },
+            // gameUsers: { label: '參賽者' },
             otherInfo: { label: '其他資訊' },
           }
         case 'FINISHED':
           return {
             basicInfo: { label: '基本資訊' },
-            gameUsers: { label: '參賽者' },
+            tickets: { label: '購票者' },
+            // gameUsers: { label: '參賽者' },
           }
         default:
           return {}
@@ -122,7 +124,7 @@ export default {
       switch (game.value.game_status) {
         case 'PLAYING':
           return [
-            { icon: 'fas fa-qrcode', text: '驗票', class: 'main', callback: openPanel.bind(this, true) },
+            { icon: 'fas fa-qrcode', text: 'QR code 驗票', class: 'main', callback: openPanel.bind(this, true) },
           ]
         case 'PENDING':
           return [

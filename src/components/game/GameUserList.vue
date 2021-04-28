@@ -30,14 +30,12 @@ import { useStore } from 'vuex'
 import dayjs from 'dayjs'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
 import SidePanel from '@/components/layout/SidePanel'
-import QrScanner from '@/components/public/QrScanner'
 
 export default {
   name: 'GameUserList',
   components: {
     OperatorDialog,
     SidePanel,
-    QrScanner
   },
   props: {
     game_id: String

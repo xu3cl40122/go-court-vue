@@ -263,6 +263,8 @@ export default {
 
     async function submit() {
       let body = emitData(allColumns.value, true)
+      console.log('body', body)
+
       if (!body) return
       let isSpecValid = validSpecList()
       if (!isSpecValid) return
@@ -323,6 +325,9 @@ export default {
             outputData[key] = col.model
             break;
         }
+        console.log('key', key)
+        console.log(outputData[key])
+        console.log(col.model)
       })
 
       if (isAll) {

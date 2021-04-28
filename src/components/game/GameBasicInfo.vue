@@ -1,16 +1,22 @@
 <template lang="pug">
 .GameBasicInfo
-  img.img(:src="logo")
+  .imgWrapper
+    img.img(:src="logo")
+    .statusTag(:class="gameStatusTag.class") 
+      span {{ gameStatusTag.label }}
   .content(v-if="game.game_id")
     .flex.between.v-center
       .tags 
         .gc-tag(v-for="(tag, i) of tags" :key="i" :class="tag.class") {{ tag.label }}
       .flex
-        .operator.pointer(v-if="editable && game.game_status === 'PENDING'" @click="editGame")
-          i.fas.fa-edit 
-          span 編輯
-        .statusTag(v-else :class="gameStatusTag.class") 
-          span {{ gameStatusTag.label }}
+        .operator.flex
+          .btn.pointer(v-if="editable && game.game_status === 'PENDING'" @click="editGame")
+            i.fas.fa-edit 
+            span 編輯
+          .btn.pointer(v-if="canShare" @click="shareGame")
+            i.fas.fa-share-alt
+            span 分享
+       
 
     h3.title {{ game.game_name }}
     .time {{ time }}
@@ -50,8 +56,9 @@ export default {
       default: () => ({})
     }
   },
-  setup(props, {emit}) {
+  setup(props, { emit }) {
     const store = useStore()
+    let canShare = ref(false)
 
     let logo = computed(() => props.game?.meta?.logo_file_url || defaultImg)
     let time = computed(() => {
@@ -87,34 +94,70 @@ export default {
 
     })
 
+    onMounted(() => {
+      canShare.value = navigator.canShare()
+    })
+
     function editGame() {
       emit('editGame')
     }
 
-    return {
-      logo,
-      time,
-      tags,
-      price,
-      editGame,
-      gameStatusTag,
+    function shareGame() {
+      const sharePromise = navigator.share({
+        url: `${window.origin}/games/${props.game.game_id}`,   
+        title: props.game.game_name,   
+        text: props.game.game_name         
+      });
+    }
+
+      return {
+        logo,
+        time,
+        tags,
+        price,
+        editGame,
+        gameStatusTag,
+        shareGame,
+        canShare
+      }
     }
   }
-}
 </script>
 
 <style lang="sass" scoped>
-.GameBasicInfo 
+.GameBasicInfo
+  .imgWrapper
+    position: relative
   .img 
     display: block 
     width: 100% 
     height: auto
     border-radius: 4px
     margin-bottom: 1rem
+
+  .statusTag
+    position: absolute
+    top: .5rem 
+    right: .5rem
+    padding: .25rem .5rem
+    background-color: $second_c
+    color: #fff 
+    border-radius: 4px
+    z-index: 1
+    &.success
+      background-color: $success_c
+    &.second
+      background-color: $second_c
+    &.info
+      background-color: #ccc
+
   .title, .time 
     margin-bottom: .5rem
   .operator 
     color: $main_c
+    .btn 
+      &:not(:last-child)
+        margin-right: .5rem
     i 
       margin-right: .25rem
   .detail 
@@ -135,16 +178,6 @@ export default {
     margin: 1rem 0 .5rem
   .description 
     color: #666
-  .statusTag 
-    padding: .25rem .5rem
-    background-color: $second_c
-    color: #fff 
-    border-radius: 4px
-    &.success
-      background-color: $success_c
-    &.second
-      background-color: $second_c
-    &.info
-      background-color: #ccc
+  
 
 </style>

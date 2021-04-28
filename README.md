@@ -1,29 +1,19 @@
 # go-court-vue
 
-## Project setup
-```
-yarn install
-```
+### todo 
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+- [x] https deploy
+- [x] 開始球賽 關閉球賽
+- [x] 驗票流程
+- [ ] 分享票券
+- [x] 是否公開
+- [ ] 搶票測試
+- [ ] input search 優化
+- [ ] 紀錄球賽結果
+- [ ] 評論系統
+- [ ] 電腦版介面
+- [ ] 重設密碼
+- [ ] 忘記密碼
 
-### Compiles and minifies for production
-```
-yarn build
-```
 
-### Run your unit tests
-```
-yarn test:unit
-```
 
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
