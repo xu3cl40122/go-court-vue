@@ -8,7 +8,7 @@
 
   .flex.between
     .rest.flex 
-      span 尚缺
+      span 剩餘
       span {{ stock.stock_amount }}
 
     .counter.flex.v-center.h-end 

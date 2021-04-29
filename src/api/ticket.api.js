@@ -21,3 +21,8 @@ export function verifyTicket({ game_id, game_ticket_id, option }) {
   return q.put(url, {}, { ...option })
 }
 
+export function transferTicket({ game_ticket_id, body, option }) {
+  let url = `${apiPath}/games/tickets/${game_ticket_id}/transfer`
+  return q.put(url, body, { ...option })
+}
+

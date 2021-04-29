@@ -6,7 +6,11 @@
     h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
   
   OperatorDialog(v-model:show="isOpDialogOpen")
-    TicketCard(:info="selectedTicketInfo" :showQrCode="true")
+    TicketCard(:info="selectedTicketInfo" :features="['id', 'transfer', 'qrcode']" @transferTicket="openPanel(true)")
+  
+  SidePanel(v-model:isOpen="isPanelOpen" title="轉送票券")
+    .panelWrapper(v-if="selectedTicketInfo.game_ticket_id")
+      TransferTicket(:info="selectedTicketInfo" @transferSuccess="transferSuccess")
 
 </template>
 
@@ -15,12 +19,16 @@ import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import TicketCard from '@/components/ticket/TicketCard'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
+import SidePanel from '@/components/layout/SidePanel'
+import TransferTicket from '@/components/ticket/TransferTicket'
 
 export default {
   name: 'TicketPage',
   components: {
     TicketCard,
-    OperatorDialog
+    OperatorDialog,
+    SidePanel,
+    TransferTicket
   },
   setup() {
     const store = useStore()
@@ -79,6 +87,19 @@ export default {
       openOpDialog(true)
     }
 
+   
+    let isPanelOpen = ref(false)
+    function openPanel(open) {
+      openOpDialog(false)
+      isPanelOpen.value = open
+    }
+
+    function transferSuccess() {
+      openPanel(false)
+      queryTickets({ init: true })
+
+    }
+
     return {
       tickets,
       pageSetting,
@@ -90,6 +111,9 @@ export default {
       loadingEl,
       toEnd,
       queryTickets,
+      isPanelOpen,
+      openPanel,
+      transferSuccess
     }
   }
 }
@@ -104,5 +128,7 @@ export default {
 
 .cards 
   grid-row-gap: 1rem
+.panelWrapper 
+  padding: 1rem
 
 </style>

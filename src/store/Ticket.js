@@ -62,6 +62,17 @@ const actions = {
     }
   },
 
+  async transferTicket(context, { game_ticket_id, body, option }) {
+    let res = await Ticket.transferTicket({ game_ticket_id, body, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
 }
 
 export default {

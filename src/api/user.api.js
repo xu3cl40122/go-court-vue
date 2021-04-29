@@ -30,3 +30,8 @@ export function putProfile({ body, option }) {
   let url = `${apiPath}/profile`
   return q.put(url, body, option)
 }
+
+export function getUserById({ user_id, option }) {
+  let url = `${apiPath}/users/${user_id}`
+  return q.get(url, option)
+}

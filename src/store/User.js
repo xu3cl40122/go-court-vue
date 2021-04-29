@@ -117,6 +117,18 @@ const actions = {
     }
   },
 
+  async getUserById(context, { user_id, option }) {
+    let res = await User.getUserById({ user_id, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        context.commit('setUser', data)
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
 
 
 }

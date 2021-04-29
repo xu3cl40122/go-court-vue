@@ -7,8 +7,8 @@
     MessageDialog
     .main
       router-view(v-slot="{ Component }")
-        keep-alive(include="GamesPage")
-          component(:is="Component")
+        //- keep-alive(include="GamesPage")
+        component(:is="Component")
     Navbar(v-if="showNavbar")
   
 </template>

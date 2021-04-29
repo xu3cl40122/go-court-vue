@@ -14,7 +14,7 @@
         span {{ info.court_detail.name }}
       .detailCol 
         i.fas.fa-dollar-sign
-        span {{ price }}
+        span {{ price }} 起
       //- .detailCol 
       //-   i.fas.fa-user 
       //-   span {{ info.host_user_detail.profile_name }}

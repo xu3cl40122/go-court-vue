@@ -84,15 +84,15 @@ export default {
           return { game_stock_id, stock_amount: count }
         })
       let option = {}
-      let { success } = await store.dispatch('Ticket/checkout', { body, option })
+      let { success, status } = await store.dispatch('Ticket/checkout', { body, option })
       success
         ? showMessageDialog('success')
-        : showMessageDialog('failed')
+        : showMessageDialog('failed', status)
     }
 
-    function showMessageDialog(status) {
+    function showMessageDialog(event, status) {
       let info = {}
-      switch (status) {
+      switch (event) {
         case 'success':
           info = {
             status: 'success',
@@ -102,14 +102,17 @@ export default {
             closeCb: toTicketsPage.bind(this)
           }
           break;
-        case 'failed':
+        case 'failed': {
+          let subtitles = status === 400
+            ? ['票已經賣光啦']
+            : ['請稍後再試', '或聯絡系統管理員']
           info = {
             status: 'danger',
             title: `購票失敗`,
-            subtitles: ['請稍後再試', '或聯絡系統管理員'],
+            subtitles,
           }
           break;
-
+        }
         default:
           break;
       }

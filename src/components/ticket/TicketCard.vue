@@ -11,14 +11,19 @@
     .spec {{ info.game_stock_detail.spec_name }}
   .location {{ info.game_detail.court_detail.name }}
   .time {{ time }}
-  .qrcode(v-if="showQrCode" ref="qrcodeRef")
+  .qrcode(v-if="features.includes('qrcode')" ref="qrcodeRef")
+  .id(v-if="features.includes('id')") {{ info.game_ticket_id }}
+
+  .flex.h-center
+    .gc-btn.main(v-if="showTransferBtn" @click="transferTicket")
+      i.fas.fa-share
+      span 轉票
   
 </template>
 
 <script>
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
-import defaultImg from '@/assets/image/default.jpg'
 import { toTimeRangeString } from '@/methods/time'
 
 export default {
@@ -30,10 +35,17 @@ export default {
         return {}
       }
     },
-    showQrCode: Boolean
+    features: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+
   },
   setup(props, { emit }) {
     const store = useStore()
+
     let { game_start_at, game_end_at, game_stock, game_type, court_type } = props.info.game_detail
     let time = computed(() => toTimeRangeString(game_start_at, game_end_at))
     let tags = computed(() => {
@@ -45,7 +57,7 @@ export default {
       ]
     })
 
-     let statusTag = computed(() => {
+    let statusTag = computed(() => {
       let { game_ticket_status } = props.info
       let match = store.state.Ticket.ticketStatusMap[game_ticket_status]
       return match || {}
@@ -76,7 +88,7 @@ export default {
     }
 
     onMounted(() => {
-      if (props.showQrCode)
+      if (props.features.includes('qrcode'))
         generateQrcode()
     })
 
@@ -84,13 +96,22 @@ export default {
       emit('onCardClick')
     }
 
+    function transferTicket() {
+      emit('transferTicket')
+    }
+
+    let showTransferBtn = computed(() => props.info.game_ticket_status === 'PENDING' && props.features.includes('transfer'))
+
+
     return {
       time,
       price,
       tags,
       onCardClick,
       qrcodeRef,
-      statusTag
+      statusTag,
+      showTransferBtn,
+      transferTicket
     }
   }
 }
@@ -127,4 +148,12 @@ export default {
     font-size: 1.125rem
   .qrcode 
     margin: 1rem auto
+  .id 
+    text-align: center 
+    margin-bottom: .5rem
+  .input 
+    margin-bottom: .5rem
+.gc-btn
+  i 
+    margin-right: .5rem
 </style>
