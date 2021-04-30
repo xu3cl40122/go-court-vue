@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { useLoading } from 'vue3-loading-overlay';
-// Import stylesheet
-import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 const reqInstance = axios.create({})
 reqInstance.interceptors.response.use(onRes, onError)
 reqInstance.setErrorHandle = setErrorHandle
@@ -13,20 +10,20 @@ function setErrorHandle({ pass401Paths, unauthorizedCb, forbiddenCb }) {
   reqInstance.pass401Paths = pass401Paths
 }
 
-let loader = useLoading();
 let isLoading = false
+let loader
 
 
 function onReq(config) {
   if (!isLoading && !config.skipLoading) {
     isLoading = true
-    loader.show({
+    loader = vm.$loading.show({
       container: null,
       'z-index': 1020,
       canCancel: true,
       loader: 'dots',
       color: '#1b295d',
-    });
+    })
   }
 
   return config
@@ -41,14 +38,16 @@ function onRes(res) {
   }
   if (isLoading && !res.config.keepLoading) {
     isLoading = false
-    loader.hide()
+    console.log('loader', loader)
+    loader?.hide()
   }
   return res
 }
 
 function onError(error) {
-  loader.hide()
+  loader?.hide()
   let { response } = error
+  // if (!response) return error
   let path = response.data?.path
   switch (response.status) {
     // token 過期或錯誤

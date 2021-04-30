@@ -5,7 +5,6 @@ Dialog(
   :dismissableMask="false",
   :modal="true",
   :closable="true",
-  position="top"
 ) 
   template(#header)
     .header.flex.v-center.h-center
@@ -235,7 +234,6 @@ export default {
 
 <style lang="sass" scoped>
 :deep .p-dialog
-  margin-top: 10vh
   width: 600px
   max-width: 90%
   border-radius: 8px

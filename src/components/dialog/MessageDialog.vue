@@ -6,7 +6,6 @@ Dialog(
   :modal="true",
   :closable="true",
   :showHeader="false"
-  position="top"
   @show="onOpen"
   @hide="onClose"
 )
@@ -73,7 +72,6 @@ export default {
 
 <style lang="sass" scoped>
 :deep .p-dialog
-  margin-top: 30vh
   width: 270px
   max-width: 90%
   border-radius: 8px

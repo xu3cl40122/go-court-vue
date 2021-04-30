@@ -4,6 +4,9 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 
+
+import VueLoading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 // PrimeVue
 import 'primevue/resources/themes/saga-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
@@ -11,6 +14,7 @@ import 'primeicons/primeicons.css'
 import PrimeVue from 'primevue/config';
 import InputText from 'primevue/inputtext';
 import ToastService from 'primevue/toastservice';
+
 
 
 // global sass 
@@ -22,6 +26,7 @@ import '@/sass/primevue.sass'
 const app = createApp(App)
   .use(store)
   .use(router)
+  .use(VueLoading)
 
   // PrimeVue
   .use(PrimeVue)

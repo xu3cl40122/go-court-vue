@@ -6,7 +6,6 @@ Dialog(
   :modal="true",
   :closable="true",
   :showHeader="false"
-  position="top"
   @show="onOpen"
   @hide="onClose"
 )
