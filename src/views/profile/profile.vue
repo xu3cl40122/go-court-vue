@@ -9,7 +9,7 @@
     .operator.pointer(@click="openPanel(true)")
       i.fas.fa-edit 
       span 編輯
-    ListItem(v-for="(col, key) of infoColumns" :key="key" :info="col")
+    ListItem(v-for="(col, key) of infoColumns" :key="key" :info="col" :iKey="key")
     .flex.h-center
       .gc-btns
         button.gc-btn.main(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
@@ -56,10 +56,17 @@ export default {
     })
 
     let infoColumns = reactive({
+      user_id: {
+        label: 'ID',
+        className: 'small',
+        value: '',
+        icon: 'fas fa-id-badge',
+        copy: true
+      },
       phone: {
         label: '連絡電話',
         value: '',
-        icon: 'fas fa-mobile-alt'
+        icon: 'fas fa-mobile-alt',
       },
       gender: {
         label: '生理性別',
@@ -111,7 +118,7 @@ export default {
       profile.meta = { ...profile.meta, avatar_file_id: file_id, avatar_url: contentRes.data.file_url }
       let userRes = await store.dispatch('User/putProfile', { body: profile, option: {} })
       if (!userRes.success) return showMessageDialog('updateProfileFailed')
-      
+
       showMessageDialog('success')
       updateIndex.value++
 
@@ -174,6 +181,9 @@ export default {
 <style lang="sass" scoped>
 .ProfilePage 
   padding-bottom: $navbarH
+#user_id
+  max-width: 200px
+  text-align: center
 .banner
   min-height: 200px
   background-color: $second_c
