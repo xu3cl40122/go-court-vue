@@ -30,7 +30,7 @@
             @onChange="onChange"
           )
       .specWrapper
-        SpecCreator(ref="SpecCreatorRef" v-if="!ticketColumns.is_free.model" v-model:specList="specList")
+        SpecCreator(ref="SpecCreatorRef" v-model:specList="specList")
 
   .gc-fixed-wrapper 
     .gc-btns 
@@ -225,18 +225,7 @@ export default {
     })
 
     const ticketColumns = reactive({
-      is_free: {
-        label: "是否收費",
-        type: "radio",
-        model: false,
-        options: [
-          { label: '是', value: false },
-          { label: '否', value: true },
-        ],
-        required: true,
-        asterisk: false,
-        error: "",
-      },
+
     })
 
 
@@ -263,7 +252,6 @@ export default {
 
     async function submit() {
       let body = emitData(allColumns.value, true)
-      console.log('body', body)
 
       if (!body) return
       let isSpecValid = validSpecList()
@@ -325,9 +313,6 @@ export default {
             outputData[key] = col.model
             break;
         }
-        console.log('key', key)
-        console.log(outputData[key])
-        console.log(col.model)
       })
 
       if (isAll) {
@@ -401,12 +386,14 @@ export default {
           spec.error = '請完成表單再送出'
           isPass = false
         }
+        if (Number(stock_amount) < 0 || Number(price) < 0) {
+          spec.error = '請輸入合理的數量及價格'
+          isPass = false
+        }
         return spec
       })
       return isPass
     }
-
-
 
     function showMessageDialog(status) {
       let info = {}

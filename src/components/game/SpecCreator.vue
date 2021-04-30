@@ -1,5 +1,9 @@
 <template lang="pug">
 .SpecCreator
+  .tipRow.flex.h-end
+    .gc-tips
+      i.fas.fa-info-circle
+      span 如欲停售票券，可將其數量設為 0
   .specCols.grid
     .specCol.grid(v-for="(spec, i) of listModel" :key="i")
       .col.flex.v-center.spec_name
@@ -12,7 +16,8 @@
         .label 價格
         InputText(v-model="spec.price" placeholder="NTD" type="number")
       .errorMsg(v-if="spec.error") {{ spec.error }}
-      i.fas.fa-times.close.pointer(v-if="listModel.length > 1" @click="deleteCol(i)")
+      //- 目前有 id(已創建的) 不能刪除 以免影響到已售出的票券
+      i.fas.fa-times.close.pointer(v-if="!spec.game_stock_id && listModel.length > 1" @click="deleteCol(i)")
 
   .btns.flex.h-center
     button.gc-btn.main(@click="addCol")
@@ -26,14 +31,14 @@ import InputNumber from 'primevue/inputnumber';
 
 export default {
   name: 'SpecCreator',
-  components:{
+  components: {
     InputNumber
   },
   props: {
     specList: {
       type: Array,
       default: () => ([])
-    }
+    },
   },
   setup(props, { emit }) {
     let listModel = computed({
@@ -61,7 +66,7 @@ export default {
     function addCol() {
       listModel.value = [
         ...listModel.value,
-          {
+        {
           spec_name: '',
           stock_amount: '',
           price: ''
@@ -116,6 +121,8 @@ export default {
 
 .btns
   margin-top: 1rem
+.tipRow 
+  margin-bottom: 1rem
 
 
 
