@@ -25,17 +25,6 @@ const actions = {
     }
   },
 
-  async searchCourts(context, { params, option }) {
-    let res = await Court.searchCourts({ params, option })
-    let { status, data } = res
-    switch (status) {
-      case 200:
-        return { success: true, status, data }
-      default:
-        return { success: false, status, message: data?.message }
-    }
-  },
-
   async getCourtById(context, { court_id, option }) {
     let res = await Court.getCourtById({ court_id, option })
     let { status, data } = res

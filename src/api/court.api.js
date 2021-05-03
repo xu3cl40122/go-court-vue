@@ -6,11 +6,6 @@ export function queryCourts({ params, option }) {
   return q.get(url, { ...option, params })
 }
 
-export function searchCourts({ params, option }) {
-  let url = `${apiPath}/courts/search`
-  return q.get(url, { ...option, params })
-}
-
 export function getCourtById({ court_id, option }) {
   let url = `${apiPath}/courts/${court_id}`
   return q.get(url, { ...option })

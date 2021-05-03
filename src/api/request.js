@@ -38,7 +38,6 @@ function onRes(res) {
   }
   if (isLoading && !res.config.keepLoading) {
     isLoading = false
-    console.log('loader', loader)
     loader?.hide()
   }
   return res

@@ -6,6 +6,7 @@ import HostGameDetail from '@/views/games/host-game-detail.vue'
 import Tickets from '@/views/tickets/'
 import MyGames from '@/views/myGames/myGames'
 import Profile from '@/views/profile/profile'
+import Courts from '@/views/courts/courts'
 import Refresh from '@/views/refresh'
 import store from '@/store/'
 
@@ -48,6 +49,11 @@ const routes = [
     component: MyGames,
   },
   {
+    path: '/courts',
+    name: 'Courts',
+    component: Courts,
+  },
+  {
     path: '/refresh',
     name: 'Refresh',
     component: Refresh,
@@ -65,6 +71,7 @@ router.beforeEach((to, from, next) => {
   switch (name) {
     case 'GameDetail':
     case 'HostGameDetail':
+    case 'Courts':
       store.commit('Layout/setHeaders', [
         {
           type: 'icons',

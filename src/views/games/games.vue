@@ -10,8 +10,8 @@
           span /
           span {{ displayQuery.dist_code }}
       .time {{ displayQuery.time_range }}
-      .searchOption {{ displayQuery.game_type }}
-      .searchOption {{ displayQuery.court_type }}
+      //- .searchOption {{ displayQuery.game_type }}
+      //- .searchOption {{ displayQuery.court_type }}
     i.fas.fa-search
 
   .games.grid
