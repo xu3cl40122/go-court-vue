@@ -10,13 +10,16 @@ import File from './File'
 
 export default createStore({
   state: {
+    inited: false
   },
   mutations: {
+    setInited: (state, bool) => state.inited = bool
   },
   actions: {
     async initApp(context) {
       await context.dispatch('User/setErrorHandle')
       await context.dispatch('User/autoLogin')
+      context.commit('setInited', true)
     }
   },
   modules: {

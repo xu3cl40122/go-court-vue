@@ -2,6 +2,7 @@
 const state = () => ({
   isSidebarOpen: false,
   isSidePanelOpen: false,
+  layout: 'default',
 
   sidebarMenu: {
     login: { label: '登入', path: '', event: 'login' },
@@ -48,6 +49,7 @@ const mutations = {
   setSidePanelOpen: (state, open) => state.isSidePanelOpen = open,
   setHeaders: (state, headers) => state.headers = headers,
   setShowNavbar: (state, show) => state.showNavbar = show,
+  setLayout: (state, layout) => state.layout = layout,
 }
 
 const actions = {

@@ -69,9 +69,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   let { name } = to
   switch (name) {
+    case 'Courts':
+      store.commit('Layout/setLayout', 'empty')
+      break
     case 'GameDetail':
     case 'HostGameDetail':
-    case 'Courts':
+      store.commit('Layout/setLayout', 'default')
       store.commit('Layout/setHeaders', [
         {
           type: 'icons',
@@ -100,6 +103,7 @@ router.beforeEach((to, from, next) => {
           icons: [{ icon: 'fas fa-bars', class: '', event: 'toggleSidebar' }]
         },
       ])
+      store.commit('Layout/setLayout', 'default')
       store.commit('Layout/setShowNavbar', true)
       break;
   }

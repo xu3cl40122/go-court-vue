@@ -1,61 +1,41 @@
 <template lang="pug">
-.App
-  template(v-if="redyRender")
-    Header.header
-    Sidebar
-    UserDialog
-    MessageDialog
-    .main
-      router-view(v-slot="{ Component }")
-        //- keep-alive(include="GamesPage")
-        component(:is="Component")
-    Navbar(v-if="showNavbar")
+.App(v-if="redyRender")
+  Empty(v-if="layout === 'empty'")
+  Default(v-else)
+  
   
 </template>
 
 <script>
-import Header from '@/components/layout/Header'
-import Sidebar from '@/components/layout/Sidebar'
-import Navbar from '@/components/layout/Navbar'
-import UserDialog from '@/components/dialog/userSystem/'
-import MessageDialog from '@/components/dialog/MessageDialog'
+import Default from '@/layout/default'
+import Empty from '@/layout/empty'
 
 export default {
   components: {
-    Header,
-    Sidebar,
-    UserDialog,
-    MessageDialog,
-    Navbar
+    Default,
+    Empty
   },
   data() {
     return {
       redyRender: false
     }
   },
-  computed:{
-    showNavbar() {
-      return this.$store.state.Layout.showNavbar
+  computed: {
+    layout() {
+      return this.$store.state.Layout.layout
     }
   },
   async mounted() {
     window.vm = this
-    await this.$store.dispatch('initApp')
+    if (!this.$store.state.inited)
+      await this.$store.dispatch('initApp')
     this.redyRender = true
-    this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000});
   }
 }
 
 </script>
 
 <style lang="sass" scoped>
-.header 
-  position: fixed 
-  top: 0 
-  left: 0
-  width: 100% 
-.main 
-  margin-top: $headerH
-  padding-bottom: $navbarH
+
 </style>
 
