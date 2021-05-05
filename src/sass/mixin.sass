@@ -6,3 +6,11 @@
 @mixin bgImgSetting($size:cover)
   background-size: $size
   background-position: center
+
+@mixin limitRow($maxHeight, $row)
+  display: -webkit-box
+  min-height: $maxHeight
+  overflow: hidden
+  text-overflow: ellipsis
+  -webkit-line-clamp: $row
+  -webkit-box-orient: vertical

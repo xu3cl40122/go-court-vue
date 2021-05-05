@@ -1,10 +1,10 @@
 <template lang="pug">
 .CourtsPage 
-  CourtMap(:courts="courts")
+  CourtMap(:courts="courts" @markerClick="markerClick")
   MapSearchBar.bar(:queryParams="queryParams" @back="back" @clickBar="clickBar")
 
   .cards.flex 
-    CourtCard(v-for="(court, i) of courts" :key="i" :court="court")
+    CourtCard(v-for="(court, i) of courts" :id="`court_${i}`" :key="i" :court="court")
   SidePanel(v-model:isOpen="isPanelOpen" title="搜尋球場")
     CourtSearchPanel(v-model:queryParams="queryParams")
 
@@ -37,6 +37,7 @@ export default {
   },
   data() {
     return {
+      itemRefs: [],
       courts: [],
       isPanelOpen: true,
       queryParams: {
@@ -45,6 +46,11 @@ export default {
     }
   },
   methods: {
+    setItemRef(el) {
+      if (el) {
+        this.itemRefs.push(el)
+      }
+    },
 
     async queryCourts() {
       let params = { ...this.queryParams, size: 999 }
@@ -52,6 +58,14 @@ export default {
       let { sucess, data } = await this.$store.dispatch('Court/queryCourts', { params, option })
       this.courts = data.content
     },
+
+    markerClick(index) {
+      let el = document.getElementById(`court_${index}`)
+      el.scrollIntoView({
+        behavior: "smooth"
+      })
+    },
+
     clickBar() {
       this.isPanelOpen = true
     },

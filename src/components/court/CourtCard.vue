@@ -1,10 +1,11 @@
 <template lang="pug">
 .CourtCard.flex
-  .img(:style="{'background-image': `url(${defaultImg})`}")
-    .defaultImg(:style="{'background-image': `url(${defaultImg})`}")
+  .img(:style="{'background-image': `url(${court.logo_url || defaultImg})`}")
+    //- .defaultImg(:style="{'background-image': `url(${defaultImg})`}")
   .infoPart 
     .name {{ court.name }}
     .address {{ court.address }}
+    .description {{ court.description }}
 
 </template>
 
@@ -46,22 +47,22 @@ $h: 105px
   position: relative
   width: $h
   height: $h
+  z-index: 1
   @include bgImgSetting()
-  .defaultImg
-    position: absolute 
-    top: 0 
-    left: 0
-    width: 100% 
-    height: 100%
-    z-index: -1
-    @include bgImgSetting()
 .infoPart 
   padding: 1rem 
   .name 
     color: $main_c
-    margin-bottom: .25rem
+    margin-bottom: .5rem
   .address 
     color: #333 
     font-size: .875rem
+    margin-bottom: .25rem
+    @include limitRow(0, 1)
+  .description 
+    color: #333 
+    font-size: .875rem
+    @include limitRow(0, 1)
+  
 
 </style>
