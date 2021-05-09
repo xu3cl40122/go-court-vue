@@ -4,7 +4,7 @@
   MapSearchBar.bar(:queryParams="queryParams" @back="back" @clickBar="clickBar")
 
   .cards.flex 
-    CourtCard(v-for="(court, i) of courts" :id="`court_${i}`" :key="i" :court="court")
+    CourtCard(v-for="(court, i) of courts" :id="`court_${i}`" :key="i" :court="court" @clickCard="clickCard(court)")
   SidePanel(v-model:isOpen="isPanelOpen" title="搜尋球場")
     CourtSearchPanel(v-model:queryParams="queryParams")
 
@@ -64,6 +64,11 @@ export default {
       el.scrollIntoView({
         behavior: "smooth"
       })
+    },
+
+    clickCard(court) {
+      let { court_id } = court
+      this.$router.push({ name: 'CourtDetail', params: { court_id } })
     },
 
     clickBar() {

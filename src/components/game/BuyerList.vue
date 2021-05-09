@@ -74,7 +74,6 @@ export default {
     let opDialogInfo = ref({})
 
     function setOpDialog(ticket) {
-      console.log(ticket)
       let btns = ticket.game_ticket_status === 'PENDING'
         ? [{ text: '確認進場', class: 'main', callback: verifyTicket.bind(this, ticket) }]
         : []

@@ -73,7 +73,6 @@ export default {
     * 由 parent query institution 時呼叫 因為 watch prop 的話拿 detail 會改變 instituions 就會觸發一次 function
     * */
     putMarkerOnMap(courts) {
-      console.log('courts', courts)
       // map 還沒 init 的話就重來一次
       if (!mapLoaded) return setTimeout(() => this.putMarkerOnMap(courts), 100)
       // 清空 markerCluster
@@ -112,12 +111,10 @@ export default {
 
     onMarkerClick(marker, index) {
       if (marker === lastMarker) return
-      console.log('on marker click', marker)
       marker.setIcon(greenMarker)
       lastMarker?.setIcon(redMarker)
       this.$emit('markerClick', index)
       lastMarker = marker
-      console.log('lastMarker', lastMarker)
     }
 
 

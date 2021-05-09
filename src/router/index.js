@@ -7,6 +7,7 @@ import Tickets from '@/views/tickets/'
 import MyGames from '@/views/myGames/myGames'
 import Profile from '@/views/profile/profile'
 import Courts from '@/views/courts/courts'
+import CourtDetail from '@/views/courts/courtDetail'
 import Refresh from '@/views/refresh'
 import store from '@/store/'
 
@@ -52,6 +53,12 @@ const routes = [
     path: '/courts',
     name: 'Courts',
     component: Courts,
+  },
+  {
+    path: '/courts/:court_id',
+    name: 'CourtDetail',
+    component: CourtDetail,
+    props: true
   },
   {
     path: '/refresh',

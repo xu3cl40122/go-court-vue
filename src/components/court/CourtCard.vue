@@ -1,5 +1,5 @@
 <template lang="pug">
-.CourtCard.flex
+.CourtCard.flex(@click="clickCard")
   .img(:style="{'background-image': `url(${court.logo_url || defaultImg})`}")
     //- .defaultImg(:style="{'background-image': `url(${defaultImg})`}")
   .infoPart 
@@ -29,7 +29,9 @@ export default {
 
   },
   methods: {
-
+    clickCard() {
+      this.$emit('clickCard')
+    }
   }
 }
 </script>

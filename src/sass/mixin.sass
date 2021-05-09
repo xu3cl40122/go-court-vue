@@ -3,7 +3,7 @@
   font-weight: $weight
   color: $color
 
-@mixin bgImgSetting($size:cover)
+@mixin bgImgSetting($size: cover)
   background-size: $size
   background-position: center
 
@@ -14,3 +14,11 @@
   text-overflow: ellipsis
   -webkit-line-clamp: $row
   -webkit-box-orient: vertical
+
+@mixin screen__up($minW)
+  @media screen and (min-width: $minW)
+    @content
+
+@mixin screen__down($maxW)
+  @media screen and (max-width: $maxW - 0.5)
+    @content
