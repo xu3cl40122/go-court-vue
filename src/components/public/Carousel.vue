@@ -1,6 +1,6 @@
 <template lang="pug">
 .Carousel
-  Swiper(:slides-per-view="1" :space-between="0" :pagination="{ clickable: true }"   
+  Swiper(:slides-per-view="1" :space-between="0" :pagination="pageSetting"   
     @swiper="onSwiper" @slideChange="onSlideChange")
     SwiperSlide(v-for="(item, i) in carousel")
       .img(:style="{'background-image':`url(${item.src})`}")
@@ -27,6 +27,11 @@ export default {
       }
     }
   },
+  computed: {
+    pageSetting() {
+      return this.carousel.length > 1 ? { clickable: true } : false
+    }
+  },
   methods: {
     onSwiper(swiper) {
 
@@ -41,6 +46,6 @@ export default {
 
 <style lang="sass" scoped>
 .img 
-  height: 300px 
+  height: 240px 
   @include bgImgSetting()
 </style>

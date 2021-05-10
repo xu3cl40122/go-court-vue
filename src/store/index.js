@@ -7,6 +7,7 @@ import Game from './Game'
 import Ticket from './Ticket'
 import Court from './Court'
 import File from './File'
+import Comment from './Comment'
 
 export default createStore({
   state: {
@@ -30,6 +31,7 @@ export default createStore({
     Game,
     Ticket,
     Court,
-    File
+    File,
+    Comment,
   }
 })

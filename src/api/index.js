@@ -3,6 +3,7 @@ import * as Game from './game.api'
 import * as Ticket from './ticket.api'
 import * as Court from './court.api'
 import * as File from './file.api'
+import * as Comment from './comment.api'
 
 export {
   User,
@@ -10,4 +11,5 @@ export {
   Ticket,
   Court,
   File,
+  Comment,
 }
