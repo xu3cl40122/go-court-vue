@@ -10,6 +10,8 @@
 
   .content {{ comment.content }}
   .operator.flex.h-end
+    .count(v-if="replyNum" @click="addReply") {{ replyNum }} 則留言
+    .edit.pointer(v-if="isCreator" @click="updateComment") 編輯
     .pointer(@click="addReply") 回覆
   
   .replies(v-if="showReply")
@@ -47,13 +49,26 @@ export default {
     }
   },
   computed: {
+    user() {
+      return this.$store.state.User.user
+    },
+    isCreator() {
+      return this.user.user_id === this.comment.creator_id
+    },
     edited_at() {
       return dayjs(this.comment?.edited_at).format('YYYY/MM/DD HH:mm')
+    },
+    replyNum() {
+      return this.comment.replies?.length
     }
   },
   methods: {
     addReply() {
       this.$emit('addReply')
+    },
+
+    updateComment() {
+      this.$emit('updateComment')
     },
 
     toTimeString(time) {
@@ -73,7 +88,8 @@ export default {
   .topPart 
     padding: .25rem 0
     flex-wrap: wrap
-    .name 
+    .name
+      font-size: 1.25rem 
       margin-bottom: .25rem
     
   .content 
@@ -83,6 +99,8 @@ export default {
   .operator 
     font-size: .875rem
     padding: .25rem
+    .count, .edit 
+      margin-right: .5rem
   
   .replies 
     padding-left: 2rem 

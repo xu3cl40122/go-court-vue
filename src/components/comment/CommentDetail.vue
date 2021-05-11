@@ -1,19 +1,26 @@
 <template lang="pug">
 .CommentDetail 
-  CommentCard(:comment="comment" showReply)
+  CommentCard(:comment="comment" showReply @updateComment="showDialog")
   .gc-fixed-wrapper
     .flex.between.v-center 
       input.replyInput(v-model="replyContent" placeholder="回覆......" @keyup.enter="postReply")
       .send.pointer(v-if="replyContent" @click="postReply") 送出
+  
+  OperatorDialog(v-model:show="isOpDialogOpen")
+    CommentCreator(:oldComment="comment" isEdit @updateComment="onPutComment" commentTag="gc-court")
 </template>
 
 <script>
 import CommentCard from '@/components/comment/CommentCard'
+import CommentCreator from '@/components/comment/CommentCreator'
+import OperatorDialog from '@/components/dialog/OperatorDialog'
 
 export default {
   name: 'CommentDetail',
   components: {
-    CommentCard
+    CommentCard,
+    OperatorDialog,
+    CommentCreator,
   },
   props: {
     comment_id: String
@@ -21,7 +28,9 @@ export default {
   data() {
     return {
       comment: {},
-      replyContent: ''
+      replyContent: '',
+
+      isOpDialogOpen: false
     }
   },
   computed: {
@@ -45,7 +54,7 @@ export default {
 
     async postReply() {
       if (!this.replyContent) return
-      
+
       let comment_id = this.comment_id
       let body = {
         content: this.replyContent,
@@ -53,7 +62,19 @@ export default {
       }
       let { success, data } = await this.$store.dispatch('Comment/postReply', { comment_id, body })
       this.getCommentById()
-    }
+      this.replyContent = ''
+    },
+
+    onPutComment() {
+      this.showDialog(false)
+      this.getCommentById()
+      this.$emit('updateComment')
+
+    },
+
+    showDialog(bool = true) {
+      this.isOpDialogOpen = bool
+    },
 
   }
 }

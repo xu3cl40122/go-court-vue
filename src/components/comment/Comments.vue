@@ -1,18 +1,14 @@
 <template lang="pug">
 .Comments
-  h5.title 評價  
-  .inputPart
-    Rating.rating(v-model="rank" :stars="5" :cancel="false") 
-    textarea.gc-textarea(v-model="content" placeholder="對球場的評價")
-    .errorMsg(v-if="errorMsg") {{ errorMsg }}
-    button.gc-btn.main.full(@click="submit") 送出評論
+  h5.title 評價
+  CommentCreator(:target_id="target_id" :commentTag="commentTag" @updateComment="queryComments")
   
   .cards 
     CommentCard(v-for="(comment, i) of comments" :key="i" :comment="comment" @addReply="openPanel(comment)")
   
   SidePanel(v-model:isOpen="isPanelOpen" title="查看評論")
     template(v-if="isPanelOpen")
-      CommentDetail(:comment_id="selectedComment._id")
+      CommentDetail(:comment_id="selectedComment._id" @updateComment="queryComments")
       
 </template>
 
@@ -20,6 +16,7 @@
 import Rating from 'primevue/rating';
 import CommentCard from '@/components/comment/CommentCard'
 import CommentDetail from '@/components/comment/CommentDetail'
+import CommentCreator from '@/components/comment/CommentCreator'
 import SidePanel from '@/components/layout/SidePanel'
 
 export default {
@@ -28,18 +25,15 @@ export default {
     Rating,
     CommentCard,
     CommentDetail,
+    CommentCreator,
     SidePanel
   },
   props: {
     target_id: String,
-    editable: Boolean
   },
   data() {
     return {
       comments: [],
-      content: '',
-      rank: 0,
-      errorMsg: '',
       commentTag: 'gc-court',
 
       // panel 
@@ -72,36 +66,10 @@ export default {
 
     },
 
-    async postComment() {
-      let { target_id, content, rank } = this
-      let body = {
-        target_id,
-        content,
-        rank,
-        tag: this.commentTag,
-        creator_display_name: this.user.profile_name
-      }
-      let { success, data } = await this.$store.dispatch('Comment/postComment', { body })
-      this.queryComments()
-      this.initInput()
-    },
-
-    submit() {
-      if (!this.isLogin) return
-      if (!this.content) return this.errorMsg = '請填寫評論'
-      this.errorMsg = ''
-      this.postComment()
-    },
-
     openPanel(comment) {
       this.selectedComment = comment
       this.isPanelOpen = true
     },
-
-    initInput() {
-      this.rank = 0
-      this.content = ''
-    }
 
   }
 }
