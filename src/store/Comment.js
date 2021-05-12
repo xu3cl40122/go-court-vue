@@ -91,6 +91,17 @@ const actions = {
     }
   },
 
+  async deleteReply(context, { comment_id, reply_id, option }) {
+    let res = await Comment.deleteReply({ comment_id, reply_id, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
 
 
 }

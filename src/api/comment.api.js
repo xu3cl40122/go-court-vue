@@ -36,3 +36,8 @@ export function putReply({ comment_id, reply_id, body, option }) {
   return q.put(url, body, option)
 }
 
+export function deleteReply({ comment_id, reply_id, option }) {
+  let url = `${apiPath}/comments/${comment_id}/reply/${reply_id}`
+  return q.delete(url, option)
+}
+

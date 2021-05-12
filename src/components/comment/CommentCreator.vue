@@ -1,6 +1,6 @@
 <template lang="pug">
 .CommentCreator 
-  Rating.rating(v-model="rank" :stars="5" :cancel="false") 
+  Rating.rating(v-if="action !== 'updateReply'" v-model="rank" :stars="5" :cancel="false") 
   textarea.gc-textarea(v-model="content" placeholder="對球場的評價")
   .errorMsg(v-if="errorMsg") {{ errorMsg }}
   button.gc-btn.main.full(@click="submit") {{ btnText }}
@@ -17,8 +17,9 @@ export default {
   props: {
     commentTag: String,
     target_id: String,
-    isEdit: Boolean,
-    oldComment: {
+    //  updateComment, addComment, updateReply
+    action: String,
+    oldData: {
       type: Object,
       default: () => ({})
     }
@@ -38,18 +39,21 @@ export default {
       return this.$store.state.User.isLogin
     },
     btnText() {
-      return this.isEdit ? '編輯評論' : '送出評論'
+      let textMap = {
+        'updateComment': '編輯評論',
+        'addComment': '送出評論',
+        'updateReply': '編輯留言',
+      }
+      return textMap[this.action] ?? ''
     }
   },
   watch: {
-    oldComment: {
+    oldData: {
       immediate: true,
-      handler(comment) {
-        if (this.isEdit) {
-          let { content, rank } = comment
-          this.content = content ?? ''
-          this.rank = rank ?? 0
-        }
+      handler(data) {
+        let { content, rank } = data
+        this.content = content ?? ''
+        this.rank = rank ?? 0
 
       }
     }
@@ -64,32 +68,54 @@ export default {
         tag: this.commentTag,
         creator_display_name: this.user.profile_name
       }
-      let { success, data } = await this.$store.dispatch('Comment/postComment', { body })
-      this.initInput()
-      this.$emit('updateComment')
+      return await this.$store.dispatch('Comment/postComment', { body })
     },
 
     async putComment() {
       let { content, rank } = this
-      let comment_id = this.oldComment._id
+      let comment_id = this.oldData._id
       let body = {
         content,
         rank,
         tag: this.commentTag,
         creator_display_name: this.user.profile_name
       }
-      let { success, data } = await this.$store.dispatch('Comment/putComment', { comment_id, body })
-      this.initInput()
-      this.$emit('updateComment')
+      return await this.$store.dispatch('Comment/putComment', { comment_id, body })
     },
 
-    submit() {
+    async putReply() {
+      let { content } = this
+      let reply_id = this.oldData._id
+      let comment_id = this.oldData.comment_id
+      let body = {
+        content,
+        creator_display_name: this.user.profile_name
+      }
+      return await this.$store.dispatch('Comment/putReply', { comment_id, reply_id, body })
+    },
+
+    async submit() {
       if (!this.isLogin) return
-      if (!this.content) return this.errorMsg = '請填寫評論'
+      if (!this.content) return this.errorMsg = '請填寫內容'
       this.errorMsg = ''
-      this.isEdit
-        ? this.putComment()
-        : this.postComment()
+      let res
+      switch (this.action) {
+        case 'updateComment':
+          res = await this.putComment()
+          break;
+        case 'addComment':
+          res = await this.postComment()
+          break;
+        case 'updateReply':
+          res = await this.putReply()
+          break;
+
+        default:
+          break;
+      }
+
+      this.initInput()
+      this.$emit('onUpdate')
     },
 
     initInput() {

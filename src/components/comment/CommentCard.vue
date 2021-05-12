@@ -10,17 +10,22 @@
 
   .content {{ comment.content }}
   .operator.flex.h-end
-    .count(v-if="replyNum" @click="addReply") {{ replyNum }} 則留言
-    .edit.pointer(v-if="isCreator" @click="updateComment") 編輯
-    .pointer(@click="addReply") 回覆
+    .count(v-if="replyNum" @click="toDetail") {{ replyNum }} 則留言
+    template(v-if="isCreator && isDetail")
+      .edit.pointer(@click="updateComment") 編輯
+      .edit.pointer(@click="deleteComment") 刪除
+    .pointer(v-else @click="toDetail") 回覆
   
-  .replies(v-if="showReply")
+  .replies(v-if="isDetail")
     .reply(v-for="(reply, i) of comment.replies" :key="i")
       .replyBody
-        .creator {{ reply.creator_display_name }}
+        .flex.between
+          .creator {{ reply.creator_display_name }}
+          .time {{ toTimeString(reply.updated_at) }} 
         .replyContent {{ reply.content }}
       .replyOperator.flex.h-end
-        .time {{ toTimeString(reply.updated_at) }} 
+        .edit.pointer(@click="updateReply(reply)") 編輯
+        .edit.pointer(@click="deleteReply(reply)") 刪除
 
 </template>
 
@@ -35,7 +40,7 @@ export default {
     Rating
   },
   props: {
-    showReply: Boolean,
+    isDetail: Boolean,
     comment: {
       type: Object,
       default() {
@@ -63,12 +68,26 @@ export default {
     }
   },
   methods: {
-    addReply() {
-      this.$emit('addReply')
+    toDetail() {
+      this.$emit('toDetail')
     },
 
     updateComment() {
       this.$emit('updateComment')
+    },
+
+    deleteComment() {
+      this.$emit('deleteComment')
+    },
+
+    updateReply(reply) {
+      reply.comment_id = this.comment._id
+      this.$emit('updateReply', reply)
+    },
+
+    deleteReply(reply) {
+      reply.comment_id = this.comment._id
+      this.$emit('deleteReply', reply)
     },
 
     toTimeString(time) {
@@ -114,5 +133,8 @@ export default {
           color: $main_c
           font-weight: 500 
       .replyOperator
+        font-size: .875rem
         margin-top: .25rem
+        .edit
+          margin-right: .5rem
 </style>
