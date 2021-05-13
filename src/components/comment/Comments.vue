@@ -1,15 +1,20 @@
 <template lang="pug">
 .Comments
-  h5.title 評價
-  CommentCreator(:target_id="target_id" :commentTag="commentTag" :action="commentAction" @onUpdate="queryComments")
-  
+  //- h5.title 評價
+  CommentCreator(:target_id="target_id" :commentTag="commentTag" :action="commentAction" @onUpdate="queryComments({init:true})")
+  .statistic.flex.v-center
+    .scoreBox {{ avgRank }}
+    .num 
+      span {{ statistic.total }}
+      span 篇評論
+
   .cards 
     CommentCard(v-for="(comment, i) of comments" :key="i" :comment="comment" @toDetail="openPanel(comment)")
   h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
   
   SidePanel(v-model:isOpen="isPanelOpen" title="查看評論")
     template(v-if="isPanelOpen")
-      CommentDetail(:comment_id="selectedComment._id" @onUpdate="queryComments" @onDelete="onDeleteComment")
+      CommentDetail(:comment_id="selectedComment._id" @onUpdate="queryComments({init:true})" @onDelete="onDeleteComment")
       
 </template>
 
@@ -37,13 +42,17 @@ export default {
       comments: [],
       commentTag: 'gc-court',
       commentAction: 'addComment',
+      statistic: {
+        avgRank: 0,
+        total: 0
+      },
 
       // 
       observer: {},
       toEnd: false,
       pageSetting: {
         page: 0,
-        size: 1,
+        size: 4,
         totalPage: 10
       },
 
@@ -58,16 +67,17 @@ export default {
     },
     isLogin() {
       return this.$store.state.User.isLogin
+    },
+    avgRank() {
+      return this.statistic?.avgRank?.toFixed(1) ?? 0
     }
   },
   watch: {
     target_id: {
       handler(val) {
         if (val) {
-          this.observer = new IntersectionObserver(this.onInterset, {})
-          let loadingEl = this.$refs['loadingEl']
-          loadingEl && this.observer.observe(loadingEl)
           this.queryComments({ init: true })
+          this.getStatistics()
         }
       }
     }
@@ -78,6 +88,8 @@ export default {
         this.pageSetting.page = 0
         this.toEnd = false
         this.comments = []
+        await this.$nextTick()
+        this.initObserver()
       }
       else {
         this.pageSetting.page++
@@ -87,9 +99,17 @@ export default {
       let { success, data } = await this.$store.dispatch('Comment/queryComments', { params, option })
       this.comments = this.comments.concat(data.content)
 
+      this.pageSetting.size = data.size
+
       if (data.totalPage - 1 <= data.page)
         this.toEnd = true
+      console.log('observer', this.observer)
+    },
 
+    initObserver() {
+      this.observer = new IntersectionObserver(this.onInterset, {})
+      let loadingEl = this.$refs['loadingEl']
+      loadingEl && this.observer.observe(loadingEl)
     },
 
     onInterset(entryArr) {
@@ -100,13 +120,23 @@ export default {
       })
     },
 
+    async getStatistics() {
+      let params = {
+        target_id: this.target_id,
+        tag: 'gc-court'
+      }
+      let { success, data } = await this.$store.dispatch('Comment/getStatistics', { params })
+      this.statistic = data
+    },
+
+
     openPanel(comment) {
       this.selectedComment = comment
       this.isPanelOpen = true
     },
 
     onDeleteComment() {
-      this.queryComments()
+      this.queryComments({ init: true })
       this.isPanelOpen = false
     }
 
@@ -117,16 +147,15 @@ export default {
 <style lang="sass" scoped>
 .title 
   margin-bottom: 1rem
-.inputPart
-  .rating 
-    margin-bottom: .25rem
-  .gc-textarea
-    height: 100px
-  .gc-btn 
-    margin-top: .5rem
-  .errorMsg
-    margin-top: .25rem 
-    color: $danger_c
-    text-align: right
+.cards 
+  margin-top: 1rem
+.statistic
+  margin-top: 1rem
+  .scoreBox 
+    padding: .5rem 
+    background-color: $main_c
+    color: #fff
+    margin-right: .5rem
+    border-radius: 4px
 
 </style>

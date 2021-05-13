@@ -25,6 +25,21 @@ const actions = {
     }
   },
 
+/**
+ * get 評論對象統計資訊 平均分數, 評論數...
+ * query 要帶 target_id, tag 
+ */
+  async getStatistics(context, { params, option }) {
+    let res = await Comment.getStatistics({ params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
   async getCommentById(context, { comment_id, option }) {
     let res = await Comment.getCommentById({ comment_id, option })
     let { status, data } = res

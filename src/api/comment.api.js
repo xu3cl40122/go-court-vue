@@ -6,6 +6,11 @@ export function queryComments({ params, option }) {
   return q.get(url, { ...option, params })
 }
 
+export function getStatistics({ params, option }) {
+  let url = `${apiPath}/comments/statistics`
+  return q.get(url, { ...option, params })
+}
+
 export function getCommentById({ comment_id, option }) {
   let url = `${apiPath}/comments/${comment_id}`
   return q.get(url, { ...option })
