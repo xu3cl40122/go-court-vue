@@ -1,6 +1,5 @@
 <template lang="pug">
 .Comments
-  //- h5.title 評價
   CommentCreator(:target_id="target_id" :commentTag="commentTag" :action="commentAction" @onUpdate="queryComments({init:true})")
   .statistic.flex.v-center
     .scoreBox {{ avgRank }}
@@ -69,7 +68,7 @@ export default {
       return this.$store.state.User.isLogin
     },
     avgRank() {
-      return this.statistic?.avgRank?.toFixed(1) ?? 0
+      return Number(this.statistic?.avgRank)?.toFixed(1) ?? 0
     }
   },
   watch: {

@@ -41,7 +41,7 @@ export default {
       courts: [],
       isPanelOpen: true,
       queryParams: {
-        city_code: "65000", dist_code: "65000020",
+        city_code: "63000", dist_code: "",
       }
     }
   },

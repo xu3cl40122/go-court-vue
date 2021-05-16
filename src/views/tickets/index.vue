@@ -1,9 +1,10 @@
 <template lang="pug">
 .TicketsPage 
   h2.title 我的票夾
-  .cards.grid 
+  .cards.grid(v-if="tickets.length > 0")
     TicketCard(v-for="(ticket, i) of tickets" :info="ticket" :key="i" @onCardClick="showTicketDetail(ticket)")
-    h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
+  Empty(v-else title="尚無票券")
+  h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
   
   OperatorDialog(v-model:show="isOpDialogOpen")
     TicketCard(:info="selectedTicketInfo" :features="['id', 'transfer', 'qrcode']" @transferTicket="openPanel(true)")
@@ -21,6 +22,7 @@ import TicketCard from '@/components/ticket/TicketCard'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
 import SidePanel from '@/components/layout/SidePanel'
 import TransferTicket from '@/components/ticket/TransferTicket'
+import Empty from '@/components/unit/Empty'
 
 export default {
   name: 'TicketPage',
@@ -28,7 +30,8 @@ export default {
     TicketCard,
     OperatorDialog,
     SidePanel,
-    TransferTicket
+    TransferTicket,
+    Empty
   },
   setup() {
     const store = useStore()

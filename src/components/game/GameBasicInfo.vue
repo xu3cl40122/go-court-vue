@@ -22,9 +22,12 @@
     .time {{ time }}
 
     .detail
-      .detailCol 
+      .detailCol.link(@click="toCourtDetail(game.court_detail.court_id)")
         i.fas.fa-map-marker-alt
         span {{ game.court_detail.name }}
+      .detailCol.link(@click="showGoogleMap(game.court_detail.name)")
+        i.fas.fa-location-arrow
+        span {{ game.court_detail.address }}
       .detailCol 
         i.fas.fa-user 
         span {{ game.host_user_detail.profile_name }}
@@ -44,6 +47,7 @@
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import defaultImg from '@/assets/image/default.jpg'
 import { toTimeRangeString } from '@/methods/time'
 
@@ -58,6 +62,7 @@ export default {
   },
   setup(props, { emit }) {
     const store = useStore()
+    const router = useRouter()
     let canShare = ref(false)
 
     let logo = computed(() => props.game?.meta?.logo_file_url || defaultImg)
@@ -102,26 +107,42 @@ export default {
       emit('editGame')
     }
 
+    function showGoogleMap(placeName) {
+      let url = `https://www.google.com.tw/maps/search/${placeName}/`
+      window.open(url, 'map', 'noopener noreferrer')
+    }
+
+    function toCourtDetail(court_id) {
+      router.push({
+        name: 'CourtDetail',
+        params: {
+          court_id
+        }
+      })
+    }
+
     function shareGame() {
       const sharePromise = navigator.share({
-        url: `${window.origin}/games/${props.game.game_id}`,   
-        title: props.game.game_name,   
-        text: props.game.game_name         
+        url: `${window.origin}/games/${props.game.game_id}`,
+        title: props.game.game_name,
+        text: props.game.game_name
       });
     }
 
-      return {
-        logo,
-        time,
-        tags,
-        price,
-        editGame,
-        gameStatusTag,
-        shareGame,
-        canShare
-      }
+    return {
+      logo,
+      time,
+      tags,
+      price,
+      editGame,
+      gameStatusTag,
+      shareGame,
+      canShare,
+      showGoogleMap,
+      toCourtDetail
     }
   }
+}
 </script>
 
 <style lang="sass" scoped>
@@ -164,11 +185,15 @@ export default {
     color: #666
     .detailCol
       margin-bottom: .5rem
+      &.link 
+        text-decoration: underline
+        color: $info_c
       i 
         display: inline-block
         width: 1rem 
         text-align: center
         margin-right: .25rem
+      
   .spec 
     font-size: 1.125rem 
     margin-bottom: .25rem

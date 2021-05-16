@@ -14,10 +14,11 @@
       //- .searchOption {{ displayQuery.court_type }}
     i.fas.fa-search
 
-  .games.grid
+  .games.grid(v-if="games.length > 0")
     router-link(v-for="(game, i) of games" :key="game.game_id" :to="`/games/${game.game_id}`")
       GameCard(:info="game")
-    h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
+  Empty(v-else title="無符合條件之球賽")
+  h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
 
   SidePanel(v-model:isOpen="isPanelOpen" title="搜尋球賽")
     SearchPanel(v-model:queryParams="queryParams")
@@ -28,6 +29,7 @@
 import SearchPanel from '@/components/public/SearchPanel'
 import SidePanel from '@/components/layout/SidePanel'
 import GameCard from '@/components/game/GameCard'
+import Empty from '@/components/unit/Empty'
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { getDistrictCodeMap } from '@/methods/district'
@@ -39,7 +41,8 @@ export default {
   components: {
     SearchPanel,
     SidePanel,
-    GameCard
+    GameCard,
+    Empty
   },
   setup() {
     const store = useStore()
