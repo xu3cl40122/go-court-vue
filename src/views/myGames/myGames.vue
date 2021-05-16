@@ -3,10 +3,11 @@
   .titleRow.flex.between.v-center
     h3.main_c 我舉辦的球賽
     button.gc-btn.main(@click="showPanel(true)") 新增球賽
-  .games.grid
+  .games.grid(v-if="games.length > 0")
     router-link(v-for="(game, i) of games" :key="game.game_id" :to="`/games/host/${game.game_id}`")
       GameCard(:info="game")
-    h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
+  Empty(v-else title="尚無球賽")
+  h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
 
   SidePanel(v-model:isOpen="isPanelOpen" title="建立球賽")
     GameCreator(v-if="isPanelOpen" @onGameChange="onGameChange")
@@ -16,6 +17,7 @@
 import SidePanel from '@/components/layout/SidePanel'
 import GameCreator from '@/components/game/GameCreator'
 import GameCard from '@/components/game/GameCard'
+import Empty from '@/components/unit/Empty'
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
@@ -24,7 +26,8 @@ export default {
   components: {
     SidePanel,
     GameCreator,
-    GameCard
+    GameCard,
+    Empty
   },
   setup(props) {
     const store = useStore()

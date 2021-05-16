@@ -1,5 +1,5 @@
 <template lang="pug">
-.Empty.flex.h-center.v-center
+.Empty.flex.h-center.baseline
   i(:class="icon") 
   .title {{ title }}
 </template>
