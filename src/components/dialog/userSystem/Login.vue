@@ -37,7 +37,7 @@ export default {
       email: {
         label: "電子郵件",
         type: "text",
-        model: "xu3cl40122@gmail.com",
+        model: "test@gmail.com",
         placeholder: "example@email.com",
         required: true,
         asterisk: false,
