@@ -1,45 +1,42 @@
 <template lang="pug">
 .Home
-  button.gc-btn.main.full(@click="toMapPage") 球場地圖
-  //- TabBlocks(v-model:tabIndex="tabIndex" :tabs="tabs")
-  //- SearchPanel
+  Banner
+  .wrapper
+    //- RecommendGames
+    button.gc-btn.main.full(@click="toMapPage") 球場地圖
 </template>
 
 <script>
-import SearchPanel from '@/components/public/SearchPanel'
-import TabBlocks from '@/components/unit/TabBlocks'
-import { ref, computed, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import Carousel from '@/components/public/Carousel'
+import Banner from '@/components/public/Banner'
+import RecommendGames from '@/components/game/RecomendGames'
+
 
 export default {
   name: 'Home',
   components: {
-    SearchPanel,
-    TabBlocks
+    Carousel,
+    Banner,
+    RecommendGames
   },
-  setup() {
-    let router = useRouter()
-    let tabIndex = ref(0)
-    let tabs = reactive([
-      { icon: 'fas fa-volleyball-ball', label: '找比賽', value: 'game' },
-      { icon: 'fas fa-map-marked-alt', label: '找球場', value: 'court' },
-    ])
-
-    function toMapPage() {
-      router.push({ name: 'Courts' })
-    }
-
+  data() {
     return {
-      tabIndex,
-      tabs,
-      router,
-      toMapPage
+     
+    }
+  },
+  mounted() {
+
+  },
+  methods: {
+    toMapPage() {
+      this.$router.push({ name: 'Courts' })
     }
   }
+
 }
 </script>
 
 <style lang="sass" scoped>
-.Home
+.wrapper
   padding: 1rem
 </style>
