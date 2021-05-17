@@ -100,7 +100,7 @@ export default {
     })
 
     onMounted(() => {
-      canShare.value = navigator.canShare()
+      canShare.value = navigator.canShare
     })
 
     function editGame() {
