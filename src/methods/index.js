@@ -33,3 +33,18 @@ export function addQueryToUrl(url, query = {}) {
 
   return url
 }
+
+let Compressor = require('compressorjs')
+export function compressImg(file, quality = 0.6) {
+  return new Promise(resolve => {
+    new Compressor(file, {
+      quality: quality,
+      success(result) {
+        resolve(result)
+      },
+      error(e) {
+        console.log(e.message);
+      },
+    });
+  })
+}

@@ -45,7 +45,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import FormItem from "@/components/unit/FormItem.vue"
 import SpecCreator from "@/components/game/SpecCreator.vue"
-import { isNull } from "@/methods/"
+import { isNull, compressImg } from "@/methods/"
 import defaultImg from '@/assets/image/default.jpg'
 
 export default {
@@ -331,7 +331,10 @@ export default {
     let logoSrc = computed(() => tempLogoUrl.value || props.game?.meta?.logo_file_url)
 
     function addFile(e) {
-      logoFile.value = e.target.files[0]
+      let file = e.target.files[0]
+      if (file.size > 1024 * 1024 * 10) return alert('檔案大小不可超過 10 MB')
+      logoFile.value = file
+
       let url = URL.createObjectURL(logoFile.value)
       tempLogoUrl.value = url
     }
@@ -339,6 +342,7 @@ export default {
     async function updateLogo({ game_id, file_id }) {
       let file = logoFile.value
       if (!file) return {}
+      file = await compressImg(file)
       // create file entity
       if (!file_id) {
         let body = {

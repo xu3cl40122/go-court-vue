@@ -26,6 +26,7 @@ import SidePanel from '@/components/layout/SidePanel'
 import Avatar from '@/components/unit/Avatar'
 import ListItem from '@/components/unit/ListItem'
 import ProfileEditor from '@/components/public/ProfileEditor'
+import { compressImg } from "@/methods/"
 
 
 export default {
@@ -96,7 +97,8 @@ export default {
     }
 
     async function avatarChange(file) {
-
+      if (file.size > 1024 * 1024 * 10) return alert('檔案大小不可超過 10 MB')
+      file = await compressImg(file)
       let file_id = user.value.meta.avatar_file_id
       // create file entity
       if (!file_id) {
