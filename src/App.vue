@@ -1,7 +1,10 @@
 <template lang="pug">
-.App(v-if="redyRender")
-  Empty(v-if="layout === 'empty'")
-  Default(v-else)
+div
+  .App(v-if="redyRender")
+    Empty(v-if="layout === 'empty'")
+    Default(v-else)
+  metainfo
+    template(v-slot:title="{ content }") {{ content ? `${content} | GO COURT 球場資源交流平台` : `GO COURT 球場資源交流平台` }}
   
   
 </template>

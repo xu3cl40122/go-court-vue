@@ -32,6 +32,7 @@
     "vue": "^3.0.5",
     "vue-cli-plugin-pug": "^2.0.0",
     "vue-loading-overlay": "4.0",
+    "vue-meta": "^3.0.0-alpha.6",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
   },

@@ -13,6 +13,7 @@
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { useMeta } from 'vue-meta'
 import SidePanel from '@/components/layout/SidePanel'
 import GameStockSelector from '@/components/game/GameStockSelector'
 import GameBasicInfo from '@/components/game/GameBasicInfo'
@@ -28,8 +29,13 @@ export default {
     game_id: String
   },
   setup(props) {
-    const store = useStore()
     let game = ref({})
+    const computedMeta = computed(() => ({
+      title: game.value.game_name,
+      description: game.value.description
+    }))
+    const { meta, onRemoved } = useMeta(computedMeta)
+    const store = useStore()
     let isPanelOpen = ref(false)
     onMounted(() => {
       getGameById()
