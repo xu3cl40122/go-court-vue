@@ -42,7 +42,7 @@ export default {
   background-color: #fff
   transform: translateX(100%)
   transition: transform .3s ease-in-out
-  z-index: $headerZ
+  z-index: $sidePanelZ
   &.show
     transform: translateX(0)
 

@@ -4,7 +4,8 @@ header.Header.grid.v-center
     template(v-if="col.type === 'icons'")
       i.pointer(v-for="(icon, j) of col.icons" :key="j" :class="[icon.icon, icon.class]" @click="onIconClick(icon)")
     template(v-else-if="col.type === 'title'")
-      h1.title {{ col.title }}
+      router-link(to="/")
+        h1.title {{ col.title }}
   
 </template>
 
@@ -35,7 +36,7 @@ export default {
     }
 
     function back() {
-      router.go(-1)
+      let url = router.go(-1)
     }
 
     return {

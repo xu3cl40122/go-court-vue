@@ -21,11 +21,11 @@
 
   template(v-else-if="iCol.type === 'dateRange'")
     Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled"
-    selectionMode="range" :manualInput="false" @date-select="onSelectDate" dateFormat="yy-mm-dd")
+    selectionMode="range" :manualInput="false" @date-select="onSelectDate" dateFormat="yy-mm-dd" :touchUI="true" :baseZIndex ="2000")
 
   template(v-else-if="iCol.type === 'datetime'")
     Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" :showTime="true" 
-      @date-select="onChange" dateFormat="yy-mm-dd")
+      @date-select="onChange" dateFormat="yy-mm-dd" :touchUI="true")
 
   //- template(v-else-if="iCol.type === 'autoComplete'")
   //-   InputComplete(:modelValue="iCol.model" :target="iCol.target" :emitAttr="iCol.emitAttr" @onSelect="onChange"
