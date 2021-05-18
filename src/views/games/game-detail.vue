@@ -32,7 +32,10 @@ export default {
     let game = ref({})
     const computedMeta = computed(() => ({
       title: game.value.game_name,
-      description: game.value.description
+      description: game.value.description,
+      "og:title": `${game.value.game_name} | GO COURT 球場資源交流平台`,
+      "og:site_name": `${game.value.game_name} | GO COURT 球場資源交流平台`,
+      "og:description": game.value.description,
     }))
     const { meta, onRemoved } = useMeta(computedMeta)
     const store = useStore()
@@ -73,33 +76,32 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.GameDetailPage 
+.GameDetailPage
   padding: 1rem
-  .img 
-    display: block 
-    width: 100% 
+  .img
+    display: block
+    width: 100%
     height: auto
     border-radius: 4px
     margin-bottom: 1rem
-  .title, .time 
+  .title, .time
     margin-bottom: .5rem
-  .detail 
+  .detail
     color: #666
     .detailCol
       margin-bottom: .5rem
-      i 
+      i
         display: inline-block
-        width: 1rem 
+        width: 1rem
         text-align: center
         margin-right: .25rem
-  .spec 
-    font-size: 1.125rem 
+  .spec
+    font-size: 1.125rem
     margin-bottom: .25rem
-    span 
+    span
       margin-right: .25rem
-  .blockTitle 
+  .blockTitle
     margin: 1rem 0 .5rem
-  .description 
+  .description
     color: #666
-
 </style>

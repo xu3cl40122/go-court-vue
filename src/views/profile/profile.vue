@@ -181,7 +181,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.ProfilePage 
+.ProfilePage
   padding-bottom: $navbarH
 #user_id
   max-width: 200px
@@ -189,17 +189,16 @@ export default {
 .banner
   min-height: 200px
   background-color: $second_c
-  h3  
+  h3
     margin: .5rem 0 .25rem
 .infoWrapper
   position: relative
   padding-top: 1.5rem
-  .operator 
-    position: absolute 
+  .operator
+    position: absolute
     top: .5rem
     right: .5rem
     color: $main_c
-    i 
+    i
       margin-right: .25rem
-
 </style>

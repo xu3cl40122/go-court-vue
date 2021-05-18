@@ -125,7 +125,7 @@ export default {
       const sharePromise = navigator.share({
         url: `${window.origin}/games/${props.game.game_id}`,
         title: props.game.game_name,
-        text: props.game.game_name
+        // text: props.game.game_name
       });
     }
 
