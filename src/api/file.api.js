@@ -21,6 +21,11 @@ export function putFileContent({ file_id, body, option }) {
   return q.put(url, body, option)
 }
 
+export function getFileContent({ file_id, option }) {
+  let url = `${apiPath}/files/${file_id}/content`
+  return q.get(url, option)
+}
+
 export function deleteFile({ file_id, option }) {
   let url = `${apiPath}/files/${file_id}`
   return q.delete(url, option)

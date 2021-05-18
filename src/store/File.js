@@ -61,6 +61,18 @@ const actions = {
     }
   },
 
+  async getFileContent(context, { file_id, option }) {
+    option.responseType = 'blob'
+    let res = await File.getFileContent({ file_id, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
   async deleteFile(context, { file_id, option }) {
     let res = await File.deleteFile({ file_id, option })
     let { status, data } = res
