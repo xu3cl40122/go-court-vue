@@ -46,6 +46,7 @@ import { useRouter } from 'vue-router'
 import FormItem from "@/components/unit/FormItem.vue"
 import SpecCreator from "@/components/game/SpecCreator.vue"
 import { isNull, compressImg } from "@/methods/"
+import { loadingInstance } from "@/api/request"
 import defaultImg from '@/assets/image/default.jpg'
 
 export default {
@@ -278,13 +279,14 @@ export default {
         body.meta.logo_file_url = file_url
       }
 
-      let option = {}
+      let option = { keepLoading: true }
       let apis = [
         store.dispatch('Game/putGame', { game_id, body, option }),
         store.dispatch('Game/putGameStock', { game_id, body: specList.value, option })
       ]
 
       let resArr = await Promise.all(apis).catch(err => false)
+      loadingInstance?.hide()
 
       if (!resArr.every(res => res.success)) return showMessageDialog('failed')
       showMessageDialog('success')
@@ -464,7 +466,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.body 
+.body
   padding: 1rem 1rem 4rem
 
 .imgWrapper
@@ -476,6 +478,6 @@ export default {
   height: auto
   margin-bottom: 1rem
   border-radius: 4px
-.specWrapper 
+.specWrapper
   margin-top: 1.5rem
 </style>

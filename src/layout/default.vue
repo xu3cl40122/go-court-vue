@@ -1,6 +1,6 @@
 <template lang="pug">
 .App
-  Header.header
+  Header.header(:className="headerClass")
   Sidebar
   UserDialog
   MessageDialog
@@ -34,22 +34,26 @@ export default {
   computed: {
     showNavbar() {
       return this.$store.state.Layout.showNavbar
+    },
+    headerClass() {
+      let whiteHeaderPath = ['']
+      return whiteHeaderPath.includes(this.$route.name) ? 'white' : ''
     }
   },
   async mounted() {
-   
+
   }
 }
 
 </script>
 
 <style lang="sass" scoped>
-.header 
-  position: fixed 
-  top: 0 
+.header
+  position: fixed
+  top: 0
   left: 0
-  width: 100% 
-.main 
+  width: 100%
+.main
   margin-top: $headerH
   padding-bottom: $navbarH
 </style>

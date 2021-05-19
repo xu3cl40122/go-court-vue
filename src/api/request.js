@@ -11,13 +11,13 @@ function setErrorHandle({ pass401Paths, unauthorizedCb, forbiddenCb }) {
 }
 
 let isLoading = false
-let loader
+export let loadingInstance
 
 
 function onReq(config) {
   if (!isLoading && !config.skipLoading) {
     isLoading = true
-    loader = vm.$loading.show({
+    loadingInstance = vm.$loading.show({
       container: null,
       'z-index': 1020,
       canCancel: true,
@@ -38,13 +38,13 @@ function onRes(res) {
   }
   if (isLoading && !res.config.keepLoading) {
     isLoading = false
-    loader?.hide()
+    loadingInstance?.hide()
   }
   return res
 }
 
 function onError(error) {
-  loader?.hide()
+  loadingInstance?.hide()
   let { response } = error
   // if (!response) return error
   let path = response.data?.path

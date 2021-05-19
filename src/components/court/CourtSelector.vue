@@ -26,7 +26,7 @@ export default {
     AutoComplete
   },
   props: {
-    courtId: String,
+    courtId: [String, Number],
     disabled: Boolean,
   },
   setup(props, { emit }) {

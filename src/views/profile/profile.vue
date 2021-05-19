@@ -1,7 +1,7 @@
 <template lang="pug">
 .ProfilePage
   .banner.flex.h-center.v-center.column
-    Avatar(:src="user.meta.avatar_url" :key="updateIndex" :editable="true" @fileChange="avatarChange")
+    Avatar(:src="user.meta && user.meta.avatar_url" :key="updateIndex" :editable="true" @fileChange="avatarChange")
     h3 {{ user.profile_name }}
     h5 {{ user.email }}
   

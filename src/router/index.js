@@ -99,18 +99,17 @@ router.beforeEach((to, from, next) => {
       store.commit('Layout/setShowNavbar', false)
       break;
     default:
+      store.commit('Layout/setLayout', 'default')
       store.commit('Layout/setHeaders', [
-        {},
         {
-          type: 'title',
-          title: 'GO COURT'
+          type: 'logo',
         },
+        {},
         {
           type: 'icons',
           icons: [{ icon: 'fas fa-bars', class: '', event: 'toggleSidebar' }]
         },
       ])
-      store.commit('Layout/setLayout', 'default')
       store.commit('Layout/setShowNavbar', true)
       break;
   }
