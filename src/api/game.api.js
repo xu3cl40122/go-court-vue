@@ -31,11 +31,6 @@ export function putGameStock({ game_id, body, option }) {
   return q.put(url, body, option)
 }
 
-export function getGameTickets({ game_id, params, option }) {
-  let url = `${apiPath}/games/${game_id}/tickets`
-  return q.get(url, { ...option, params })
-}
-
 export function getGameUsers({ game_id, params, option }) {
   let url = `${apiPath}/games/${game_id}/game_users`
   return q.get(url, { ...option, params })

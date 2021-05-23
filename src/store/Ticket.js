@@ -51,6 +51,17 @@ const actions = {
     }
   },
 
+  async getGameTickets(context, { game_id, params, option }) {
+    let res = await Ticket.getGameTickets({ game_id, params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
   async verifyTicket(context, { game_id, game_ticket_id, option }) {
     let res = await Ticket.verifyTicket({ game_id, game_ticket_id, option })
     let { status, data } = res

@@ -91,7 +91,12 @@ export default {
     function getParamsFromLocal() {
       let localData = localStorage.getItem('GC_SEARCH_GAME_PARAMS')
       if (!localData) return
-      queryParams.value = JSON.parse(localData)
+      let lastQuery = JSON.parse(localData)
+      queryParams.value = {
+        ...lastQuery,
+        start: dayjs(),
+        end: dayjs().add(7, 'day')
+      }
     }
 
 
@@ -150,22 +155,22 @@ export default {
     background-color: #ececec
     border-radius: 20px
     margin-bottom: 1rem
-    i 
-      position: absolute 
+    i
+      position: absolute
       right: 1rem
-      top: 50% 
+      top: 50%
       transform: translateY(-50%)
     .location
-      margin-bottom: .25rem 
+      margin-bottom: .25rem
     .searchPlaceholder
       color: #666
-    .time 
+    .time
       font-size: .75rem
     .searchOption
       margin: .25rem 0
   .games
-    grid-row-gap: 1rem 
-  .loading 
-    text-align: center 
+    grid-row-gap: 1rem
+  .loading
+    text-align: center
     color: #666
 </style>

@@ -53,7 +53,7 @@ export default {
     async function getTickets() {
       let game_id = props.game_id
       let params = { size: 9999 }
-      let { success, data } = await store.dispatch('Game/getGameTickets', { game_id, params, option: {} })
+      let { success, data } = await store.dispatch('Ticket/getGameTickets', { game_id, params, option: {} })
       if (!success) return
       tickets.value = data.content.map(d => {
         d.createdTimeStr = dayjs(d.created_at).format('YYYY/MM/DD HH:mm')
