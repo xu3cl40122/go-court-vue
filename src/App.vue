@@ -1,8 +1,9 @@
 <template lang="pug">
 div
   .App(v-if="redyRender")
-    Empty(v-if="layout === 'empty'")
-    Default(v-else)
+    //- 用 v-show 才能保有該 layout keep alive 的子組件
+    Empty(v-show="layout === 'empty'")
+    Default(v-show="layout === 'default'")
   metainfo
     template(v-slot:title="{ content }") {{ content ? `${content} | GO COURT 球場資源交流平台` : `GO COURT 球場資源交流平台` }}
   

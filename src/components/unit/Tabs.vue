@@ -23,7 +23,7 @@ export default {
   setup(props, { emit }) {
     let tabsStyle = computed(() => {
       return {
-        'grid-template-columns': `repeat(${Object.keys(props.tabs).length}, 1fr)`
+        'grid-template-columns': `repeat(${Object.keys(props.tabs).length}, auto)`
       }
     })
 
@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.tab 
+.tab
   padding: .75rem 0
   text-align: center
   border-bottom: 1px solid #eee

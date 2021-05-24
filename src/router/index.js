@@ -81,6 +81,7 @@ router.beforeEach((to, from, next) => {
       break
     case 'GameDetail':
     case 'HostGameDetail':
+    case 'CourtDetail':
       store.commit('Layout/setLayout', 'default')
       store.commit('Layout/setHeaders', [
         {

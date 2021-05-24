@@ -45,6 +45,8 @@ export default {
       }
     }
   },
+  mounted() {
+  },
   methods: {
     setItemRef(el) {
       if (el) {

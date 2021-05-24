@@ -32,6 +32,7 @@ import GameCard from '@/components/game/GameCard'
 import Empty from '@/components/unit/Empty'
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
 import { getDistrictCodeMap } from '@/methods/district'
 import { toTimeRangeString } from '@/methods/time'
 import dayjs from 'dayjs'
@@ -46,6 +47,9 @@ export default {
   },
   setup() {
     const store = useStore()
+    const route = useRoute()
+    const router = useRouter()
+
     let isPanelOpen = ref(false)
     let games = ref([])
     let queryParams = ref({})
@@ -77,6 +81,7 @@ export default {
      */
     onMounted(async () => {
       let hasGame = storeGames.value?.length
+      // let hasRoute = getParamsFromRoute()
       getParamsFromLocal()
       let observer = new IntersectionObserver(onInterset, {})
       loadingEl.value && observer.observe(loadingEl.value)
@@ -84,7 +89,7 @@ export default {
 
     watch(queryParams, (val) => {
       isPanelOpen.value = false
-      localStorage.setItem('GC_SEARCH_GAME_PARAMS', JSON.stringify(val))
+      saveQuery(val)
       queryGames({ init: true })
     })
 
@@ -92,13 +97,26 @@ export default {
       let localData = localStorage.getItem('GC_SEARCH_GAME_PARAMS')
       if (!localData) return
       let lastQuery = JSON.parse(localData)
-      queryParams.value = {
-        ...lastQuery,
-        start: dayjs(),
-        end: dayjs().add(7, 'day')
-      }
+      queryParams.value = lastQuery
+      if (new Date(lastQuery.end).getTime < new Date().getTime())
+        queryParams.value = {
+          ...lastQuery,
+          start: dayjs(),
+          end: dayjs().add(7, 'day')
+        }
     }
 
+    function getParamsFromRoute() {
+      let { city_code, start, end } = route.query
+      if (!(city_code && start && end)) return false
+      queryParams.value = { ...route.query, start: new Date(start), end: new Date(end) }
+      return true
+    }
+
+    function saveQuery(query) {
+      localStorage.setItem('GC_SEARCH_GAME_PARAMS', JSON.stringify(query))
+      // router.replace({ name: route.name, query })
+    }
 
     function onInterset(entryArr) {
       entryArr.forEach(entry => {

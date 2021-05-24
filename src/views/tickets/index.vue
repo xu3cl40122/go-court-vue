@@ -1,11 +1,14 @@
 <template lang="pug">
 .TicketsPage 
-  h2.title 我的票夾
-  .cards.grid(v-if="tickets.length > 0")
-    TicketCard(v-for="(ticket, i) of tickets" :info="ticket" :key="i" @onCardClick="showTicketDetail(ticket)")
-  Empty(v-else title="尚無票券")
-  h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
-  
+  //- h3.title 我的票夾
+  .tabsWrapper
+    Tabs(v-model:active="activeTab" :tabs="tabs")
+  .wrapper
+    .cards.grid(v-if="tickets.length > 0")
+      TicketCard(v-for="(ticket, i) of tickets" :info="ticket" :key="i" @onCardClick="showTicketDetail(ticket)")
+    Empty(v-else title="尚無票券")
+    h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
+    
   OperatorDialog(v-model:show="isOpDialogOpen")
     TicketCard(:info="selectedTicketInfo" :features="['id', 'transfer', 'qrcode']" @transferTicket="openPanel(true)")
   
@@ -23,6 +26,7 @@ import OperatorDialog from '@/components/dialog/OperatorDialog'
 import SidePanel from '@/components/layout/SidePanel'
 import TransferTicket from '@/components/ticket/TransferTicket'
 import Empty from '@/components/unit/Empty'
+import Tabs from '@/components/unit/Tabs'
 
 export default {
   name: 'TicketPage',
@@ -31,7 +35,8 @@ export default {
     OperatorDialog,
     SidePanel,
     TransferTicket,
-    Empty
+    Empty,
+    Tabs
   },
   setup() {
     const store = useStore()
@@ -44,11 +49,19 @@ export default {
     let loadingEl = ref(false)
     let toEnd = ref(false)
 
+    let activeTab = ref('PENDING')
+    let tabs = ref({
+      PENDING: { label: '未使用' },
+      VERIFIED: { label: '已使用' },
+    })
+
     onMounted(async () => {
       await queryTickets({ init: true })
       let observer = new IntersectionObserver(onInterset, {})
       loadingEl.value && observer.observe(loadingEl.value)
     })
+
+    watch(activeTab, (val) => queryTickets({ init: true }))
 
     function onInterset(entryArr) {
       entryArr.forEach(entry => {
@@ -69,7 +82,8 @@ export default {
       }
 
       let params = {
-        ...pageSetting.value
+        ...pageSetting.value,
+        game_ticket_status: activeTab.value
       }
       let { data } = await store.dispatch('Ticket/getMyTickets', { params, option: { skipLoading: true } })
       tickets.value = tickets.value.concat(data.content)
@@ -90,7 +104,7 @@ export default {
       openOpDialog(true)
     }
 
-   
+
     let isPanelOpen = ref(false)
     function openPanel(open) {
       openOpDialog(false)
@@ -116,22 +130,27 @@ export default {
       queryTickets,
       isPanelOpen,
       openPanel,
-      transferSuccess
+      transferSuccess,
+      tabs,
+      activeTab
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-.TicketsPage 
-  padding: 1rem
+.TicketsPage
+  .tabsWrapper
+    // width: 50%
+    margin: 0 auto
+  .wrapper
+    padding: 1rem
   .title
     color: $main_c
     margin-bottom: 1.5rem
 
-.cards 
+.cards
   grid-row-gap: 1rem
-.panelWrapper 
+.panelWrapper
   padding: 1rem
-
 </style>

@@ -4,8 +4,8 @@
   MessageDialog
   .main
     router-view(v-slot="{ Component }")
-      //- keep-alive(include="GamesPage")
-      component(:is="Component")
+      keep-alive(include="CourtsPage")
+        component(:is="Component")
 </template>
 
 <script>

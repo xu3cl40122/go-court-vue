@@ -122,16 +122,9 @@ export default {
     async function submit() {
       let params = emitData()
       if (!params) return
-      // saveParamsToLocal()
       emit('update:queryParams', params)
     }
-
-    function saveParamsToLocal() {
-      let params = {}
-      Object.keys(columns).forEach(key => params[key] = columns[key].model)
-      localStorage.setItem('GC_SEARCH_GAME_PARAMS', JSON.stringify(params))
-    }
-
+ 
     function emitData() {
       let outputData = {}
       let isValid = true
