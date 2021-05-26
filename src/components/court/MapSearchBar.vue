@@ -2,8 +2,9 @@
 .MapSearchBar.flex.v-center.h-center(@click="clickBar")
   i.fas.fa-chevron-left.back(@click.stop="back")
   .area
-    span {{ displayQuery.city_code }} / 
-    span {{ displayQuery.dist_code }}
+    span(v-if="displayQuery.city_code") {{ displayQuery.city_code }}
+    span(v-else) 請選擇搜尋區域
+    span(v-if="displayQuery.dist_code") / {{ displayQuery.dist_code }}
   
 </template>
 

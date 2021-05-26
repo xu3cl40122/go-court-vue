@@ -46,19 +46,22 @@ export default {
     }
   },
   mounted() {
+    this.getQueryFromRoute()
   },
   methods: {
-    setItemRef(el) {
-      if (el) {
-        this.itemRefs.push(el)
-      }
+    getQueryFromRoute() {
+      let query = this.$route.query
+      query.city_code = query.city_code || '63000'
+      this.queryParams = query
     },
 
     async queryCourts() {
-      let params = { ...this.queryParams, size: 999 }
+      let params = { ...this.queryParams, size: 9999 }
       let option = { skipLoading: true }
       let { sucess, data } = await this.$store.dispatch('Court/queryCourts', { params, option })
       this.courts = data.content
+      let { dist_code, city_code } = this.queryParams
+      this.$router.replace({ path: this.$route.path, query: { dist_code, city_code } })
     },
 
     markerClick(index) {
@@ -79,22 +82,23 @@ export default {
 
     back() {
       this.$router.go(-1)
-    }
+    },
+
   }
 }
 </script>
 
 <style lang="sass" scoped>
-.CourtsPage 
+.CourtsPage
   position: relative
-.bar 
-  position: absolute 
+.bar
+  position: absolute
   width: 80%
   top: 1rem
-  left: 50% 
+  left: 50%
   transform: translateX(-50%)
-.cards 
-  position: absolute 
+.cards
+  position: absolute
   width: 100%
   bottom: 1rem
   padding: 0 1.5rem
@@ -102,10 +106,8 @@ export default {
   scroll-snap-type: x mandatory
   scroll-padding: 1rem
   // scroll-snap-points-x: repeat(300px)
-  > * 
+  > *
     flex: 0 0 auto
     margin-right: 1rem
     scroll-snap-align: start
-
-
 </style>

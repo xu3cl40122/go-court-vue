@@ -33,7 +33,6 @@ export default {
     const headers = computed(() => store.state.Layout.headers)
     let imgSrc = ref(logoImg)
     let imgWhiteSrc = ref(logoWhiteImg)
-    console.log(7777777, imgSrc)
 
     function onIconClick(icon) {
       let { event, args } = icon

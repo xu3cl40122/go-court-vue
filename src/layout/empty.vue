@@ -3,9 +3,7 @@
   UserDialog
   MessageDialog
   .main
-    router-view(v-slot="{ Component }")
-      keep-alive(include="CourtsPage")
-        component(:is="Component")
+    router-view
 </template>
 
 <script>

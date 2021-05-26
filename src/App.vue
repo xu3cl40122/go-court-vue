@@ -2,8 +2,11 @@
 div
   .App(v-if="redyRender")
     //- 用 v-show 才能保有該 layout keep alive 的子組件
-    Empty(v-show="layout === 'empty'")
-    Default(v-show="layout === 'default'")
+    //- 但是會讓 google map 壞掉
+    Empty(v-if="layout === 'empty'")
+    Default(v-else)
+    //- Default(v-show="layout === 'default'")
+    
   metainfo
     template(v-slot:title="{ content }") {{ content ? `${content} | GO COURT 球場資源交流平台` : `GO COURT 球場資源交流平台` }}
   
@@ -42,16 +45,10 @@ export default {
     window.vm = this
     if (!this.$store.state.inited)
       await this.$store.dispatch('initApp')
-    this.setVh()
     this.redyRender = true
   },
   methods: {
-    setVh() {
-      let vh = window.innerHeight * 0.01;
-      // Then we set the value in the --vh custom property to the root of the document
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-
-    }
+   
   }
 }
 
