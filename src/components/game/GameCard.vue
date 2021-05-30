@@ -15,6 +15,7 @@
       .detailCol 
         i.fas.fa-dollar-sign
         span {{ price }} 起
+        span.outOfStock(v-if="outOfStock") 已售完!
       //- .detailCol 
       //-   i.fas.fa-user 
       //-   span {{ info.host_user_detail.profile_name }}
@@ -73,6 +74,8 @@ export default {
 
     })
 
+    let outOfStock = computed(() => game_stock.every(d => d.stock_amount === 0 && d.price > 0))
+
     onMounted(() => {
     })
 
@@ -82,7 +85,8 @@ export default {
       price,
       tags,
       gameStatusTag,
-      defaultImg
+      defaultImg,
+      outOfStock
     }
   }
 }
@@ -106,35 +110,38 @@ export default {
       overflow: hidden
       @include bgImgSetting()
       .defaultImg
-        position: absolute 
-        top: 0 
+        position: absolute
+        top: 0
         left: 0
-        width: 100% 
+        width: 100%
         height: 100%
         z-index: -1
         @include bgImgSetting()
 
-  .infoPart 
+  .infoPart
     background-color: #fff
     padding: .5rem 1rem
-    .title, .time 
+    .title, .time
       margin-bottom: .25rem
-    .detail 
+    .detail
       color: #666
       font-size: .875rem
       .detailCol
         margin-bottom: .25rem
-        i 
+        i
           display: inline-block
-          width: 1rem 
+          width: 1rem
           text-align: center
           margin-right: .25rem
-  .statusTag 
-    position: absolute 
-    top: .25rem 
-    right: .25rem 
+        .outOfStock 
+          color: $danger_c
+          margin-left: .5rem
+  .statusTag
+    position: absolute
+    top: .25rem
+    right: .25rem
     padding: .25rem .5rem
-    color: #fff 
+    color: #fff
     border-radius: 4px
     &.success
       background-color: $success_c

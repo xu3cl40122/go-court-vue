@@ -1,5 +1,7 @@
 <template lang="pug">
 .BuyerList
+  .total
+    span 已售出 {{ pageSetting.total }} 張
   .tickets.grid(v-if="tickets.length > 0")
     .ticketCol.ticketInfo(v-for="(ticket, i) of tickets" :key="i" @click="setOpDialog(ticket)")
       .flex.between
@@ -50,6 +52,11 @@ export default {
   setup(props) {
     const store = useStore()
     let tickets = ref([])
+    let pageSetting = ref({
+      page: 0,
+      size: 10,
+      total: 0
+    })
     onMounted(() => {
       getTickets()
     })
@@ -63,12 +70,18 @@ export default {
         d.createdTimeStr = dayjs(d.created_at).format('YYYY/MM/DD HH:mm')
         return d
       })
+
+      pageSetting.value = {
+        page: data.page,
+        size: data.size,
+        total: data.total,
+      }
     }
 
     async function verifyTicket(ticket) {
       let { game_id, game_ticket_id } = ticket
       let { success } = await store.dispatch('Ticket/verifyTicket', { game_id, game_ticket_id })
-      if(!success) return showMessageDialog('verifyFailed')
+      if (!success) return showMessageDialog('verifyFailed')
       showMessageDialog('verifySuccess', `${ticket.owner_user_detail.profile_name} 已進場`)
       getTickets()
     }
@@ -125,37 +138,36 @@ export default {
       isOpDialogOpen,
       opDialogInfo,
       setOpDialog,
-      openOpDialog
+      openOpDialog,
+      pageSetting
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-
-
-.tickets 
-  grid-gap: 1rem 
+.total 
+  margin-bottom: 1rem
+.tickets
+  grid-gap: 1rem
   .ticketCol
-    position: relative 
+    position: relative
     border-radius: 4px
     padding: .5rem 1rem
     background-color: rgba($main_c, .1)
 
 .ticketInfo
-  .time 
-    color: #666 
+  .time
+    color: #666
     flex: 0 0 auto
   .specWrapper
-    span 
+    span
       margin-right: .25rem
   .buyer
-    color: $main_c 
-    margin-bottom: .25rem 
-  .verify 
+    color: $main_c
+    margin-bottom: .25rem
+  .verify
     i
       color: $success_c
-      margin-right: .25rem 
-    
-
+      margin-right: .25rem
 </style>

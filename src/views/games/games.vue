@@ -4,14 +4,16 @@
     template(v-if="Object.values(displayQuery).every(d => !d)")
       .searchPlaceholder 請選擇搜尋條件
     template(v-else)
-      .location 
-        span {{ displayQuery.city_code }}
-        template(v-if="displayQuery.dist_code")
-          span /
-          span {{ displayQuery.dist_code }}
+      .flex.searchRow
+        .location(v-if="displayQuery.city_code") 
+          span {{ displayQuery.city_code }}
+          template(v-if="displayQuery.dist_code")
+            span /
+            span {{ displayQuery.dist_code }}
+        span(v-if="displayQuery.game_type") {{ displayQuery.game_type }}
+        span(v-if="displayQuery.court_type") {{ displayQuery.court_type }}
+        span(v-if="displayQuery.game_name") {{ displayQuery.game_name }}
       .time {{ displayQuery.time_range }}
-      //- .searchOption {{ displayQuery.game_type }}
-      //- .searchOption {{ displayQuery.court_type }}
     i.fas.fa-search
 
   .games.grid(v-if="games.length > 0")
@@ -54,13 +56,14 @@ export default {
     let games = ref([])
     let queryParams = ref({})
     let displayQuery = computed(() => {
-      let { city_code, dist_code, start, end, court_type, game_type } = queryParams.value
+      let { city_code, dist_code, start, end, court_type, game_type, game_name } = queryParams.value
       return {
         city_code: codeMap.value[city_code],
         dist_code: codeMap.value[dist_code],
         time_range: toTimeRangeString(start, end, true),
         court_type: court_type?.split(',').map(key => store.state.Game.courtTypeMap[key]?.label).join(', '),
         game_type: game_type?.split(',').map(key => store.state.Game.gameTypeMap[key]?.label).join(', '),
+        game_name: game_name
       }
     })
 
@@ -173,13 +176,16 @@ export default {
     background-color: #ececec
     border-radius: 20px
     margin-bottom: 1rem
+    .searchRow
+      margin-bottom: .25rem
+      flex-wrap: wrap 
+      > * 
+        margin-right: .5rem
     i
       position: absolute
       right: 1rem
       top: 50%
       transform: translateY(-50%)
-    .location
-      margin-bottom: .25rem
     .searchPlaceholder
       color: #666
     .time

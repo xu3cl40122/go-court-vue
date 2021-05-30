@@ -88,43 +88,10 @@ export default {
       },
     }
   },
-
-  // setup(props, { emit, }) {
-  //   let model = computed({
-  //     get() {
-  //       return props.iCol.model
-  //     },
-  //     set(val) {
-  //       props.iCol.model = val
-  //       // emit('update:iCol', { ...props.iCol, model: value })
-  //       emitChange()
-  //     },
-  //   })
-
-  //   let suggestions = ref([])
-
-
-  //   function onEnter() {
-  //     emit('onEnter', { col: props.iCol, key: props.iKey })
-  //   }
-
-  //   function emitChange(val) {
-  //     emit("onChange", { col: props.iCol, key: props.iKey })
-  //   }
-
-  //   return {
-  //     model,
-  //     onEnter,
-  //     emitChange,
-  //     suggestions,
-  //   }
-  // },
   methods: {
     // 這樣才能調用 this
     async onSelect({ orginalEvent, value }) {
-      console.log(777777777777)
       this.model = value
-      // this.emitChange()
       this.$forceUpdate()
     },
 

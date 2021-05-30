@@ -1,7 +1,7 @@
 <template lang="pug">
 .CommentDetail 
   CommentCard(:comment="comment"  @updateComment="showEditDialog('updateComment', comment)" 
-  @deleteComment="showDeleteDialog('comment')" @deleteReply="showDeleteDialog('reply', $event)"  @updateReply="showEditDialog('updateReply', $event)" isDetail)
+  @deleteComment="showDeleteDialog('comment', comment)" @deleteReply="showDeleteDialog('reply', $event)"  @updateReply="showEditDialog('updateReply', $event)" isDetail)
   .gc-fixed-wrapper
     .flex.between.v-center 
       input.replyInput(v-model="replyContent" placeholder="回覆......" @keyup.enter="postReply")
@@ -150,6 +150,7 @@ export default {
     },
 
     showDeleteDialog(entity, reply) {
+      console.log(777777777, entity, reply)
       this.deleteTarget = {
         entity,
         comment_id: this.comment_id,

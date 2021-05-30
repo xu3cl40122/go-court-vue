@@ -39,6 +39,8 @@ export default {
     }))
     // const { meta, onRemoved } = useMeta(computedMeta)
     const store = useStore()
+
+    let isLogin = computed(() => store.state.User.isLogin)
     let isPanelOpen = ref(false)
     onMounted(() => {
       getGameById()
@@ -47,7 +49,7 @@ export default {
     let btns = computed(() => {
       switch (game.value.game_status) {
         case 'PENDING':
-          return [{ text: '參加球賽', class: '', callback: openPanel.bind(this, true) }]
+          return [{ text: '參加球賽', class: '', callback: joinGame.bind(this) }]
 
         default:
           return []
@@ -59,6 +61,19 @@ export default {
       let { success, data } = await store.dispatch('Game/getGameById', { game_id, option: {} })
       if (!success) return
       game.value = data
+    }
+
+    function joinGame() {
+      isLogin.value
+        ? openPanel(true)
+        : login()
+    }
+
+    function login() {
+      store.commit('Dialog/setDialog', {
+        name: 'userDialog',
+        info: { type: 'login' }
+      })
     }
 
     function openPanel(open) {

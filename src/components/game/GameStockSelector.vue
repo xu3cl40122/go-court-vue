@@ -18,7 +18,7 @@
       GameStockCard(v-for="(stock, i) of gameStock" :key="i" :stock="stock" :game="game" @change="cardChange")
 
     .gc-fixed-wrapper  
-      button.gc-btn.main.full(@click="checkout") 送出
+      button.gc-btn.main.full(@click="checkout" :disabled="isNoSelect") 送出
 
 </template>
 
@@ -75,6 +75,8 @@ export default {
       let index = gameStock.value.findIndex(d => d.game_stock_id === game_stock_id)
       gameStock.value[index] = { ...gameStock.value[index], count }
     }
+
+    let isNoSelect = computed(() => gameStock.value.every(d => d.count === 0))
 
     async function checkout() {
       let body = gameStock.value
@@ -133,6 +135,7 @@ export default {
       gameStock,
       cardChange,
       checkout,
+      isNoSelect,
     }
   }
 }

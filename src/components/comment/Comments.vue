@@ -1,6 +1,6 @@
 <template lang="pug">
 .Comments
-  CommentCreator(:target_id="target_id" :commentTag="commentTag" :action="commentAction" @onUpdate="queryComments({init:true})")
+  CommentCreator(:target_id="target_id" :commentTag="commentTag" :action="commentAction" @onUpdate="reloadComments")
   .statistic.flex.v-center
     .scoreBox {{ avgRank }}
     .num 
@@ -13,7 +13,7 @@
   
   SidePanel(v-model:isOpen="isPanelOpen" title="查看評論")
     template(v-if="isPanelOpen")
-      CommentDetail(:comment_id="selectedComment._id" @onUpdate="queryComments({init:true})" @onDelete="onDeleteComment")
+      CommentDetail(:comment_id="selectedComment._id" @onUpdate="reloadComments" @onDelete="onDeleteComment")
       
 </template>
 
@@ -75,8 +75,7 @@ export default {
     target_id: {
       handler(val) {
         if (val) {
-          this.queryComments({ init: true })
-          this.getStatistics()
+         this.reloadComments()
         }
       }
     }
@@ -134,8 +133,13 @@ export default {
       this.isPanelOpen = true
     },
 
-    onDeleteComment() {
+    reloadComments() {
       this.queryComments({ init: true })
+      this.getStatistics()
+    },
+
+    onDeleteComment() {
+      this.reloadComments()
       this.isPanelOpen = false
     }
 
@@ -144,17 +148,16 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.title 
+.title
   margin-bottom: 1rem
-.cards 
+.cards
   margin-top: 1rem
 .statistic
   margin-top: 1rem
-  .scoreBox 
-    padding: .5rem 
+  .scoreBox
+    padding: .5rem
     background-color: $main_c
     color: #fff
     margin-right: .5rem
     border-radius: 4px
-
 </style>
