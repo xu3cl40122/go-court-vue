@@ -2499,7 +2499,7 @@ export function getCityOptions() {
 
 export function getDistOptions(city_code) {
   let city = Object.values(cityMap).find(city => city.code === city_code)
-  if (!city) throw 'city not found'
+  if (!city) return []
   let cityName = city.label
   let dists = distMap[cityName]
   return Object.values(dists)

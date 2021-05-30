@@ -20,12 +20,12 @@
       :placeholder="iCol.placeholder" :disabled="iCol.disabled" @change="onSelect")
 
   template(v-else-if="iCol.type === 'dateRange'")
-    Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled"
-    selectionMode="range" :manualInput="false" @date-select="onSelectDate" dateFormat="yy-mm-dd" :touchUI="true" :baseZIndex ="2000")
+    Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" :monthNavigator="true" :yearNavigator="true"
+    selectionMode="range" :manualInput="false" @date-select="onSelectDate" dateFormat="yy-mm-dd" :touchUI="true" :baseZIndex ="2000" yearRange="2000:2030")
 
   template(v-else-if="iCol.type === 'datetime'")
     Calendar(:modelValue="iCol.model" :placeholder="iCol.placeholder" :disabled="iCol.disabled" :showTime="true" 
-      @date-select="onChange" dateFormat="yy-mm-dd" :touchUI="true")
+      @date-select="onChange" dateFormat="yy-mm-dd" :touchUI="true" :monthNavigator="true" :yearNavigator="true" yearRange="2000:2030")
 
   //- template(v-else-if="iCol.type === 'autoComplete'")
   //-   InputComplete(:modelValue="iCol.model" :target="iCol.target" :emitAttr="iCol.emitAttr" @onSelect="onChange"
@@ -76,40 +76,55 @@ export default {
     },
     iKey: String,
   },
-  setup(props, { emit, }) {
-    let model = computed({
+  computed: {
+    model: {
       get() {
-        return props.iCol.model
+        return this.iCol.model
       },
       set(val) {
-        props.iCol.model = val
+        this.iCol.model = val
         // emit('update:iCol', { ...props.iCol, model: value })
-        emitChange()
+        this.emitChange()
       },
-    })
-
-    let suggestions = ref([])
-
-
-    function onEnter() {
-      emit('onEnter', { col: props.iCol, key: props.iKey })
-    }
-
-    function emitChange(val) {
-      emit("onChange", { col: props.iCol, key: props.iKey })
-    }
-
-    return {
-      model,
-      onEnter,
-      emitChange,
-      suggestions,
     }
   },
+
+  // setup(props, { emit, }) {
+  //   let model = computed({
+  //     get() {
+  //       return props.iCol.model
+  //     },
+  //     set(val) {
+  //       props.iCol.model = val
+  //       // emit('update:iCol', { ...props.iCol, model: value })
+  //       emitChange()
+  //     },
+  //   })
+
+  //   let suggestions = ref([])
+
+
+  //   function onEnter() {
+  //     emit('onEnter', { col: props.iCol, key: props.iKey })
+  //   }
+
+  //   function emitChange(val) {
+  //     emit("onChange", { col: props.iCol, key: props.iKey })
+  //   }
+
+  //   return {
+  //     model,
+  //     onEnter,
+  //     emitChange,
+  //     suggestions,
+  //   }
+  // },
   methods: {
     // 這樣才能調用 this
     async onSelect({ orginalEvent, value }) {
+      console.log(777777777777)
       this.model = value
+      // this.emitChange()
       this.$forceUpdate()
     },
 
@@ -129,6 +144,14 @@ export default {
       }
       this.$forceUpdate()
       this.emitChange()
+    },
+
+    onEnter() {
+      this.$emit('onEnter', { col: this.iCol, key: this.iKey })
+    },
+
+    emitChange(val) {
+      this.$emit("onChange", { col: this.iCol, key: this.iKey })
     }
   }
 }
@@ -142,14 +165,14 @@ export default {
 .label
   @include setTextStyle(1rem, 600, #333)
   margin-bottom: .5rem
-.errorMsg 
-  margin-top: .35rem 
+.errorMsg
+  margin-top: .35rem
   text-align: right
   font-size: .875rem
   font-weight: 600
-.radioWrapper 
+.radioWrapper
   display: inline
   margin-right: .5rem
-  label 
+  label
     margin-left: .25rem
 </style>

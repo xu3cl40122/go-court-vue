@@ -45,7 +45,8 @@ export default {
         model: "",
         placeholder: "",
         options: getCityOptions(),
-        required: true,
+        required: false,
+        showClear: true,
         error: "",
       },
       dist_code: {
@@ -84,6 +85,14 @@ export default {
         required: false,
         error: '',
         options: store.getters['Game/getCourtTypeOptions']
+      },
+      game_name: {
+        label: '關鍵字',
+        model: '',
+        type: 'text',
+        class: 'span2',
+        required: false,
+        error: '',
       }
 
     }
@@ -107,11 +116,11 @@ export default {
             break
           case 'game_type':
           case 'court_type':
-            col.model = params[key].split(',')
+            col.model = params[key].split(',').filter(d => d)
             break;
           default:
             if (params[key])
-              col.model = params[key]
+              col.model = params[key] ?? ''
             break;
         }
 
@@ -124,7 +133,7 @@ export default {
       if (!params) return
       emit('update:queryParams', params)
     }
- 
+
     function emitData() {
       let outputData = {}
       let isValid = true
@@ -195,9 +204,9 @@ export default {
     border-radius: 8px
     background-color: #fff
     box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 1px
-.col 
-  &.span2 
+.col
+  &.span2
     grid-column: span 2
-.gc-btns 
+.gc-btns
   margin-top: 1rem
 </style>

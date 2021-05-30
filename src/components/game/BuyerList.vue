@@ -1,6 +1,6 @@
 <template lang="pug">
 .BuyerList
-  .tickets.grid 
+  .tickets.grid(v-if="tickets.length > 0")
     .ticketCol.ticketInfo(v-for="(ticket, i) of tickets" :key="i" @click="setOpDialog(ticket)")
       .flex.between
         h5.buyer {{ ticket.owner_user_detail.profile_name }}
@@ -13,6 +13,8 @@
         .verify(v-if="ticket.game_ticket_status === 'VERIFIED'")
           i.fas.fa-check-circle
           span 已進場
+  
+  Empty(v-else title="尚無購票者")
       
   OperatorDialog(v-model:show="isOpDialogOpen" :info="opDialogInfo")
     .ticketInfo
@@ -34,11 +36,13 @@ import { ref, computed, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import dayjs from 'dayjs'
 import OperatorDialog from '@/components/dialog/OperatorDialog'
+import Empty from '@/components/unit/Empty'
 
 export default {
   name: 'BuyerList',
   components: {
-    OperatorDialog
+    OperatorDialog,
+    Empty
   },
   props: {
     game_id: String

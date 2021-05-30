@@ -37,7 +37,7 @@ export default {
       "og:site_name": `${game.value.game_name} | GO COURT 球場資源交流平台`,
       "og:description": game.value.description,
     }))
-    const { meta, onRemoved } = useMeta(computedMeta)
+    // const { meta, onRemoved } = useMeta(computedMeta)
     const store = useStore()
     let isPanelOpen = ref(false)
     onMounted(() => {
