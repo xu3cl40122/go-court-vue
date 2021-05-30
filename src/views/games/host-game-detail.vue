@@ -6,15 +6,15 @@
       GameBasicInfo(:game="game" :editable="true" @editGame="openPanel(true)")
     div(v-show="active === 'tickets'")
       BuyerList(:game_id="game_id")    
-    div(v-show="active === 'gameUsers'")
-      GameUserList(:game_id="game_id")
+    //- div(v-show="active === 'gameUsers'")
+    //-   GameUserList(:game_id="game_id")
     div(v-show="active === 'otherInfo'")
       GameRecord(:game="game")
       
     .gc-fixed-wrapper(v-if="btns.length")
       //- IconBtns(:buttons="btns")
       .gc-btns
-        button.gc-btn.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
+        button.gc-btn.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" :disabled="btn.disabled" @click="btn.callback") {{ btn.text }}
     
     SidePanel(v-model:isOpen="isPanelOpen" :title="panelTitle")
       template(v-if="isPanelOpen")
@@ -283,23 +283,23 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.wrapper 
+.wrapper
   padding: 1rem
 
 .confirmWrapper
   text-align: center
   .initGameUser
     margin-top: 1rem
-    .label 
+    .label
       margin-left: .5rem
 .ticketInfo
   text-align: center
-  i 
+  i
     font-size: 64px
     color: $success_c
     margin-bottom: 1rem
-  h5, .owner 
-    margin-bottom: .5rem 
+  h5, .owner
+    margin-bottom: .5rem
   .specName
-      margin-right: .5rem
+    margin-right: .5rem
 </style>

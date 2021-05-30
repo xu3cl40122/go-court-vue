@@ -1,7 +1,8 @@
 <template lang="pug">
 .BuyerList
-  .total
+  .total(v-if="pageSetting.total")
     span 已售出 {{ pageSetting.total }} 張
+    span 已進場 {{ onBoardNum }} 位
   .tickets.grid(v-if="tickets.length > 0")
     .ticketCol.ticketInfo(v-for="(ticket, i) of tickets" :key="i" @click="setOpDialog(ticket)")
       .flex.between
@@ -57,6 +58,8 @@ export default {
       size: 10,
       total: 0
     })
+
+    let onBoardNum = computed(() => tickets.value.filter(d => d.game_ticket_status === 'VERIFIED').length)
     onMounted(() => {
       getTickets()
     })
@@ -139,15 +142,18 @@ export default {
       opDialogInfo,
       setOpDialog,
       openOpDialog,
-      pageSetting
+      pageSetting,
+      onBoardNum
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-.total 
+.total
   margin-bottom: 1rem
+  span 
+    margin-right: .5rem
 .tickets
   grid-gap: 1rem
   .ticketCol

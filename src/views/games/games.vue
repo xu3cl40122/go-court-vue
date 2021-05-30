@@ -98,7 +98,12 @@ export default {
 
     function getParamsFromLocal() {
       let localData = localStorage.getItem('GC_SEARCH_GAME_PARAMS')
-      if (!localData) return
+      if (!localData) {
+        return queryParams.value = {
+          start: dayjs(),
+          end: dayjs().add(7, 'day')
+        }
+      }
       let lastQuery = JSON.parse(localData)
       queryParams.value = lastQuery
       if (new Date(lastQuery.end).getTime < new Date().getTime())
@@ -142,6 +147,7 @@ export default {
       if (toEnd.value) return
 
       let params = {
+        game_status: 'PENDING',
         ...queryParams.value,
         ...pageSetting.value
       }
@@ -178,8 +184,8 @@ export default {
     margin-bottom: 1rem
     .searchRow
       margin-bottom: .25rem
-      flex-wrap: wrap 
-      > * 
+      flex-wrap: wrap
+      > *
         margin-right: .5rem
     i
       position: absolute

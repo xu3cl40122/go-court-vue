@@ -1,5 +1,7 @@
 <template lang="pug">
 .GameUserList
+  .total(v-if="pageSetting.total")
+    span 已進場 {{ pageSetting.total }} 位
   .tickets.grid 
     .ticketCol(v-for="(gameUser, i) of gameUsers" :key="i" @click="setOpDialog(gameUser)")
       .flex.between
@@ -43,6 +45,11 @@ export default {
   setup(props) {
     const store = useStore()
     let gameUsers = ref([])
+    let pageSetting = ref({
+      page: 0,
+      size: 10,
+      total: 0
+    })
     onMounted(() => {
       getTickets()
     })
@@ -56,6 +63,12 @@ export default {
         d.createdTimeStr = dayjs(d.created_at).format('YYYY/MM/DD HH:mm')
         return d
       })
+
+      pageSetting.value = {
+        page: data.page,
+        size: data.size,
+        total: data.total,
+      }
     }
 
     let isOpDialogOpen = ref(false)
@@ -92,32 +105,32 @@ export default {
       setOpDialog,
       isPanelOpen,
       openPanel,
+      pageSetting
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-.tickets 
-  grid-gap: 1rem 
+.tickets
+  grid-gap: 1rem
   .ticketCol
-    position: relative 
+    position: relative
     border-radius: 4px
     padding: .5rem 1rem
     background-color: rgba($main_c, .1)
-    .verify 
+    .verify
       i
         color: $success_c
-        margin-right: .25rem  
+        margin-right: .25rem
 
 .buyer
-  color: $main_c 
-  margin-bottom: .25rem 
-.time 
-  color: #666 
+  color: $main_c
+  margin-bottom: .25rem
+.time
+  color: #666
   flex: 0 0 auto
 .specWrapper
-  span 
+  span
     margin-right: .25rem
-      
 </style>
