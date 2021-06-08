@@ -21,8 +21,8 @@ import ToastService from 'primevue/toastservice';
 // global sass 
 import '@/sass/init.sass'
 import '@/sass/public.sass'
-import '@/sass/button.sass'
 import '@/sass/primevue.sass'
+import '@/sass/button.sass'
 
 const app = createApp(App)
   .use(store)

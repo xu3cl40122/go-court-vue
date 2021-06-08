@@ -18,7 +18,7 @@ Dialog(
     Verification(ref="RefVerification" :info="dialogInfo" :errorMsg="errorMsg" @resend="sendVerification" @submit="enableUser")
 
   template(#footer)
-    .gc-btns 
+    .btns 
       button.gc-btn.full(
         v-for="(btn, i) of layout.btns",
         :key="i",
@@ -63,7 +63,8 @@ export default {
           return {
             title: "登入",
             btns: [
-              { text: '登入', class: 'main', callback: login.bind(this) }
+              { text: '使用 Facebook 登入', class: 'fb', callback: fbLogin.bind(this) },
+              { text: '登入', class: 'main', callback: login.bind(this) },
             ]
           }
         case "register":
@@ -172,6 +173,16 @@ export default {
       })
     }
 
+    function fbLogin() {
+      FB.login(function (response) {
+        // handle the response 
+      }, { scope: 'email' });
+      FB.api('/me', { fields: 'id,name,email,picture' }, function (response) {
+        console.log('Successful login for: ', response);
+
+      });
+    }
+
     function showMessageDialog(event) {
       let info = {}
       switch (event) {
@@ -227,6 +238,7 @@ export default {
       sendVerification,
       login,
       enableUser,
+      fbLogin
     }
   },
 }
@@ -255,4 +267,10 @@ export default {
     position: absolute
     right: 1rem
     font-size: 1.25rem
+.btns
+  display: flex
+  flex-direction: column
+  > *
+    &:not(:last-child)
+      margin-bottom: .75rem
 </style>

@@ -10,6 +10,7 @@
       @onEnter="onEnter"
     )
   
+  <div class="fb-login-button" data-width="200" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="true" data-use-continue-as="false"></div>
 </template>
 
 <script>
@@ -115,6 +116,6 @@ export default {
 .user-container
   padding: 1rem
   .errorMsg
-    margin-top: 1rem 
+    margin-top: 1rem
     text-align: center
 </style>

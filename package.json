@@ -9,7 +9,8 @@
     "dev": "vue-cli-service serve",
     "dev:prod": "vue-cli-service serve --mode production",
     "dev:local": "vue-cli-service serve --mode localtest",
-    "dev:https": "vue-cli-service serve --https"
+    "dev:https": "vue-cli-service serve --https",
+    "dev:local:https": "vue-cli-service serve --mode localtest --https"
   },
   "dependencies": {
     "@googlemaps/markerclustererplus": "^1.1.0",

@@ -150,7 +150,6 @@ export default {
     },
 
     showDeleteDialog(entity, reply) {
-      console.log(777777777, entity, reply)
       this.deleteTarget = {
         entity,
         comment_id: this.comment_id,

@@ -20,6 +20,8 @@ export default createStore({
     async initApp(context) {
       await context.dispatch('User/setErrorHandle')
       await context.dispatch('User/autoLogin')
+      await context.dispatch('User/FBAutoLogin')
+    
       context.commit('setInited', true)
     }
   },

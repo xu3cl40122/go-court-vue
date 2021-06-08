@@ -59,6 +59,37 @@ const actions = {
     context.commit('setIsLogin', true)
   },
 
+  async FBAutoLogin(context) {
+    if (!window.FB) {
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId: '147041934150129',
+          cookie: true,
+          xfbml: true,
+          version: 'v10.0'
+        });
+
+        FB.AppEvents.logPageView();
+
+        FB.getLoginStatus(function (response) {
+        });
+        // FB.login(function(response){
+        //   // handle the response 
+        // });
+
+      };
+
+      (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) { return; }
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    }
+
+  },
+
   async onLoginSuccess(context, { jwtToken }) {
     q.defaults.headers.common['Authorization'] = jwtToken
     localStorage.setItem(process.env.VUE_APP_TOKEN_NAME, jwtToken)
