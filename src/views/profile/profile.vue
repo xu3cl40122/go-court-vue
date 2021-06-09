@@ -87,7 +87,11 @@ export default {
         let col = infoColumns[key]
         switch (key) {
           case 'gender':
-            col.value = user.value[key] === 'MALE' ? '男生' : '女生'
+            let genderMap = {
+              'MALE': '男生',
+              'FEMALE': '女生',
+            }
+            col.value = genderMap[user.value[key]] ?? ''
             break;
           default:
             col.value = user.value[key]

@@ -50,6 +50,19 @@ const actions = {
         return { success: false, status, message: res.data?.message }
     }
   },
+  
+  async socialLogin(context, { params, option }) {
+    let res = await User.socialLogin({ params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        let jwtToken = res.headers.authorization
+        context.dispatch('onLoginSuccess', { jwtToken })
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: res.data?.message }
+    }
+  },
 
   async autoLogin(context) {
     let jwtToken = localStorage.getItem(process.env.VUE_APP_TOKEN_NAME)
@@ -70,13 +83,6 @@ const actions = {
         });
 
         FB.AppEvents.logPageView();
-
-        FB.getLoginStatus(function (response) {
-        });
-        // FB.login(function(response){
-        //   // handle the response 
-        // });
-
       };
 
       (function (d, s, id) {
@@ -110,6 +116,7 @@ const actions = {
         context.commit('setUser', data)
         return { success: true, status, data }
       default:
+        context.dispatch('logout')
         return { success: false, status, message: data?.message }
     }
   },

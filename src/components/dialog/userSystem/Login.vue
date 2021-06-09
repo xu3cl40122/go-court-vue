@@ -9,8 +9,10 @@
       @onChange="onChange"
       @onEnter="onEnter"
     )
+
+  .flex.h-end
+    .gc-link.pointer(@click="toRegister") 沒有帳號嗎?
   
-  <div class="fb-login-button" data-width="200" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="true" data-use-continue-as="false"></div>
 </template>
 
 <script>
@@ -90,6 +92,10 @@ export default {
         emit('submit')
     }
 
+    function toRegister() {
+      emit('setDialogType', 'register')
+    }
+
     function checkValue({ col, key }) {
       let { model, required, label } = col
       if (key === "email" && !isEmail(model))
@@ -106,7 +112,8 @@ export default {
       columns,
       onChange,
       emitData,
-      onEnter
+      onEnter,
+      toRegister
     }
   },
 };

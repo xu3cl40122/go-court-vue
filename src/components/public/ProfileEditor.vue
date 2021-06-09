@@ -51,7 +51,7 @@ export default {
         type: "text",
         model: "",
         placeholder: "連絡電話",
-        required: true,
+        required: false,
         asterisk: false,
         error: "",
       },
@@ -117,8 +117,6 @@ export default {
       emit('updateProfileSuccess')
     }
 
-    
-
     function onChange({ col, key }) {
       checkValue({ col, key })
     }
@@ -142,9 +140,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.ProfileEditor 
+.ProfileEditor
   padding: 1rem
-  .gc-btns  
+  .gc-btns
     margin-top: 1rem
-
 </style>

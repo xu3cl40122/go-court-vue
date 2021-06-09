@@ -11,6 +11,11 @@ export function login({ params, option }) {
   return q.post(url, params, option)
 }
 
+export function socialLogin({ params, option }) {
+  let url = `${apiPath}/auth/social_login`
+  return q.post(url, params, option)
+}
+
 export function sendVerification({ params, option }) {
   let url = `${apiPath}/users/verification`
   return q.put(url, params, option)

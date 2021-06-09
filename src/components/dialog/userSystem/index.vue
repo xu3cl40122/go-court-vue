@@ -11,7 +11,7 @@ Dialog(
       h4.main_c {{ layout.title }}
       i.fas.fa-times.close.pointer(v-if="!layout.hideClose" @click="close")
   template(v-if="dialogInfo.type === 'login'")
-    Login(ref="RefLogin" :errorMsg="errorMsg" @submit="login")
+    Login(ref="RefLogin" :errorMsg="errorMsg" @submit="login" @setDialogType="setDialogType")
   template(v-else-if="dialogInfo.type === 'register'")
     Register(ref="RefRegister")
   template(v-else-if="dialogInfo.type === 'verification'")
@@ -63,7 +63,7 @@ export default {
           return {
             title: "登入",
             btns: [
-              { text: '使用 Facebook 登入', class: 'fb', callback: fbLogin.bind(this) },
+              { text: '使用 Facebook 繼續', class: 'fb', callback: fbLogin.bind(this) },
               { text: '登入', class: 'main', callback: login.bind(this) },
             ]
           }
@@ -71,6 +71,7 @@ export default {
           return {
             title: "註冊",
             btns: [
+              { text: '使用 Facebook 繼續', class: 'fb', callback: fbLogin.bind(this) },
               { text: '確認', class: 'main', callback: addUser.bind(this) }
             ]
           }
@@ -173,14 +174,39 @@ export default {
       })
     }
 
-    function fbLogin() {
-      FB.login(function (response) {
-        // handle the response 
-      }, { scope: 'email' });
-      FB.api('/me', { fields: 'id,name,email,picture' }, function (response) {
-        console.log('Successful login for: ', response);
+    async function fbLogin() {
+      let loginRes = await promiseGetFbToken()
+      if (loginRes.status !== "connected") return
 
-      });
+      let profile = await promiseGetFbProfile()
+      let params = {
+        accessToken: loginRes.authResponse.accessToken,
+        email: profile.email,
+        profile_name: profile.name,
+        external_id: profile.id,
+        register_by: 'FACEBOOK',
+        meta: {
+          avatar_url: profile.picture?.data?.url
+        }
+      }
+
+      let { success } = await store.dispatch('User/socialLogin', { params, option: {} })
+      if (!success) return showMessageDialog('failed')
+
+      showMessageDialog('loginSuccess')
+      close()
+    }
+
+    function promiseGetFbToken() {
+      return new Promise((resolve, reject) => {
+        FB.login(res => resolve(res), { scope: 'email' })
+      })
+    }
+
+    function promiseGetFbProfile() {
+      return new Promise((resolve, reject) => {
+        FB.api('/me', { fields: 'id,name,email,picture.width(400).height(400)' }, res => resolve(res))
+      })
     }
 
     function showMessageDialog(event) {
@@ -211,6 +237,14 @@ export default {
             closeCb: sendVerification.bind(this, { email: loginParams.value.email })
           }
           break;
+        case 'failed':
+          info = {
+            status: 'danger',
+            title: `操作失敗`,
+            subtitles: ['請稍後再試', '或聯絡系統管理員'],
+          }
+          break;
+
 
         default:
           break;
@@ -226,6 +260,15 @@ export default {
       store.commit("Dialog/closeDialog", "userDialog")
     }
 
+    function setDialogType(type) {
+      store.commit("Dialog/setDialog", {
+        name: 'userDialog',
+        info: {
+          type
+        }
+      })
+    }
+
     return {
       isDialogOpen,
       dialogInfo,
@@ -238,7 +281,8 @@ export default {
       sendVerification,
       login,
       enableUser,
-      fbLogin
+      fbLogin,
+      setDialogType,
     }
   },
 }
