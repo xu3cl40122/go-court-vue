@@ -1,6 +1,7 @@
 
 import { User } from '@/api/'
 import q from '@/api/request'
+import { promiseGetLoginStatus, promiseGetFbProfile } from '@/methods/fb'
 
 const state = () => ({
   // 註冊流程時暫存帳密
@@ -22,7 +23,7 @@ const mutations = {
 
 const actions = {
   async setErrorHandle(context) {
-    let pass401Paths = ['/auth/login']
+    let pass401Paths = ['/auth/login', '/auth/social_login']
     let unauthorizedCb = () => context.dispatch('logout')
     q.setErrorHandle({ pass401Paths, unauthorizedCb })
   },
@@ -50,8 +51,19 @@ const actions = {
         return { success: false, status, message: res.data?.message }
     }
   },
-  
-  async socialLogin(context, { params, option }) {
+
+  async socialLogin(context, { accessToken, option }) {
+    let profile = await promiseGetFbProfile()
+    let params = {
+      accessToken,
+      email: profile.email,
+      profile_name: profile.name,
+      external_id: profile.id,
+      register_by: 'FACEBOOK',
+      meta: {
+        avatar_url: profile.picture?.data?.url
+      }
+    }
     let res = await User.socialLogin({ params, option })
     let { status, data } = res
     switch (status) {
@@ -74,7 +86,7 @@ const actions = {
 
   async FBAutoLogin(context) {
     if (!window.FB) {
-      window.fbAsyncInit = function () {
+      window.fbAsyncInit = async function () {
         FB.init({
           appId: '147041934150129',
           cookie: true,
@@ -83,6 +95,11 @@ const actions = {
         });
 
         FB.AppEvents.logPageView();
+        let loginRes = await promiseGetLoginStatus()
+        if (loginRes.status == "connected") {
+          let accessToken = loginRes.authResponse.accessToken
+          context.dispatch('socialLogin', { accessToken, ooption: {} })
+        }
       };
 
       (function (d, s, id) {
@@ -104,6 +121,8 @@ const actions = {
   },
 
   async logout(context) {
+    if (context.state.user.register_by === 'FACEBOOK')
+      FB.logout()
     localStorage.removeItem(process.env.VUE_APP_TOKEN_NAME)
     window.location.href = window.location.origin
   },
@@ -166,8 +185,6 @@ const actions = {
         return { success: false, status, message: data?.message }
     }
   },
-
-
 
 }
 

@@ -34,6 +34,7 @@ import Dialog from "primevue/dialog"
 import Login from "@/components/dialog/userSystem/Login"
 import Register from "@/components/dialog/userSystem/Register"
 import Verification from "@/components/dialog/userSystem/Verification"
+import { promiseFbLogin, promiseGetFbProfile } from '@/methods/fb'
 
 export default {
   name: "UserDialog",
@@ -175,38 +176,14 @@ export default {
     }
 
     async function fbLogin() {
-      let loginRes = await promiseGetFbToken()
+      let loginRes = await promiseFbLogin()
       if (loginRes.status !== "connected") return
-
-      let profile = await promiseGetFbProfile()
-      let params = {
-        accessToken: loginRes.authResponse.accessToken,
-        email: profile.email,
-        profile_name: profile.name,
-        external_id: profile.id,
-        register_by: 'FACEBOOK',
-        meta: {
-          avatar_url: profile.picture?.data?.url
-        }
-      }
-
-      let { success } = await store.dispatch('User/socialLogin', { params, option: {} })
+      let accessToken = loginRes.authResponse.accessToken
+      let { success } = await store.dispatch('User/socialLogin', { accessToken, option: {} })
       if (!success) return showMessageDialog('failed')
 
       showMessageDialog('loginSuccess')
       close()
-    }
-
-    function promiseGetFbToken() {
-      return new Promise((resolve, reject) => {
-        FB.login(res => resolve(res), { scope: 'email' })
-      })
-    }
-
-    function promiseGetFbProfile() {
-      return new Promise((resolve, reject) => {
-        FB.api('/me', { fields: 'id,name,email,picture.width(400).height(400)' }, res => resolve(res))
-      })
     }
 
     function showMessageDialog(event) {
