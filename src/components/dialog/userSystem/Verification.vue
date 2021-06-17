@@ -4,8 +4,7 @@
     span 已將驗證碼發送到您的 e-mail
     .email.info_c {{ userEmail }}
     span(v-if="cdTime") 重發驗證碼({{ cdTime }}s)
-    .underline.main_c.pointer(v-else @click="resend") 重發驗證碼
-
+    .underline.main_c.pointer(v-else @click="init") 重發驗證碼
  
   .flex.h-center
     .codeRow.grid(:style="gridStyle")
@@ -17,6 +16,13 @@
   //- hidden input 
   input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput" @keyup="onChange" @keyup.enter="onEnter")
 
+  .gc-btns 
+    button.gc-btn.full(
+      v-for="(btn, i) of btns",
+      :key="i",
+      :class="btn.class",
+      @click="btn.callback"
+    ) {{ btn.text }}
   
 
 </template>
@@ -34,10 +40,6 @@ export default {
     },
     // ENABLE_ACCOUNT, FORGOT_PASSWORD
     verification_type: String,
-    // errorMsg: {
-    //   type: Object,
-    //   default: () => ({}),
-    // },
     codeLength: {
       type: Number,
       default: 6
@@ -55,17 +57,25 @@ export default {
     let gridStyle = computed(() => {
       return { 'grid-template-columns': `repeat(${codeLength}, minmax(24px, 40px))` }
     })
+    const loginParams = computed(() => store.state.User.loginParams)
     let verification_code = ref('')
     let codeArr = ref(Array(codeLength).fill(''))
     let cdTime = ref(cdSecond)
     let errorMsg = ref('')
     let timer
+    let btns = computed(() => [
+      { text: '送出', class: 'main', callback: submit.bind(this) },
+    ])
 
     onMounted(() => {
+      init()
+    })
+
+    function init() {
       sendVerif()
       focusInput()
       initTimer()
-    })
+    }
 
     // 連動 hidden input 跟顯示的驗證碼
     watch(verification_code, (newVal, oldVal) => {
@@ -87,6 +97,7 @@ export default {
       if (res.status === 406)
         errorMsg.value = '請求驗證碼太過頻繁，請先至您的信箱查看驗證碼或稍後再試'
     }
+
     // 發忘記密碼驗證碼
     async function sendForgotVerif(email) {
       let params = { email }
@@ -95,9 +106,38 @@ export default {
         errorMsg.value = '請求驗證碼太過頻繁，請先至您的信箱查看驗證碼或稍後再試'
     }
 
-    function resend() {
-      emit('resend', { email: userEmail.value, toVerify: false })
-      initTimer()
+    async function submit() {
+      console.log('props.verification_type', props.verification_type)
+      switch (props.verification_type) {
+        case 'ENABLE_ACCOUNT':
+          return enableUser()
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    async function enableUser() {
+      let email = loginParams.value.email
+      let params = { email, verification_code: verification_code.value }
+      let res = await store.dispatch('User/enableUser', { params, option: {} })
+      switch (res.status) {
+        case 400:
+          return errorMsg.value = '驗證碼錯誤'
+        case 406:
+          return errorMsg.value = '驗證碼已過期，請點擊重新發送'
+        default:
+          return enableUserSuccess()
+      }
+    }
+
+    // 驗證完 email 自動幫登入
+    async function enableUserSuccess() {
+      let params = loginParams.value
+      let res = await store.dispatch('User/login', { params, option: {} })
+      if (!res.success) return
+      emit('showMessageDialog', 'registerSuccess')
     }
 
     function initTimer() {
@@ -132,8 +172,11 @@ export default {
       focusInput,
       cdTime,
       initTimer,
-      resend,
+      init,
       onEnter,
+      btns,
+      errorMsg,
+      submit
     }
   },
 };

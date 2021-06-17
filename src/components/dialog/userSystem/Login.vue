@@ -10,17 +10,26 @@
       @onEnter="onEnter"
     )
 
-    .links
-      .gc-link.pointer(@click="toRegister") 沒有帳號嗎?
-      .gc-link.pointer(@click="toFogotPwd") 忘記密碼?
+  .links
+    .gc-link.pointer(@click="toRegister") 沒有帳號嗎?
+    .gc-link.pointer(@click="toFogotPwd") 忘記密碼?
+  
+  .gc-btns 
+    button.gc-btn.full(
+      v-for="(btn, i) of btns",
+      :key="i",
+      :class="btn.class",
+      @click="btn.callback"
+    ) {{ btn.text }}
   
 </template>
 
 <script>
-import { watch, reactive, ref } from "vue";
+import { watch, reactive, ref, computed } from "vue";
 import { useStore } from 'vuex'
 import FormItem from "@/components/unit/FormItem.vue"
 import { isEmail, isNull } from "@/methods/"
+import { promiseFbLogin, promiseGetFbProfile } from '@/methods/fb'
 
 export default {
   name: "Login",
@@ -28,10 +37,6 @@ export default {
     FormItem
   },
   props: {
-    errorMsg: {
-      type: Object,
-      default: () => ({}),
-    },
     info: {
       type: Object,
       default: () => ({}),
@@ -60,11 +65,38 @@ export default {
       },
     })
 
-    watch(props, (newVal) => {
-      let { errorMsg } = newVal
-      if (errorMsg.text)
-        columns.password.error = errorMsg.text
-    })
+    let btns = computed(() => [
+      { text: '使用 Facebook 繼續', class: 'fb', callback: fbLogin.bind(this) },
+      { text: '登入', class: 'main', callback: login.bind(this) },
+    ])
+
+    async function login() {
+      let params = emitData()
+      if (!params) return
+
+      let res = await store.dispatch('User/login', { params, option: {} })
+      switch (res.status) {
+        case 200:
+          return emit('showMessageDialog', 'loginSuccess')
+        // initial account
+        case 406:
+          store.commit('User/setLoginParams', params)
+          return emit('showMessageDialog', 'accountNotEnabled')
+        default:
+          columns.password.error = '帳號密碼錯誤'
+          break;
+      }
+    }
+
+    async function fbLogin() {
+      let loginRes = await promiseFbLogin()
+      if (loginRes.status !== "connected") return
+      let accessToken = loginRes.authResponse.accessToken
+      let { success } = await store.dispatch('User/socialLogin', { accessToken, option: {} })
+      if (!success) return emit('showMessageDialog', 'failed')
+
+      emit('showMessageDialog', 'loginSuccess')
+    }
 
     function emitData() {
       let outputData = {}
@@ -92,7 +124,7 @@ export default {
 
     function onEnter({ col, key }) {
       if (key === 'password')
-        emit('submit')
+        emit('login')
     }
 
     function toRegister() {
@@ -128,7 +160,9 @@ export default {
       emitData,
       onEnter,
       toRegister,
-      toFogotPwd
+      toFogotPwd,
+      btns,
+      login
     }
   },
 };
@@ -139,7 +173,8 @@ export default {
   text-align: center
   .gc-link
     margin-bottom: .5rem
-
+.gc-btns
+  margin-top: 1.5rem
 .user-container
   padding: 1rem
   .errorMsg
