@@ -16,7 +16,7 @@ export function socialLogin({ params, option }) {
   return q.post(url, params, option)
 }
 
-export function sendVerification({ params, option }) {
+export function sendEnableVerif({ params, option }) {
   let url = `${apiPath}/users/verification`
   return q.put(url, params, option)
 }
@@ -39,4 +39,14 @@ export function putProfile({ body, option }) {
 export function getUserById({ user_id, option }) {
   let url = `${apiPath}/users/${user_id}`
   return q.get(url, option)
+}
+
+export function sendForgotVerif({ params, option }) {
+  let url = `${apiPath}/forgot/verification`
+  return q.put(url, params, option)
+}
+
+export function resetPassword({ params, option }) {
+  let url = `${apiPath}/forgot/reset_password`
+  return q.put(url, params, option)
 }

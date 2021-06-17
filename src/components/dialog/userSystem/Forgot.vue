@@ -9,10 +9,6 @@
       @onChange="onChange"
       @onEnter="onEnter"
     )
-
-    .links
-      .gc-link.pointer(@click="toRegister") 沒有帳號嗎?
-      .gc-link.pointer(@click="toFogotPwd") 忘記密碼?
   
 </template>
 
@@ -23,7 +19,7 @@ import FormItem from "@/components/unit/FormItem.vue"
 import { isEmail, isNull } from "@/methods/"
 
 export default {
-  name: "Login",
+  name: "Forgot",
   components: {
     FormItem
   },
@@ -43,21 +39,13 @@ export default {
       email: {
         label: "電子郵件",
         type: "text",
-        model: "test@gmail.com",
+        model: "",
         placeholder: "example@email.com",
         required: true,
         asterisk: false,
         error: "",
       },
-      password: {
-        label: "密碼",
-        type: "password",
-        model: "11111111",
-        placeholder: "password",
-        required: true,
-        asterisk: false,
-        error: "",
-      },
+     
     })
 
     watch(props, (newVal) => {
@@ -75,8 +63,6 @@ export default {
         if (col.error) return isValid = false
 
         switch (key) {
-          case 'confirm_password':
-            break;
           default:
             outputData[key] = col.model
             break;
@@ -91,23 +77,12 @@ export default {
     }
 
     function onEnter({ col, key }) {
-      if (key === 'password')
+      if (key === 'email')
         emit('submit')
     }
 
     function toRegister() {
       emit('setDialogType', 'register')
-    }
-
-    function toFogotPwd() {
-      store.commit('Dialog/setDialog', {
-        name: 'userDialog',
-        info: {
-          type: 'forgot',
-          user: store.state.User.loginParams,
-          verification_type: 'FORGOT_PASSWORD'
-        }
-      })
     }
 
     function checkValue({ col, key }) {
@@ -128,7 +103,6 @@ export default {
       emitData,
       onEnter,
       toRegister,
-      toFogotPwd
     }
   },
 };
@@ -139,6 +113,10 @@ export default {
   text-align: center
   .gc-link
     margin-bottom: .5rem
+
+.title 
+  text-align: center
+  margin-bottom: 1rem
 
 .user-container
   padding: 1rem

@@ -152,8 +152,8 @@ const actions = {
     }
   },
 
-  async sendVerification(context, { params, option }) {
-    let res = await User.sendVerification({ params, option })
+  async sendEnableVerif(context, { params, option }) {
+    let res = await User.sendEnableVerif({ params, option })
     let { status, data } = res
     switch (status) {
       case 200:
@@ -180,6 +180,28 @@ const actions = {
     switch (status) {
       case 200:
         context.commit('setUser', data)
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async sendForgotVerif(context, { params, option }) {
+    let res = await User.sendForgotVerif({ params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async resetPassword(context, { params, option }) {
+    let res = await User.resetPassword({ params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
         return { success: true, status, data }
       default:
         return { success: false, status, message: data?.message }

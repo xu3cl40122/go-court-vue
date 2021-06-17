@@ -14,8 +14,10 @@ Dialog(
     Login(ref="RefLogin" :errorMsg="errorMsg" @submit="login" @setDialogType="setDialogType")
   template(v-else-if="dialogInfo.type === 'register'")
     Register(ref="RefRegister")
+  template(v-else-if="dialogInfo.type === 'forgot'")
+    Forgot(ref="Forgot")
   template(v-else-if="dialogInfo.type === 'verification'")
-    Verification(ref="RefVerification" :info="dialogInfo" :errorMsg="errorMsg" @resend="sendVerification" @submit="enableUser")
+    Verification(ref="RefVerification" :info="dialogInfo" :verification_type="dialogInfo.verification_type" :errorMsg="errorMsg" @resend="sendEnableVerif" @submit="enableUser")
 
   template(#footer)
     .btns 
@@ -34,6 +36,7 @@ import Dialog from "primevue/dialog"
 import Login from "@/components/dialog/userSystem/Login"
 import Register from "@/components/dialog/userSystem/Register"
 import Verification from "@/components/dialog/userSystem/Verification"
+import Forgot from "@/components/dialog/userSystem/Forgot"
 import { promiseFbLogin, promiseGetFbProfile } from '@/methods/fb'
 
 export default {
@@ -42,7 +45,8 @@ export default {
     Dialog,
     Login,
     Register,
-    Verification
+    Verification,
+    Forgot
   },
   props: {},
   setup(props) {
@@ -76,10 +80,17 @@ export default {
               { text: '確認', class: 'main', callback: addUser.bind(this) }
             ]
           }
+        case "forgot":
+          return {
+            title: "忘記密碼",
+            btns: [
+              { text: '確認', class: 'main', callback: addUser.bind(this) }
+            ]
+          }
         case "verification":
           return {
             title: "輸入驗證碼",
-            hideClose: true,
+            hideClose: false,
             btns: [
               { text: '確認', class: 'main', callback: enableUser.bind(this) }
             ]
@@ -121,7 +132,7 @@ export default {
       switch (res.status) {
         case 201:
           store.commit('User/setLoginParams', params)
-          return sendVerification({ email: params.email })
+          return sendEnableVerif({ email: params.email })
         case 400:
           return errorMsg.value = { text: '該 e-mail 已被使用，請確認是否已有帳號' }
         default:
@@ -155,9 +166,9 @@ export default {
     }
 
     // 發送驗證碼到 email
-    async function sendVerification({ email, toVerify = true }) {
+    async function sendEnableVerif({ email, toVerify = true }) {
       let params = { email }
-      let res = await store.dispatch('User/sendVerification', { params, option: {} })
+      let res = await store.dispatch('User/sendEnableVerif', { params, option: {} })
       if (res.status === 406)
         errorMsg.value = { text: '請求驗證碼太過頻繁，請先至您的信箱查看驗證碼或稍後再試' }
       if (toVerify)
@@ -211,7 +222,8 @@ export default {
             title: '帳號 e-mail 未驗證',
             subtitles: ['請先驗證您的 email'],
             closeAfter: 3000,
-            closeCb: sendVerification.bind(this, { email: loginParams.value.email })
+            // closeCb: sendEnableVerif.bind(this, { email: loginParams.value.email })
+            closeCb: toVerificationTab.bind(this)
           }
           break;
         case 'failed':
@@ -255,7 +267,7 @@ export default {
       RefVerification,
       RefLogin,
       errorMsg,
-      sendVerification,
+      sendEnableVerif,
       login,
       enableUser,
       fbLogin,

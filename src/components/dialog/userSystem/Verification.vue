@@ -12,10 +12,10 @@
       .codeCol.flex.h-center.v-center(v-for="(code, i) of codeArr", :key="i") 
         span {{ code }}
 
-  .errorMsg.danger_c(v-if="errorMsg.text") {{ errorMsg.text }}
+  .errorMsg.danger_c(v-if="errorMsg") {{ errorMsg }}
   
   //- hidden input 
-  input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput35" @keyup="onChange" @keyup.enter="onEnter")
+  input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput" @keyup="onChange" @keyup.enter="onEnter")
 
   
 
@@ -23,6 +23,7 @@
 
 <script>
 import { ref, computed, onMounted, watch } from "vue";
+import { useStore } from 'vuex'
 
 export default {
   name: "Verification",
@@ -31,10 +32,12 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    errorMsg: {
-      type: Object,
-      default: () => ({}),
-    },
+    // ENABLE_ACCOUNT, FORGOT_PASSWORD
+    verification_type: String,
+    // errorMsg: {
+    //   type: Object,
+    //   default: () => ({}),
+    // },
     codeLength: {
       type: Number,
       default: 6
@@ -46,6 +49,7 @@ export default {
   },
   setup(props, { emit }) {
     let { info, codeLength, cdSecond } = props
+    const store = useStore()
     let RefInput = ref(null)
     let userEmail = computed(() => info.user?.email || '')
     let gridStyle = computed(() => {
@@ -54,9 +58,11 @@ export default {
     let verification_code = ref('')
     let codeArr = ref(Array(codeLength).fill(''))
     let cdTime = ref(cdSecond)
+    let errorMsg = ref('')
     let timer
 
     onMounted(() => {
+      sendVerif()
       focusInput()
       initTimer()
     })
@@ -66,6 +72,28 @@ export default {
       verification_code.value = verification_code.value.slice(0, codeLength)
       codeArr.value = codeArr.value.map((code, i) => verification_code.value[i] || '')
     })
+
+    async function sendVerif() {
+      let { email } = info.user
+      props.verification_type === 'ENABLE_ACCOUNT'
+        ? sendEnableVerif(email)
+        : sendForgotVerif(email)
+    }
+
+    // 發啟用帳號驗證碼
+    async function sendEnableVerif(email) {
+      let params = { email }
+      let res = await store.dispatch('User/sendEnableVerif', { params, option: {} })
+      if (res.status === 406)
+        errorMsg.value = '請求驗證碼太過頻繁，請先至您的信箱查看驗證碼或稍後再試'
+    }
+    // 發忘記密碼驗證碼
+    async function sendForgotVerif(email) {
+      let params = { email }
+      let res = await store.dispatch('User/sendForgotVerif', { params, option: {} })
+      if (res.status === 406)
+        errorMsg.value = '請求驗證碼太過頻繁，請先至您的信箱查看驗證碼或稍後再試'
+    }
 
     function resend() {
       emit('resend', { email: userEmail.value, toVerify: false })
@@ -117,7 +145,7 @@ export default {
   padding: 1rem
   .description
     text-align: center
-    .email 
+    .email
       margin: .5rem
 
   .codeRow
@@ -129,7 +157,7 @@ export default {
     border-bottom: 2px solid #979797
 
   .errorMsg
-    margin-top: 1rem 
+    margin-top: 1rem
     text-align: center
   .disapper
     height: 0
