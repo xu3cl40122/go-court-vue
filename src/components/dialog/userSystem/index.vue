@@ -17,7 +17,8 @@ Dialog(
   template(v-else-if="dialogInfo.type === 'forgot'")
     Forgot(ref="Forgot" @setDialogType="setDialogType" @showMessageDialog="showMessageDialog")
   template(v-else-if="dialogInfo.type === 'verification'")
-    Verification(ref="RefVerification" :info="dialogInfo" :verification_type="dialogInfo.verification_type" @showMessageDialog="showMessageDialog")
+    Verification(ref="RefVerification" :info="dialogInfo" :verification_type="dialogInfo.verification_type" 
+      @setDialogType="setDialogType" @showMessageDialog="showMessageDialog")
 
 </template>
 
@@ -92,7 +93,7 @@ export default {
           info = {
             status: 'success',
             title: '註冊完成',
-            subtitles: ['祝您天天定三米'],
+            subtitles: ['祝您天天有球打'],
             closeAfter: 3000
           }
           break;
@@ -100,6 +101,14 @@ export default {
           info = {
             status: 'success',
             title: '登入成功',
+            subtitles: [],
+            closeAfter: 3000
+          }
+          break;
+        case 'resetPasswordSuccess':
+          info = {
+            status: 'success',
+            title: '重設密碼成功',
             subtitles: [],
             closeAfter: 3000
           }

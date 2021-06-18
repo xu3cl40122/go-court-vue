@@ -10,10 +10,18 @@
       @onEnter="onEnter"
     )
   
+  .gc-btns 
+    button.gc-btn.full(
+      v-for="(btn, i) of btns",
+      :key="i",
+      :class="btn.class",
+      @click="btn.callback"
+    ) {{ btn.text }}
+  
 </template>
 
 <script>
-import { watch, reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStore } from 'vuex'
 import FormItem from "@/components/unit/FormItem.vue"
 import { isEmail, isNull } from "@/methods/"
@@ -24,10 +32,6 @@ export default {
     FormItem
   },
   props: {
-    errorMsg: {
-      type: Object,
-      default: () => ({}),
-    },
     info: {
       type: Object,
       default: () => ({}),
@@ -45,14 +49,43 @@ export default {
         asterisk: false,
         error: "",
       },
-     
+      password: {
+        label: "新密碼",
+        type: "password",
+        model: "",
+        placeholder: "密碼長度至少 8 碼",
+        required: true,
+        asterisk: false,
+        error: "",
+      },
+      confirm_password: {
+        label: "確認新密碼",
+        type: "password",
+        model: "",
+        placeholder: "確認新密碼",
+        required: true,
+        asterisk: false,
+        error: "",
+      },
+
     })
 
-    watch(props, (newVal) => {
-      let { errorMsg } = newVal
-      if (errorMsg.text)
-        columns.password.error = errorMsg.text
-    })
+    let btns = computed(() => [
+      { text: '發送驗證碼', class: 'main', callback: toVerificationTab.bind(this) }
+    ])
+
+    function toVerificationTab() {
+      let user = emitData()
+      if (!user) return
+      store.commit('Dialog/setDialog', {
+        name: 'userDialog',
+        info: {
+          type: 'verification',
+          verification_type: 'FORGOT_PASSWORD',
+          user
+        }
+      })
+    }
 
     function emitData() {
       let outputData = {}
@@ -81,16 +114,16 @@ export default {
         emit('submit')
     }
 
-    function toRegister() {
-      emit('setDialogType', 'register')
-    }
-
     function checkValue({ col, key }) {
       let { model, required, label } = col
       if (key === "email" && !isEmail(model))
         return col.error = "email 格式不正確"
       if (key === "password" && model.length < 8)
         return col.error = "密碼長度至少 8 碼"
+      if ((key === "password" || key === 'confirm_password') && columns.password.model !== columns.confirm_password.model) {
+        columns.confirm_password.error = "確認密碼需與密碼相符"
+        if (key === 'confirm_password') return
+      }
       if (required && isNull(model))
         return col.error = `請輸入"${label}"`
 
@@ -102,7 +135,7 @@ export default {
       onChange,
       emitData,
       onEnter,
-      toRegister,
+      btns
     }
   },
 };
@@ -114,10 +147,11 @@ export default {
   .gc-link
     margin-bottom: .5rem
 
-.title 
+.title
   text-align: center
   margin-bottom: 1rem
-
+.gc-btns
+  margin-top: 1.5rem
 .user-container
   padding: 1rem
   .errorMsg

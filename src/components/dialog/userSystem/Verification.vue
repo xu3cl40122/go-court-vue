@@ -1,20 +1,26 @@
 <template lang="pug">
 .Verification(@click="focusInput")
-  .description 
-    span 已將驗證碼發送到您的 e-mail
-    .email.info_c {{ userEmail }}
-    span(v-if="cdTime") 重發驗證碼({{ cdTime }}s)
-    .underline.main_c.pointer(v-else @click="init") 重發驗證碼
- 
-  .flex.h-center
-    .codeRow.grid(:style="gridStyle")
-      .codeCol.flex.h-center.v-center(v-for="(code, i) of codeArr", :key="i") 
-        span {{ code }}
+  template(v-if="emailNotFound")
+    .description 
+      span 找不到您的帳號，請確認是否輸入正確
+      .email.info_c {{ userEmail }}
 
-  .errorMsg.danger_c(v-if="errorMsg") {{ errorMsg }}
+  template(v-else)
+    .description 
+      span 已將驗證碼發送到您的 e-mail
+      .email.info_c {{ userEmail }}
+      span(v-if="cdTime") 重發驗證碼({{ cdTime }}s)
+      .underline.main_c.pointer(v-else @click="init") 重發驗證碼
   
-  //- hidden input 
-  input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput" @keyup="onChange" @keyup.enter="onEnter")
+    .flex.h-center
+      .codeRow.grid(:style="gridStyle")
+        .codeCol.flex.h-center.v-center(v-for="(code, i) of codeArr", :key="i") 
+          span {{ code }}
+
+    .errorMsg.danger_c(v-if="errorMsg") {{ errorMsg }}
+    
+    //- hidden input 
+    input.disapper(ref="RefInput", v-model="verification_code" @blur="focusInput" @keyup="onChange" @keyup.enter="onEnter")
 
   .gc-btns 
     button.gc-btn.full(
@@ -53,6 +59,7 @@ export default {
     let { info, codeLength, cdSecond } = props
     const store = useStore()
     let RefInput = ref(null)
+    let emailNotFound = ref(false)
     let userEmail = computed(() => info.user?.email || '')
     let gridStyle = computed(() => {
       return { 'grid-template-columns': `repeat(${codeLength}, minmax(24px, 40px))` }
@@ -63,9 +70,12 @@ export default {
     let cdTime = ref(cdSecond)
     let errorMsg = ref('')
     let timer
-    let btns = computed(() => [
-      { text: '送出', class: 'main', callback: submit.bind(this) },
-    ])
+    let btns = computed(() => {
+      return emailNotFound.value
+        ? [{ text: '重新輸入', class: 'main', callback: toForgot.bind(this) }]
+        : [{ text: '送出', class: 'main', callback: submit.bind(this) }]
+
+    })
 
     onMounted(() => {
       init()
@@ -104,17 +114,33 @@ export default {
       let res = await store.dispatch('User/sendForgotVerif', { params, option: {} })
       if (res.status === 406)
         errorMsg.value = '請求驗證碼太過頻繁，請先至您的信箱查看驗證碼或稍後再試'
+      else if (res.status === 400)
+        emailNotFound.value = true
     }
 
     async function submit() {
-      console.log('props.verification_type', props.verification_type)
       switch (props.verification_type) {
         case 'ENABLE_ACCOUNT':
           return enableUser()
-          break;
+        case 'FORGOT_PASSWORD':
+          return resetPassword()
 
         default:
           break;
+      }
+    }
+
+    async function resetPassword() {
+      let { email, password } = props.info.user
+      let params = { email, password, verification_code: verification_code.value }
+      let res = await store.dispatch('User/resetPassword', { params, option: {} })
+      switch (res.status) {
+        case 400:
+          return errorMsg.value = '驗證碼錯誤'
+        case 406:
+          return errorMsg.value = '驗證碼已過期，請點擊重新發送'
+        default:
+          return emit('showMessageDialog', 'resetPasswordSuccess')
       }
     }
 
@@ -159,8 +185,12 @@ export default {
       RefInput.value.focus()
     }
 
+    function toForgot() {
+      emit('setDialogType', 'forgot')
+    }
+
     function onEnter() {
-      emit('submit')
+      submit()
     }
 
     return {
@@ -176,7 +206,8 @@ export default {
       onEnter,
       btns,
       errorMsg,
-      submit
+      submit,
+      emailNotFound
     }
   },
 };
@@ -199,6 +230,8 @@ export default {
     @include setTextStyle(2rem, 600, #333)
     border-bottom: 2px solid #979797
 
+  .gc-btns 
+    margin-top: 1.5rem
   .errorMsg
     margin-top: 1rem
     text-align: center
