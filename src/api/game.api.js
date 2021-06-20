@@ -6,6 +6,11 @@ export function queryGames({ params, option }) {
   return q.get(url, { ...option, params })
 }
 
+export function queryPopularGames({ params, option }) {
+  let url = `${apiPath}/games/popular`
+  return q.get(url, { ...option, params })
+}
+
 export function getGameById({ game_id, option }) {
   let url = `${apiPath}/games/${game_id}`
   return q.get(url, { ...option })

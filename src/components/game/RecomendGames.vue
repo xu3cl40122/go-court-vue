@@ -1,7 +1,7 @@
 <template lang="pug">
 .RecommendGames
   .header.flex.between.v-center
-    h4.title 推薦賽事
+    h4.title {{ title }}
     .more.pointer(@click="toGamesPage") 
       span 看更多
       i.fas.fa-chevron-right
@@ -28,6 +28,15 @@ export default {
     size: {
       type: Number,
       default: 3
+    },
+    title:{
+      type:String,
+      default: '推薦賽事'
+    },
+    // POPULAR, LOCAL
+    recommendWay: {
+      type: String,
+      default: 'POPULAR'
     }
   },
   data() {
@@ -58,6 +67,7 @@ export default {
     },
 
     /**
+     * 
      * 推薦縣市跟預設條件各取 3個
      * 推薦的不夠就用預設的去補
      */
@@ -68,7 +78,7 @@ export default {
       }
 
       let [recRes, defaultRes] = await Promise.all([
-        this.$store.dispatch('Game/queryGames', { params: this.query, option: { skipLoading: true } }),
+        this.queryRecomendGames(),
         this.$store.dispatch('Game/queryGames', { params: defaultQuery, option: { skipLoading: true } })
       ])
 
@@ -80,6 +90,13 @@ export default {
       this.games = games.slice(0, 3)
     },
 
+    queryRecomendGames() {
+      let option = { skipLoading: true }
+      return this.recommendWay === 'POPULAR'
+        ? this.$store.dispatch('Game/queryPopularGames', { params: { size: this.size }, option })
+        : this.$store.dispatch('Game/queryGames', { params: this.query, option })
+    },
+
     toGamesPage() {
       this.$router.push({ name: 'Games' })
     }
@@ -88,12 +105,12 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.header 
+.header
   margin-bottom: .5rem
   .more
-    color: $main_c 
-    i 
-      margin-left: .25rem 
+    color: $main_c
+    i
+      margin-left: .25rem
 .games
-  grid-gap: 1rem 
+  grid-gap: 1rem
 </style>

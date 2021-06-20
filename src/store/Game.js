@@ -50,6 +50,17 @@ const actions = {
         return { success: false, status, message: data?.message }
     }
   },
+  
+  async queryPopularGames(context, { params, option }) {
+    let res = await Game.queryPopularGames({ params, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
 
   async getGameById(context, { game_id, option }) {
     let res = await Game.getGameById({ game_id, option })
