@@ -6,7 +6,7 @@
   .wrapper
     .cards.grid(v-if="tickets.length > 0")
       TicketCard(v-for="(ticket, i) of tickets" :info="ticket" :key="i" @onCardClick="showTicketDetail(ticket)")
-    Empty(v-else title="尚無票券")
+    Empty(v-if="toEnd && tickets.length == 0" title="尚無票券")
     h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
     
   OperatorDialog(v-model:show="isOpDialogOpen")
@@ -153,4 +153,7 @@ export default {
   grid-row-gap: 1rem
 .panelWrapper
   padding: 1rem
+.loading
+  text-align: center
+  color: #666
 </style>

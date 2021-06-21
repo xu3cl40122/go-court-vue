@@ -19,7 +19,7 @@
   .games.grid(v-if="games.length > 0")
     router-link(v-for="(game, i) of games" :key="game.game_id" :to="`/games/${game.game_id}`")
       GameCard(:info="game")
-  Empty(v-else title="無符合條件之球賽")
+  Empty(v-if="toEnd && games.length == 0" title="無符合條件之球賽")
   h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
 
   SidePanel(v-model:isOpen="isPanelOpen" title="搜尋球賽")

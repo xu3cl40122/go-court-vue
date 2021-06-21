@@ -6,7 +6,7 @@
   .games.grid(v-if="games.length > 0")
     router-link(v-for="(game, i) of games" :key="game.game_id" :to="`/games/host/${game.game_id}`")
       GameCard(:info="game")
-  Empty(v-else title="尚無球賽")
+  Empty(v-if="toEnd && games.length == 0" title="尚無球賽")
   h5.loading(v-if="!toEnd" ref="loadingEl") LOADING ...
 
   SidePanel(v-model:isOpen="isPanelOpen" title="建立球賽")
@@ -109,4 +109,7 @@ export default {
   grid-row-gap: 1rem
 .titleRow
   margin-bottom: 1rem
+.loading
+  text-align: center
+  color: #666
 </style>
