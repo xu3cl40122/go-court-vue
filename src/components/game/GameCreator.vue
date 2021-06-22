@@ -48,6 +48,7 @@ import SpecCreator from "@/components/game/SpecCreator.vue"
 import { isNull, compressImg } from "@/methods/"
 import { loadingInstance } from "@/api/request"
 import defaultImg from '@/assets/image/default.jpg'
+import dayjs from 'dayjs'
 
 export default {
   name: 'GameCreator',
@@ -104,7 +105,7 @@ export default {
       specList.value = game.game_stock
     }
 
-    let active = ref('timeLocation')
+    let active = ref('basicInfo')
     let tabs = ref({
       basicInfo: { label: '基本資訊' },
       timeLocation: { label: '時間地點' },
@@ -368,6 +369,11 @@ export default {
       let { model, required, label } = col
       if (required && isNull(model))
         return col.error = `請輸入"${label}"`
+      // let gameTimeKeys = ['game_start_at', 'game_end_at']
+      if (dayjs(timeLocationColumns.game_end_at.model).isBefore(dayjs(timeLocationColumns.game_start_at.model))) {
+        return timeLocationColumns.game_end_at.error = '結束時間需在開始時間之後'
+      }
+
 
       return col.error = ''
     }
@@ -467,7 +473,7 @@ export default {
 
 <style lang="sass" scoped>
 .body
-  padding: 1rem 1rem 4rem
+  padding: 1rem 1rem 6rem
 
 .imgWrapper
   position: relative

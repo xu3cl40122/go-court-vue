@@ -17,7 +17,11 @@
     .specContainer.grid 
       GameStockCard(v-for="(stock, i) of gameStock" :key="i" :stock="stock" :game="game" @change="cardChange")
 
-    .gc-fixed-wrapper  
+    .gc-fixed-wrapper 
+      h4.totalPrice(v-if="totalPrice > 0") 
+        span 總計 
+        span.success_c {{ totalPrice }}
+        span  NTD
       button.gc-btn.main.full(@click="checkout" :disabled="isNoSelect") 送出
 
 </template>
@@ -77,6 +81,12 @@ export default {
     }
 
     let isNoSelect = computed(() => gameStock.value.every(d => d.count === 0))
+    let totalPrice = computed(() => {
+      return gameStock.value.reduce((acc, item) => {
+        acc += item.count * item.price
+        return acc
+      }, 0)
+    })
 
     async function checkout() {
       let body = gameStock.value
@@ -136,6 +146,7 @@ export default {
       cardChange,
       checkout,
       isNoSelect,
+      totalPrice
     }
   }
 }
@@ -159,4 +170,7 @@ export default {
   .specContainer
     margin-top: 1.5rem
     grid-row-gap: .5rem
+  .totalPrice 
+    margin-bottom: .5rem
+    text-align: right
 </style>

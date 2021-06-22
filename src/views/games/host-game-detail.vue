@@ -59,6 +59,7 @@ import OperatorDialog from '@/components/dialog/OperatorDialog'
 import QrScanner from '@/components/public/QrScanner'
 import IconBtns from '@/components/unit/IconBtns'
 import Checkbox from 'primevue/checkbox';
+import dayjs from 'dayjs'
 
 export default {
   name: 'HostGameDetail',
@@ -120,6 +121,10 @@ export default {
       }
     })
 
+    let isGameStartDay = computed(() => {
+      return dayjs(game.value.game_start_at).format('YYYY/MM/DD') === dayjs().format('YYYY/MM/DD')
+    })
+
     let btns = computed(() => {
       switch (game.value.game_status) {
         case 'PLAYING':
@@ -128,8 +133,7 @@ export default {
           ]
         case 'PENDING':
           return [
-            // { text: '編輯球賽', class: 'main', callback: openPanel.bind(this, true) },
-            { text: '開始球賽', class: 'second', callback: openOpDialog.bind(this, true) },
+            { text: '開始球賽', class: 'second', disabled: !isGameStartDay.value, callback: openOpDialog.bind(this, true) },
           ]
 
         default:

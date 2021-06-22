@@ -116,7 +116,7 @@ export default {
             break
           case 'game_type':
           case 'court_type':
-            col.model = params[key].split(',').filter(d => d)
+            col.model = params[key]?.split(',').filter(d => d) ?? []
             break;
           default:
             if (params[key])
