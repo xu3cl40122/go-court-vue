@@ -50,7 +50,7 @@ export default {
     let btns = computed(() => {
       switch (game.value.game_status) {
         case 'PENDING': {
-          let isSelling = dayjs().isAfter(dayjs(game.value.sell_start_at)) && dayjs().isBefore(dayjs(game.value.sell_end_at))
+          let isSelling = dayjs().isAfter(dayjs(game.value.sell_start_at))
           return [{ text: '參加球賽', class: '', disabled: !isSelling, callback: joinGame.bind(this) }]
         }
 

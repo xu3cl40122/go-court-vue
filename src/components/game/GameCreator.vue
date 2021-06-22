@@ -484,6 +484,4 @@ export default {
   height: auto
   margin-bottom: 1rem
   border-radius: 4px
-.specWrapper
-  margin-top: 1.5rem
 </style>

@@ -4,6 +4,11 @@
     .gc-tips
       i.fas.fa-info-circle
       span 如欲停售票券，可將其數量設為 0
+  .tipRow.last.flex.h-end
+    .gc-tips
+      i.fas.fa-info-circle
+      span 如球賽不需收費，可將價格設為 0
+
   .specCols.grid
     .specCol.grid(v-for="(spec, i) of listModel" :key="i")
       .col.flex.v-center.spec_name
@@ -122,7 +127,9 @@ export default {
 .btns
   margin-top: 1rem
 .tipRow 
-  margin-bottom: 1rem
+  margin-bottom: .25rem
+  &.last
+    margin-bottom: 1rem
 
 
 
