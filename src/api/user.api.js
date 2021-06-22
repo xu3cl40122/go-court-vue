@@ -41,12 +41,20 @@ export function getUserById({ user_id, option }) {
   return q.get(url, option)
 }
 
-export function sendForgotVerif({ params, option }) {
-  let url = `${apiPath}/forgot/verification`
-  return q.put(url, params, option)
+// 登入狀態下改密碼
+export function changePassword({ body, option }) {
+  let url = `${apiPath}/users/password`
+  return q.put(url, body, option)
 }
 
-export function resetPassword({ params, option }) {
-  let url = `${apiPath}/forgot/reset_password`
-  return q.put(url, params, option)
+export function sendForgotVerif({ body, option }) {
+  let url = `${apiPath}/forgot/verification`
+  return q.put(url, body, option)
 }
+
+// 忘記密碼後重設
+export function resetPassword({ body, option }) {
+  let url = `${apiPath}/forgot/reset_password`
+  return q.put(url, body, option)
+}
+

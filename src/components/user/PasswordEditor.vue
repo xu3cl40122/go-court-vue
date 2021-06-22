@@ -8,9 +8,9 @@
       :iKey="key",
       @onChange="onChange"
     )
-  
-  .gc-btns 
-    button.gc-btn.main.full(@click="submit") 送出
+  .gc-fixed-wrapper 
+    .gc-btns 
+      button.gc-btn.main.full(@click="submit") 送出
 
 
 </template>
@@ -37,46 +37,33 @@ export default {
     let user = computed(() => store.state.User.user)
 
     let columns = reactive({
-      profile_name: {
-        label: "暱稱",
-        type: "text",
+      password: {
+        label: "舊密碼",
+        type: "password",
         model: "",
-        placeholder: "您的暱稱",
+        placeholder: "密碼長度至少 8 碼",
         required: true,
         asterisk: false,
         error: "",
       },
-      phone: {
-        label: "連絡電話",
-        type: "text",
+      new_password: {
+        label: "新密碼",
+        type: "password",
         model: "",
-        placeholder: "連絡電話",
-        required: false,
+        placeholder: "密碼長度至少 8 碼",
+        required: true,
         asterisk: false,
         error: "",
       },
-      gender: {
-        label: "生理性別",
-        type: "radio",
+      confirm_new_password: {
+        label: "確認新密碼",
+        type: "password",
         model: "",
-        options: [
-          { label: '男', value: 'MALE' },
-          { label: '女', value: 'FEMALE' },
-        ],
-        required: false,
+        placeholder: "確認密碼",
+        required: true,
         asterisk: false,
         error: "",
       },
-      description: {
-        label: "想說的話",
-        type: "textarea",
-        model: "",
-        placeholder: "想說的話",
-        required: false,
-        asterisk: false,
-        error: "",
-      },
-
 
     })
 
@@ -100,6 +87,8 @@ export default {
         if (col.error) return isValid = false
 
         switch (key) {
+          case 'confirm_new_password':
+            break
           default:
             outputData[key] = col.model
             break;
@@ -112,9 +101,9 @@ export default {
     async function submit() {
       let body = emitData()
       if (!body) return
-      let { success, data } = await store.dispatch('User/putProfile', { body, option: {} })
-      if (!success) return emit('updateProfileFaild')
-      emit('updateProfileSuccess')
+      let { success, data } = await store.dispatch('User/changePassword', { body, option: {} })
+      if (!success) return emit('updateFailed')
+      emit('upodateSuccess')
     }
 
     function onChange({ col, key }) {
@@ -123,6 +112,12 @@ export default {
 
     function checkValue({ col, key }) {
       let { model, required, label } = col
+      if (key === "new_password" && model.length < 8)
+        return col.error = "密碼長度至少 8 碼"
+      if ((key === "new_password" || key === 'confirm_new_password') && columns.new_password.model !== columns.confirm_new_password.model) {
+        columns.confirm_new_password.error = "確認密碼需與密碼相符"
+        if (key === 'confirm_new_password') return
+      }
       if (required && isNull(model))
         return col.error = `請輸入"${label}"`
 
@@ -142,6 +137,4 @@ export default {
 <style lang="sass" scoped>
 .ProfileEditor
   padding: 1rem
-  .gc-btns
-    margin-top: 1rem
 </style>

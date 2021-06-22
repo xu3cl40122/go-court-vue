@@ -23,7 +23,7 @@ const mutations = {
 
 const actions = {
   async setErrorHandle(context) {
-    let pass401Paths = ['/auth/login', '/auth/social_login']
+    let pass401Paths = ['/auth/login', '/auth/social_login', '/users/password']
     let unauthorizedCb = () => context.dispatch('logout')
     q.setErrorHandle({ pass401Paths, unauthorizedCb })
   },
@@ -186,8 +186,8 @@ const actions = {
     }
   },
 
-  async sendForgotVerif(context, { params, option }) {
-    let res = await User.sendForgotVerif({ params, option })
+  async sendForgotVerif(context, { body, option }) {
+    let res = await User.sendForgotVerif({ body, option })
     let { status, data } = res
     switch (status) {
       case 200:
@@ -197,8 +197,19 @@ const actions = {
     }
   },
 
-  async resetPassword(context, { params, option }) {
-    let res = await User.resetPassword({ params, option })
+  async resetPassword(context, { body, option }) {
+    let res = await User.resetPassword({ body, option })
+    let { status, data } = res
+    switch (status) {
+      case 200:
+        return { success: true, status, data }
+      default:
+        return { success: false, status, message: data?.message }
+    }
+  },
+
+  async changePassword(context, { body, option }) {
+    let res = await User.changePassword({ body, option })
     let { status, data } = res
     switch (status) {
       case 200:

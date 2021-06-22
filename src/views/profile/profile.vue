@@ -15,7 +15,10 @@
         button.gc-btn.main(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
 
   SidePanel(v-model:isOpen="isPanelOpen" title="編輯個人資訊")
-    ProfileEditor(@updateProfileSuccess="updateProfileSuccess" @updateProfileFaild="showMessageDialog('updateProfileFailed')")
+    template(v-if="panelUseFor === 'password'")
+      PasswordEditor(@upodateSuccess="changePwdSuccess" @updateFailed="showMessageDialog('changePwdFailed')")
+    template(v-else)
+      ProfileEditor(@updateProfileSuccess="updateProfileSuccess" @updateProfileFaild="showMessageDialog('failed')")
 
 </template>
 
@@ -25,7 +28,8 @@ import { useStore } from 'vuex'
 import SidePanel from '@/components/layout/SidePanel'
 import Avatar from '@/components/unit/Avatar'
 import ListItem from '@/components/unit/ListItem'
-import ProfileEditor from '@/components/public/ProfileEditor'
+import ProfileEditor from '@/components/user/ProfileEditor'
+import PasswordEditor from '@/components/user/PasswordEditor'
 import { compressImg } from "@/methods/"
 
 
@@ -35,16 +39,18 @@ export default {
     SidePanel,
     Avatar,
     ListItem,
-    ProfileEditor
+    ProfileEditor,
+    PasswordEditor
   },
   setup(props) {
     const store = useStore()
     let updateIndex = ref(0)
     let isPanelOpen = ref(false)
+    let panelUseFor = ref('profile')
     let user = computed(() => store.state.User.user)
     let btns = computed(() => {
       return [
-        { text: '變更密碼', class: '', callback: '' }
+        { text: '變更密碼', class: '', callback: openPanel.bind(this, true, 'password') }
       ]
     })
 
@@ -113,17 +119,17 @@ export default {
           tag: 'AVATAR'
         }
         let { success, data } = await store.dispatch('File/postFile', { body, option: { keepLoading: true } })
-        if (!success) return showMessageDialog('updateProfileFailed')
+        if (!success) return showMessageDialog('failed')
         file_id = data.file_id
       }
       // upload file content
       let contentRes = await store.dispatch('File/putFileContent', { file_id, file, option: { keepLoading: true } })
-      if (!contentRes.success) return showMessageDialog('updateProfileFailed')
+      if (!contentRes.success) return showMessageDialog('failed')
       let profile = { ...user.value }
       // save file info to user profile
       profile.meta = { ...profile.meta, avatar_file_id: file_id, avatar_url: contentRes.data.file_url }
       let userRes = await store.dispatch('User/putProfile', { body: profile, option: {} })
-      if (!userRes.success) return showMessageDialog('updateProfileFailed')
+      if (!userRes.success) return showMessageDialog('failed')
 
       showMessageDialog('success')
       updateIndex.value++
@@ -141,11 +147,28 @@ export default {
             closeAfter: 3000
           }
           break;
-        case 'updateProfileFailed':
+
+        case 'failed':
           info = {
             status: 'danger',
-            title: '編輯個人資訊失敗',
+            title: '操作失敗',
             subtitles: ['請稍後再試', '或回報系統管理員'],
+            closeAfter: 3000,
+          }
+          break;
+        case 'changePwdSuccess':
+          info = {
+            status: 'success',
+            title: '變更密碼成功',
+            subtitles: [],
+            closeAfter: 3000
+          }
+          break;
+        case 'changePwdFailed':
+          info = {
+            status: 'warning',
+            title: '變更密碼失敗',
+            subtitles: ['請確認密碼是否正確'],
             closeAfter: 3000,
           }
           break;
@@ -165,7 +188,13 @@ export default {
       openPanel(false)
     }
 
-    function openPanel(open) {
+    function changePwdSuccess() {
+      showMessageDialog('changePwdSuccess')
+      openPanel(false)
+    }
+
+    function openPanel(open, type) {
+      panelUseFor.value = type
       isPanelOpen.value = open
     }
 
@@ -179,6 +208,8 @@ export default {
       showMessageDialog,
       updateProfileSuccess,
       updateIndex,
+      panelUseFor,
+      changePwdSuccess
     }
   }
 }
