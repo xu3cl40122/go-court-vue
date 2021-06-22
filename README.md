@@ -1,26 +1,14 @@
-# go-court-vue
+# GO COURT 球場資源分享平臺
+以下介紹只包含前端部分，整體的專案介紹請到[後端專案](https://github.com/xu3cl40122/go-court-service)  
+[demo](https://tom-lee.site/) 部屬於 AWS EC2。
 
-### todo 
 
-- [x] https deploy
-- [x] 開始球賽 關閉球賽
-- [x] 驗票流程
-- [x] 分享票券
-- [x] 是否公開
-- [x] 評論系統
-- [x] 球場地圖
-- [x] 重設密碼
-- [x] api spec
-- [ ] schedule task 關閉球賽
-- [ ] generate qrcode library bug 
-- [ ] 搶票測試
-- [ ] get api sorting, filter
-- [ ] input search 優化
-- [ ] 紀錄球賽結果
-- [ ] 電腦版介面
-- [ ] 忘記密碼
-- [ ] 複製球賽
-- [ ] 購票時就顯示其他購票者(待確認)
+## 使用技術
+*  Vue.js
+*  Pug + Sass
+*  primevue(支援 Vue 3 的 UI Library)
+*  整合 Facebook 第三方登入
+
 
 
 
