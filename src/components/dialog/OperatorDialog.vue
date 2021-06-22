@@ -61,7 +61,7 @@ export default {
 
 <style lang="sass" scoped>
 :deep .p-dialog
-  margin-top: 30vh
+  margin-top: 10vh
   width: 90%
   border-radius: 8px
   overflow: hidden

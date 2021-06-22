@@ -3,7 +3,7 @@
   GameBasicInfo(:game="game")
   
   .gc-fixed-wrapper(v-if="btns.length")
-    button.gc-btn.main.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" @click="btn.callback") {{ btn.text }}
+    button.gc-btn.main.full(v-for="(btn, i) of btns" :key="i" :class="btn.class" :disabled="btn.disabled" @click="btn.callback") {{ btn.text }}
   
   SidePanel(v-model:isOpen="isPanelOpen" title="選擇種類及數量")
     GameStockSelector(:game="game")
@@ -17,6 +17,7 @@ import { useMeta } from 'vue-meta'
 import SidePanel from '@/components/layout/SidePanel'
 import GameStockSelector from '@/components/game/GameStockSelector'
 import GameBasicInfo from '@/components/game/GameBasicInfo'
+import dayjs from 'dayjs'
 
 export default {
   name: 'GameDetailPage',
@@ -48,8 +49,10 @@ export default {
 
     let btns = computed(() => {
       switch (game.value.game_status) {
-        case 'PENDING':
-          return [{ text: '參加球賽', class: '', callback: joinGame.bind(this) }]
+        case 'PENDING': {
+          let isSelling = dayjs().isAfter(dayjs(game.value.sell_start_at)) && dayjs().isBefore(dayjs(game.value.sell_end_at))
+          return [{ text: '參加球賽', class: '', disabled: !isSelling, callback: joinGame.bind(this) }]
+        }
 
         default:
           return []

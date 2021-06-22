@@ -29,15 +29,14 @@ export default {
       scanner = new Instascan.Scanner({ video: document.getElementById('preview'), mirror: false });
       scanner.addListener('scan', onScan)
       Instascan.Camera.getCameras().then(function (cameras) {
+        cameras = cameras.filter(d => d.id || d.name)
         phoneCameras = cameras
         if (cameras.length > 0) {
           scanner.start(cameras[activeIndex.value]);
         } else {
-          console.error('No cameras found.');
+          alert('No cameras found.')
         }
-      }).catch(function (e) {
-        console.error(e);
-      });
+      })
 
     }
 
@@ -71,7 +70,7 @@ export default {
 .QrScanner
   position: relative
   .operatorBar
-    position: absolute 
+    position: absolute
     bottom: 0
     letf: 0
     width: 100%
@@ -79,21 +78,21 @@ export default {
     padding: .5rem
     background-color: rgba(#000, .5)
     color: #fff
-    .cameraName 
+    .cameraName
       margin-bottom: .25rem
     .cameraBtn
       padding: .5rem
       border-radius: 8px
-  .tips 
-    position: absolute 
-    top: 1rem 
+  .tips
+    position: absolute
+    top: 1rem
     left: 0
     width: 100%
     .tip
       text-align: center
-      background-color: $second_c 
+      background-color: $second_c
       color: #333
-      padding: .25rem 
+      padding: .25rem
       border-radius: 4px
       font-size: 1.125rem
 #preview
