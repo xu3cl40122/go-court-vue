@@ -4,7 +4,7 @@
 
 
 ## 使用技術
-*  Vue
+*  Vue 生態圈
 *  Pug + Sass
 *  primevue(支援 Vue 3 的 UI Library)
 *  整合 Facebook 第三方登入
