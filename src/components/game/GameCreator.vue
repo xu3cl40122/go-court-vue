@@ -104,7 +104,7 @@ export default {
       specList.value = game.game_stock
     }
 
-    let active = ref('basicInfo')
+    let active = ref('timeLocation')
     let tabs = ref({
       basicInfo: { label: '基本資訊' },
       timeLocation: { label: '時間地點' },

@@ -1,11 +1,11 @@
 <template lang="pug">
 .CourtSelector
   template(v-if="!courtInfo.court_id")
-    AutoComplete(v-model="queryText" :suggestions="suggestions" @complete="searchCourts($event)" 
+    AutoComplete(v-model="queryText" :dropdown="true" :suggestions="suggestions" @complete="searchCourts($event)" 
     field="name" :forceSelection="true" placeholder="輸入並搜尋球場名稱" :disabled="disabled" :minLength="0" @item-select="onSelect")
       template(#item="slotProps")
-        span.name {{ slotProps.item.name }}
-        span.address {{ slotProps.item.address }}
+        .name {{ slotProps.item.name }}
+        .address {{ slotProps.item.address }}
   template(v-else)
     .flex.between.v-center
       .info
@@ -45,8 +45,13 @@ export default {
         getCourtById(props.courtId)
     }, { immediate: true })
 
-    async function searchCourts(e) {
-      let params = { name: e.query }
+    onMounted(() => {
+      // let e = { query: '' }
+      // searchCourts(e, 100)
+    })
+
+    async function searchCourts(e, size = 100) {
+      let params = { name: e.query, size }
       let option = { skipLoading: true }
       let { data } = await store.dispatch('Court/queryCourts', { params, option })
       suggestions.value = data.content
@@ -85,18 +90,18 @@ export default {
 <style lang="sass" scoped>
 :deep .p-autocomplete
   width: 100%
-.name 
-  margin-right: 1rem
+.name
+  margin-bottom: .25rem
   font-weight: 500
-  &.mgb 
-    margin-bottom: .25rem 
-.address 
+  &.mgb
+    margin-bottom: .25rem
+.address
   color: #666
   font-size: .75rem
 
-.icons 
-  i 
+.icons
+  i
     font-size: 1.25rem
-    margin-right: .75rem 
+    margin-right: .75rem
     color: $main_c
 </style>
