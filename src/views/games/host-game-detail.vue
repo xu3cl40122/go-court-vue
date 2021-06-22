@@ -4,7 +4,8 @@
   .wrapper
     div(v-show="active === 'basicInfo'")
       GameBasicInfo(:game="game" :editable="true" @editGame="openPanel(true)")
-    div(v-show="active === 'tickets'")
+    //- 因為要更新進場的人 每次重新 render 
+    div(v-if="active === 'tickets'")
       BuyerList(:game_id="game_id")    
     //- div(v-show="active === 'gameUsers'")
     //-   GameUserList(:game_id="game_id")
