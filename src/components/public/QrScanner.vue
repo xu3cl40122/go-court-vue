@@ -46,13 +46,13 @@ export default {
     }
 
     function onScan(str) {
-      localStorage.setItem('GC_SCAN_CAMERA_INDEX', activeIndex.value)
       emit('onScan', str)
     }
 
     function changeCamera() {
       activeIndex.value = activeIndex.value === phoneCameras.length - 1 ? 0 : activeIndex.value + 1
       scanner.start(phoneCameras[activeIndex.value])
+      localStorage.setItem('GC_SCAN_CAMERA_INDEX', activeIndex.value)
     }
 
     onUnmounted(() => scanner?.stop())

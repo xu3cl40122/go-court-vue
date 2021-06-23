@@ -82,12 +82,14 @@ export default {
         this.$store.dispatch('Game/queryGames', { params: defaultQuery, option: { skipLoading: true } })
       ])
 
-      let games = recRes.data.content.filter(game => game.game_status === 'PENDING')
+      let games = recRes.data.content
       let defaultGames = defaultRes.data.content
       defaultGames.forEach(game => {
         !games.find(d => d.game_id === game.game_id) ? games.push(game) : null
       })
-      this.games = games.slice(0, this.size)
+      this.games = games
+        .filter(game => game.game_status === 'PENDING')
+        .slice(0, this.size)
     },
 
     queryRecomendGames() {

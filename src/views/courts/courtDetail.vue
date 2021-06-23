@@ -33,6 +33,10 @@ export default {
   computed: {
     target_id() {
       return this.court.court_id?.toString() ?? ''
+    },
+
+    carousel() {
+      return this.court.logo_url ? [{ src: this.court.logo_url }] : []
     }
   },
   mounted() {
@@ -58,8 +62,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.wrapper 
+.wrapper
   padding: 1rem
-.infoWrapper 
+.infoWrapper
   margin-bottom: 1.5rem
 </style>
