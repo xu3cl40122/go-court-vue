@@ -319,7 +319,7 @@ export default {
       })
 
       if (isAll) {
-        outputData.sell_end_at = outputData.game_start_at
+        outputData.sell_end_at = outputData.game_end_at
         outputData.deleted = false
         outputData.meta = props.game.meta
       }
