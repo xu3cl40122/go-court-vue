@@ -29,8 +29,8 @@ export default {
       type: Number,
       default: 3
     },
-    title:{
-      type:String,
+    title: {
+      type: String,
       default: '推薦賽事'
     },
     // POPULAR, LOCAL
@@ -82,18 +82,19 @@ export default {
         this.$store.dispatch('Game/queryGames', { params: defaultQuery, option: { skipLoading: true } })
       ])
 
-      let games = recRes.data.content
+      let games = recRes.data.content.filter(game => game.game_status === 'PENDING')
       let defaultGames = defaultRes.data.content
       defaultGames.forEach(game => {
         !games.find(d => d.game_id === game.game_id) ? games.push(game) : null
       })
-      this.games = games.slice(0, 3)
+      this.games = games.slice(0, this.size)
     },
 
     queryRecomendGames() {
       let option = { skipLoading: true }
       return this.recommendWay === 'POPULAR'
-        ? this.$store.dispatch('Game/queryPopularGames', { params: { size: this.size }, option })
+        // 因為可能拿到已經結束的，所以多拿一點再濾掉 
+        ? this.$store.dispatch('Game/queryPopularGames', { params: { size: this.size * 2 }, option })
         : this.$store.dispatch('Game/queryGames', { params: this.query, option })
     },
 
